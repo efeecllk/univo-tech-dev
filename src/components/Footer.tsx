@@ -14,12 +14,12 @@ export default function Footer() {
             <h3 className="text-4xl font-black font-serif uppercase tracking-tighter border-b-2 border-black dark:border-white pb-2 inline-block dark:text-white transition-colors">
               Univo
             </h3>
-            <p className="text-neutral-900 dark:text-neutral-300 font-serif italic leading-relaxed text-sm">
+            <p className="text-neutral-900 dark:text-neutral-200 font-serif italic leading-relaxed text-sm">
               "Kampüsün nabzı, öğrencinin sesi." <br/>
               Ankara'nın en güncel üniversite gazetesi.
             </p>
             <div className="pt-4">
-               <span className="inline-block bg-black dark:bg-neutral-800 text-white dark:text-neutral-200 px-3 py-1 font-bold text-xs uppercase tracking-widest transition-colors">
+               <span className="inline-block bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-bold text-xs uppercase tracking-widest transition-colors">
                   EST. 2025
                </span>
             </div>
@@ -53,8 +53,8 @@ export default function Footer() {
               Dumlupınar Blv. No:1<br />
               06800 Çankaya/Ankara
             </address>
-            <p className="text-xs text-neutral-500 dark:text-neutral-500 font-medium uppercase tracking-wider">
-               &copy; 2025 UNIVO GAZETTE.<br/>Tüm Hakları Saklıdır.
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wider">
+               &copy; {new Date().getFullYear()} UNIVO GAZETTE.<br/>Tüm Hakları Saklıdır.
             </p>
           </div>
         </div>

@@ -79,8 +79,8 @@ export default function AttendeesList({ eventId }: AttendeesListProps) {
 
   if (loading) {
     return (
-      <div className="bg-white border border-neutral-200 rounded-lg p-6">
-        <h3 className="font-semibold text-lg mb-4">Katılımcılar</h3>
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-6">
+        <h3 className="font-semibold text-lg mb-4 dark:text-white">Katılımcılar</h3>
         <p className="text-neutral-500">Yükleniyor...</p>
       </div>
     );
@@ -88,8 +88,8 @@ export default function AttendeesList({ eventId }: AttendeesListProps) {
 
   if (attendees.length === 0) {
     return (
-      <div className="bg-white border border-neutral-200 rounded-lg p-6">
-        <h3 className="font-semibold text-lg mb-4">Katılımcılar</h3>
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-6">
+        <h3 className="font-semibold text-lg mb-4 dark:text-white">Katılımcılar</h3>
         <p className="text-neutral-500">Henüz kimse katılmadı. İlk katılan siz olun!</p>
       </div>
     );
@@ -98,8 +98,8 @@ export default function AttendeesList({ eventId }: AttendeesListProps) {
   const displayedAttendees = showAll ? attendees : attendees.slice(0, 8);
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-lg p-6">
-      <h3 className="font-semibold text-lg mb-4">
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-6 transition-colors">
+      <h3 className="font-semibold text-lg mb-4 dark:text-white">
         Katılımcılar ({attendees.length})
       </h3>
 
@@ -108,7 +108,7 @@ export default function AttendeesList({ eventId }: AttendeesListProps) {
           <div
             key={attendee.id}
             onClick={() => router.push(`/profile/${attendee.user_id}`)}
-            className="flex flex-col items-center p-3 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors"
+            className="flex flex-col items-center p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer transition-colors"
           >
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold mb-2"
@@ -116,7 +116,7 @@ export default function AttendeesList({ eventId }: AttendeesListProps) {
             >
               {attendee.profiles?.full_name?.charAt(0).toUpperCase() || 'U'}
             </div>
-            <p className="font-medium text-sm text-center line-clamp-1">
+            <p className="font-medium text-sm text-center line-clamp-1 dark:text-neutral-200">
               {attendee.profiles?.full_name || 'Kullanıcı'}
             </p>
             {attendee.profiles?.department && (

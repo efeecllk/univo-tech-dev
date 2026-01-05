@@ -117,8 +117,7 @@ export default function AddToCalendarButton({
   return (
     <button
       onClick={handleAddToCalendar}
-      style={{ borderColor: '#C8102E', color: '#C8102E' }}
-      className="inline-flex items-center gap-2 px-6 py-2.5 border-2 rounded-lg font-semibold hover:bg-neutral-50 transition-colors"
+      className="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-[#C8102E] text-[#C8102E] dark:border-white dark:text-white rounded-lg font-bold hover:bg-[#C8102E] hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors"
     >
       <Calendar size={20} />
       <span>Google Takvime Ekle</span>

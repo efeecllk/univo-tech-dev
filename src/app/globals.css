@@ -26,6 +26,14 @@ h1, h2, h3, h4, h5, h6 {
   color: #ffffff;
 }
 
+hr {
+    border-color: #e5e5e5;
+}
+
+.dark hr {
+    border-color: #262626;
+}
+
 h1 {
   font-size: 2.5rem;
   font-weight: 900;
@@ -33,6 +41,7 @@ h1 {
 
 h2 {
   font-size: 2rem;
+  font-weight: 900;
 }
 
 h3 {
@@ -42,6 +51,10 @@ h3 {
 p {
   line-height: 1.75;
   color: #404040;
+}
+
+.dark p {
+    color: #d4d4d4;
 }
 
 a {

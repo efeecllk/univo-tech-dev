@@ -91,9 +91,9 @@ export default function SettingsPage() {
 
                     {/* Divider */}
                     <div className="relative flex py-2 items-center">
-                        <div className="flex-grow border-t border-neutral-300"></div>
+                        <div className="flex-grow border-t border-neutral-300 dark:border-neutral-700"></div>
                         <span className="flex-shrink mx-4 text-neutral-400 text-sm font-bold uppercase">veya</span>
-                        <div className="flex-grow border-t border-neutral-300"></div>
+                        <div className="flex-grow border-t border-neutral-300 dark:border-neutral-700"></div>
                     </div>
 
                     {/* Demo Button */}
@@ -173,9 +173,9 @@ export default function SettingsPage() {
             </div>
 
             {/* Demo Data Section */}
-            <div className="mt-8 bg-neutral-100 p-6 border-2 border-dashed border-neutral-300">
-                <h3 className="text-lg font-bold font-serif mb-2">Demo Verileri</h3>
-                <p className="text-sm text-neutral-600 mb-4">
+            <div className="mt-8 bg-neutral-100 dark:bg-neutral-900 p-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700">
+                <h3 className="text-lg font-bold font-serif mb-2 dark:text-white">Demo Verileri</h3>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
                     Topluluğunuz boş görünüyorsa, aşağıdan örnek verileri tekrar yükleyebilirsiniz.
                 </p>
                 <DemoDataLoader communityId={community?.id} />

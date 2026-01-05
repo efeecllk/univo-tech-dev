@@ -119,15 +119,15 @@ function AnalyticsContent() {
         {/* Header & Filter Controls */}
         <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
             <h2 className="text-3xl font-black font-serif">Analizler</h2>
-            <div className="flex bg-white rounded-lg border border-neutral-300 p-1 shadow-sm">
+            <div className="flex bg-white dark:bg-neutral-900 rounded-lg border border-neutral-300 dark:border-neutral-700 p-1 shadow-sm">
                 {(['2W', '1M', '3M', 'ALL'] as const).map((r) => (
                     <button
                         key={r}
                         onClick={() => setTimeRange(r)}
                         className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${
                             timeRange === r 
-                            ? 'bg-black text-white shadow-md' 
-                            : 'text-neutral-500 hover:bg-neutral-100'
+                            ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                            : 'text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
                         }`}
                     >
                         {r === '2W' ? 'Son 2 Hafta' : r === '1M' ? 'Son 1 Ay' : r === '3M' ? 'Son 3 Ay' : 'Tümü'}
