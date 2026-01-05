@@ -74,10 +74,14 @@ function HeaderContent() {
           <Link href="/?view=voice" className="flex items-center gap-0">
             <div className="relative w-16 h-16 overflow-hidden bg-transparent">
                 <Image 
-                    src="/univo-logo-transparent.png" 
+                    src="/logo_black.png" 
                     alt="Univo Logo" 
                     fill 
-                    className="object-cover transition-all duration-300 mix-blend-multiply dark:mix-blend-screen dark:invert dark:brightness-100 contrast-125"
+                    className="object-cover transition-all duration-300 dark:invert dark:brightness-0 dark:sepia-0 dark:saturate-100 dark:hue-rotate-0"
+                    style={{
+                        maskImage: 'radial-gradient(circle, black 60%, transparent 100%)',
+                        WebkitMaskImage: 'radial-gradient(circle, black 60%, transparent 100%)'
+                    }}
                 />
             </div>
             <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">

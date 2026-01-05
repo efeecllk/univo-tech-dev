@@ -514,8 +514,8 @@ export default function VoiceView() {
             
             {/* Input Area */}
             {user ? (
-                <div className="bg-neutral-50 dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 mb-8 rounded-sm shadow-sm relative">
-                    <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-10 dark:text-white">
+                <div className="bg-neutral-50 dark:bg-transparent p-6 border border-neutral-200 dark:border-none mb-8 rounded-sm shadow-sm dark:shadow-none relative">
+                    <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-0 dark:text-white">
                          <MessageSquare size={100} />
                     </div>
                     
