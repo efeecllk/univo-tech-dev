@@ -74,7 +74,9 @@ export default function VoiceView() {
   
   const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
   const [newComment, setNewComment] = useState('');
-  
+  const [isPosting, setIsPosting] = useState(false);
+  const [isCommenting, setIsCommenting] = useState(false);
+
   // Hashtag Autocomplete System
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestionList, setSuggestionList] = useState<string[]>([]);
@@ -156,9 +158,10 @@ export default function VoiceView() {
 
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newStatus.trim()) return;
+    if (!newStatus.trim() || isPosting) return;
     if (!user) return alert('Giriş yapmalısınız.');
 
+    setIsPosting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
@@ -193,6 +196,8 @@ export default function VoiceView() {
     } catch (e) {
       console.error(e);
       alert('Paylaşım yapılamadı.');
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -239,9 +244,10 @@ export default function VoiceView() {
 
   const handleCommentSubmit = async (e: React.FormEvent, voiceId: string) => {
       e.preventDefault();
-      if (!newComment.trim()) return;
+      if (!newComment.trim() || isCommenting) return;
       if (!user) return;
 
+      setIsCommenting(true);
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) return;
@@ -261,6 +267,8 @@ export default function VoiceView() {
         }
       } catch (e) {
           console.error(e);
+      } finally {
+          setIsCommenting(false);
       }
   };
 
@@ -335,6 +343,7 @@ export default function VoiceView() {
     if (diffInSeconds < 60) {
       return 'Şimdi';
     } else if (diffInSeconds < 3600) {
+        return Math.floor(diffInSeconds / 60) + ' dk';
     } else {
       return date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' });
     }
@@ -348,40 +357,35 @@ export default function VoiceView() {
   const [activeUsers, setActiveUsers] = useState(1); 
   
   useEffect(() => {
-    // 1. Get or Create Persistent Anonymous ID
-    let userId = user?.id;
-    if (!userId) {
-        const storedAnonId = localStorage.getItem('univo_anon_id');
-        if (storedAnonId) {
-            userId = storedAnonId;
-        } else {
-            const newId = `anon-${Math.random().toString(36).substring(7)}`;
-            localStorage.setItem('univo_anon_id', newId);
-            userId = newId;
-        }
-    }
-
     const channel = supabase.channel('room1');
 
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         
-        // 2. Count Unique User IDs (Deduplicate Tabs)
-        const uniqueUsers = new Set();
+        // 2. Count Unique Devices (Deduplicate by Device ID)
+        const uniqueDevices = new Set();
         Object.values(state).forEach((presences: any) => {
             presences.forEach((p: any) => {
-                if (p.user_id) uniqueUsers.add(p.user_id);
+                if (p.device_id) uniqueDevices.add(p.device_id);
             });
         });
 
-        setActiveUsers(Math.max(1, uniqueUsers.size));
+        setActiveUsers(Math.max(1, uniqueDevices.size));
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
+          // Always get or create device ID
+          let deviceId = localStorage.getItem('univo_device_id');
+          if (!deviceId) {
+              deviceId = `device-${Math.random().toString(36).substring(7)}`;
+              localStorage.setItem('univo_device_id', deviceId);
+          }
+
           await channel.track({ 
               online_at: new Date().toISOString(), 
-              user_id: userId 
+              user_id: user?.id || null,
+              device_id: deviceId
           });
         }
       });
@@ -569,11 +573,11 @@ export default function VoiceView() {
                                 <span className="text-xs text-neutral-400">{newStatus.length}/280</span>
                                 <button
                                     type="submit"
-                                    disabled={!newStatus.trim()}
+                                    disabled={!newStatus.trim() || isPosting}
                                     className="px-6 py-2 bg-black text-white font-bold uppercase text-sm hover:bg-neutral-800 disabled:opacity-50 flex items-center gap-2"
                                 >
                                     <Send size={14} />
-                                    Yayınla
+                                    {isPosting ? 'Yayınlanıyor...' : 'Yayınla'}
                                 </button>
                             </div>
                         </div>
@@ -701,10 +705,10 @@ export default function VoiceView() {
                                                         />
                                                         <button 
                                                             type="submit"
-                                                            disabled={!newComment.trim()}
+                                                            disabled={!newComment.trim() || isCommenting}
                                                             className="p-2 bg-black text-white hover:bg-neutral-800 disabled:opacity-50"
                                                         >
-                                                            <Send size={14} />
+                                                            {isCommenting ? '...' : <Send size={14} />}
                                                         </button>
                                                     </form>
                                                 )}
