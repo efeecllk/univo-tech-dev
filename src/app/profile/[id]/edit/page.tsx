@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Save, User, BookOpen, Heart, Quote, Globe, Lock, Eye, EyeOff, Linkedin, Github, Twitter, Instagram } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface SocialLinks {
   linkedin?: string;
@@ -161,7 +162,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
       router.refresh();
     } catch (error) {
       console.error('Error updating profile:', JSON.stringify(error, null, 2));
-      alert(`Profil güncellenirken bir hata oluştu: ${(error as any).message}. (Veritabanı şeması güncel mi?)`);
+      toast.error(`Profil güncellenirken bir hata oluştu.`);
     } finally {
       setSaving(false);
     }

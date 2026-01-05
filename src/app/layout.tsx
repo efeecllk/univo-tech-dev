@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Univo - University Events & Announcements",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <AuthProvider>
           <Header />
           <main className="flex-1">
+            <Toaster position="top-center" richColors />
             {children}
           </main>
           <Footer />

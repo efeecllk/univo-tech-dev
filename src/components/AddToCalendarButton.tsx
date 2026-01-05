@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface AddToCalendarButtonProps {
   eventId: string;
@@ -59,14 +60,14 @@ export default function AddToCalendarButton({
   const handleAddToCalendar = () => {
     // Check if user is logged in
     if (!user) {
-      alert('Takvime eklemek için önce giriş yapmalısınız!');
+      toast.error('Takvime eklemek için önce giriş yapmalısınız!');
       router.push('/login');
       return;
     }
 
     // Check if user is attending the event
     if (!isAttending) {
-      alert('Takvime eklemek için önce etkinliğe katılmalısınız!');
+      toast.warning('Takvime eklemek için önce etkinliğe katılmalısınız!');
       return;
     }
 

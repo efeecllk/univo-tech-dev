@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
@@ -50,11 +52,11 @@ export default function SettingsPage() {
                 .eq('id', community.id);
 
             if (error) throw error;
-            alert("Değişiklikler başarıyla kaydedildi!");
+            toast.success("Değişiklikler başarıyla kaydedildi!");
             router.refresh(); 
         } catch (error: any) {
             console.error("Update error:", error);
-            alert("Güncelleme başarısız: " + error.message);
+            toast.error("Güncelleme başarısız: " + error.message);
         } finally {
             setSaving(false);
         }
@@ -200,11 +202,11 @@ function CreateCommunityForm({ userId, onComplete }: { userId: string, onComplet
 
             if (error) throw error;
             if (data) {
-                alert("Topluluk başarıyla oluşturuldu!");
+                toast.success("Topluluk başarıyla oluşturuldu!");
                 onComplete(data[0]);
             }
         } catch (e: any) {
-             alert("Hata: " + e.message + "\nLütfen 'seed_fake_members.sql' dosyasını çalıştırarak veritabanı şemasını güncellediğinizden emin olun (category sütunu için).");
+             toast.error("Hata: " + e.message + "\nLütfen 'seed_fake_members.sql' dosyasını çalıştırarak veritabanı şemasını güncellediğinizden emin olun.");
         } finally {
             setLoading(false);
         }
@@ -267,7 +269,7 @@ function InitializeDemoButton({ userId, onComplete }: { userId: string, onComple
             console.log("Seeding events for community:", comm.id);
             await seedEvents(comm.id);
             
-            alert("Topluluk ve veriler oluşturuldu!");
+            toast.success("Topluluk ve veriler oluşturuldu!");
             console.log("Initialization complete. Updating Parent State directly...");
             
             // DIRECT FIX: Pass the created object to parent
@@ -275,7 +277,7 @@ function InitializeDemoButton({ userId, onComplete }: { userId: string, onComple
             
         } catch (e: any) {
             console.error("Initialization failed:", e);
-            alert("Hata: " + e.message + "\nLütfen SQL politikasını kontrol edin.");
+            toast.error("Hata: " + e.message);
         } finally {
             setLoading(false);
         }
@@ -341,19 +343,19 @@ function DemoDataLoader({ communityId }: { communityId: string }) {
     const loadData = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (!communityId) {
-             alert("Hata: Topluluk ID bulunamadı.");
+             toast.error("Hata: Topluluk ID bulunamadı.");
              return;
         }
         setLoading(true);
         try {
             await seedEvents(communityId);
-            alert('Demo verileri sıfırlandı!\n\nÖNEMLİ: Yorumları ve puanları görmek için şimdi Supabase SQL Editor\'de "seed_fake_members.sql" dosyasını çalıştırın.');
+            toast.success('Demo verileri sıfırlandı!');
             // We can optionally refresh, but user complaints about 'nothing happening' often mean they expect visual confirmation or redirect.
             // An alert is good enough for 'Load Data', or we could reload.
             router.refresh(); 
         } catch (e: any) {
             console.error("Load data error:", e);
-            alert("Hata oluştu: " + e.message);
+            toast.error("Hata oluştu: " + e.message);
         } finally {
             setLoading(false);
         }

@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 // Interfaces
 interface Voice {
@@ -159,13 +160,13 @@ export default function VoiceView() {
   const handlePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStatus.trim() || isPosting) return;
-    if (!user) return alert('Giriş yapmalısınız.');
+    if (!user) return toast.error('Giriş yapmalısınız.');
 
     setIsPosting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) return alert('Oturum hatası');
+      if (!session) return toast.error('Oturum hatası');
 
       // Extract hashtags from content
       // Matches # followed by alphanumeric characters and Turkish chars
@@ -191,18 +192,18 @@ export default function VoiceView() {
       } else {
         const err = await res.json();
         // Handle 429 specifically if needed, or just show error
-        alert(err.error || 'Bir hata oluştu');
+        toast.error(err.error || 'Bir hata oluştu');
       }
     } catch (e) {
       console.error(e);
-      alert('Paylaşım yapılamadı.');
+      toast.error('Paylaşım yapılamadı.');
     } finally {
       setIsPosting(false);
     }
   };
 
   const handleReaction = async (voiceId: string, type: 'like' | 'neutral' | 'dislike') => {
-    if (!user) return alert('Giriş yapmalısınız.');
+    if (!user) return toast.error('Giriş yapmalısınız.');
 
     // Optimistic update
     const oldVoices = [...voices];
@@ -401,7 +402,7 @@ export default function VoiceView() {
 
   const handlePollVote = async (index: number) => {
       if (!user) {
-          alert('Oy kullanmak için giriş yapmalısınız.');
+          toast.error('Oy kullanmak için giriş yapmalısınız.');
           router.push('/login');
           return;
       }
@@ -426,7 +427,7 @@ export default function VoiceView() {
           fetchPollResults(activePoll); // Refresh results from DB
       } catch (e) {
           console.error('Vote Error:', e);
-          alert('Oylama sırasında bir hata oluştu.');
+          toast.error('Oylama sırasında bir hata oluştu.');
       }
   };
 

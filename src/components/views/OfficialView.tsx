@@ -2,6 +2,7 @@ import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmar
 import * as React from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export default function OfficialView() {
   const { user } = useAuth();
@@ -224,7 +225,7 @@ export default function OfficialView() {
           const isFollowing = prev.includes(topic);
           const newFollows = isFollowing ? prev.filter(s => s !== topic) : [...prev, topic];
           localStorage.setItem('univo_followed_sources', JSON.stringify(newFollows));
-          if (!isFollowing) alert(`"${topic}" favorilere eklendi. (Bu özellik henüz sadece yerel olarak çalışır).`);
+          if (!isFollowing) toast.success(`"${topic}" favorilere eklendi.`);
           return newFollows;
       });
   };
