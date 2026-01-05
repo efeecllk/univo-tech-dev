@@ -71,7 +71,7 @@ export default function SettingsPage() {
                 
                 <div className="grid gap-8">
                     {/* Manual Creation */}
-                    <div className="bg-white dark:bg-neutral-900 p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)]">
+                    <div className="bg-white dark:bg-neutral-900 p-8 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]">
                         <h3 className="text-xl font-bold mb-4 flex items-center gap-2 dark:text-white">
                              🚀 {isAdmin ? 'Yeni Topluluk Oluştur' : 'Erişim Kısıtlı'}
                         </h3>
@@ -113,7 +113,7 @@ export default function SettingsPage() {
         <div className="max-w-2xl mx-auto">
             <h1 className="text-3xl font-black font-serif mb-8 dark:text-white">Topluluk Ayarları</h1>
             
-            <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+            <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-colors">
                 <form className="space-y-6" onSubmit={handleUpdate}>
                     <div>
                         <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Topluluk Adı</label>
@@ -366,7 +366,7 @@ function DemoDataLoader({ communityId }: { communityId: string }) {
             type="button"
             onClick={loadData} 
             disabled={loading}
-            className="bg-neutral-200 text-neutral-600 px-4 py-2 font-bold uppercase text-xs hover:bg-neutral-300 transition-colors"
+            className="bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-4 py-2 font-bold uppercase text-xs hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
         >
             {loading ? 'Yükleniyor...' : 'Demo Verilerini Yükle'}
         </button>

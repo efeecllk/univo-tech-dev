@@ -323,7 +323,7 @@ export default function OfficialView() {
   return (
     <div className="container mx-auto px-4 py-8 relative">
       {/* Newspaper Header */}
-      <div className="border-b-2 border-black dark:border-white pb-2 mb-2 flex justify-between items-end transition-colors">
+      <div className="border-b-2 border-black dark:border-neutral-700 pb-2 mb-2 flex justify-between items-end transition-colors">
          <div className="text-xs font-bold text-neutral-500 dark:text-neutral-400">
             ANKARA, {formattedDate.toUpperCase()}
          </div>
@@ -334,9 +334,9 @@ export default function OfficialView() {
             </div>
          </div>
       </div>
-      <div className="border-b-4 border-black dark:border-white pb-4 mb-8 text-center transition-colors">
+      <div className="border-b-4 border-black dark:border-neutral-700 pb-4 mb-8 text-center transition-colors">
         <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight mb-2 dark:text-white">Resmi Gündem</h2>
-        <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-white pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+        <div className="flex justify-between items-center text-sm font-medium border-t border-black dark:border-neutral-700 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
           <a href="/official/archive" className="flex items-center gap-1 hover:text-[#C8102E] transition-colors font-bold uppercase hover:underline decoration-2 underline-offset-4 cursor-pointer dark:text-neutral-300 dark:hover:text-[#C8102E]">
               <Briefcase size={16} />
@@ -485,7 +485,7 @@ export default function OfficialView() {
                                         href={item.link} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className={`mt-3 inline-flex items-center gap-2 px-4 py-2 border-2 text-xs font-black uppercase tracking-wider transition-all group/btn shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] hover:translate-x-[2px] hover:translate-y-[2px]
+                                        className={`mt-3 inline-flex items-center gap-2 px-4 py-2 border-2 text-xs font-black uppercase tracking-wider transition-all group/btn shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] hover:translate-x-[2px] hover:translate-y-[2px]
                                             ${item.type === 'email' 
                                                 ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-700 text-amber-800 dark:text-amber-500 hover:bg-amber-100 dark:hover:bg-amber-900/30' 
                                                 : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'
@@ -552,7 +552,7 @@ export default function OfficialView() {
                 ) : (
                     <button 
                         onClick={() => setShowLoginModal(true)}
-                        className="w-full py-2.5 bg-neutral-900 dark:bg-white text-white dark:text-black font-bold text-sm uppercase rounded hover:bg-neutral-800 dark:hover:bg-neutral-100 transition-colors shadow-sm"
+                        className="w-full py-2.5 bg-neutral-900 dark:bg-neutral-800 text-white dark:text-neutral-200 font-bold text-sm uppercase rounded hover:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors shadow-sm"
                     >
                          ODTÜ Hesabını Bağla
                     </button>
@@ -668,7 +668,7 @@ export default function OfficialView() {
       {/* LOGIN MODAL */}
        {showLoginModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-white/10 backdrop-blur-sm p-4">
-              <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
+              <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)] w-full max-w-md p-8 relative animate-in fade-in zoom-in duration-200">
                   <button 
                     onClick={() => setShowLoginModal(false)}
                     className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"

@@ -140,7 +140,7 @@ function AnalyticsContent() {
             {/* Event Attendance Chart */}
             <div>
                 <h3 className="text-xl font-bold font-serif mb-4 dark:text-white">Etkinlik Katılımı</h3>
-                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] rounded-xl h-[400px] transition-colors">
+                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] rounded-xl h-[400px] transition-colors">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredAttendance}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
@@ -176,7 +176,7 @@ function AnalyticsContent() {
             {/* Follower Growth Chart */}
             <div>
                 <h3 className="text-xl font-bold font-serif mb-4 dark:text-white">Takipçi Gelişimi</h3>
-                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] rounded-xl h-[400px] transition-colors">
+                <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] rounded-xl h-[400px] transition-colors">
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={filteredFollowers}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#eee" />

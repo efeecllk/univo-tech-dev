@@ -136,7 +136,7 @@ export default async function EventDetailPage({
           {/* Sidebar / Action Column */}
           <div className="lg:col-span-1 space-y-8">
              {/* Action Card */}
-             <div className="bg-neutral-50 dark:bg-neutral-900 border-4 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+             <div className="bg-neutral-50 dark:bg-neutral-900 border-4 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)] transition-colors">
                 <h3 className="text-2xl font-black font-serif uppercase mb-6 border-b-2 border-black dark:border-white pb-2 text-center dark:text-white">
                    Katılım Durumu
                 </h3>
