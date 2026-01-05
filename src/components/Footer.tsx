@@ -39,7 +39,7 @@ export default function Footer() {
              <h4 className="font-bold font-serif uppercase mb-4 text-sm tracking-wider">Kampüs Rehberi</h4>
              <ul className="space-y-2 text-sm font-medium">
                <li><a href="/?view=official" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Yemekhane Menüsü</a></li>
-               <li><a href="https://tim.metu.edu.tr/ring-saatleri" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Ring Saatleri</a></li>
+               <li><a href="https://tim.metu.edu.tr/tr/ring-services" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Ring Saatleri</a></li>
                <li><a href="https://lib.metu.edu.tr" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Kütüphane Durumu</a></li>
                <li><a href="https://oidb.metu.edu.tr/tr/akademik-takvim" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Akademik Takvim</a></li>
              </ul>
