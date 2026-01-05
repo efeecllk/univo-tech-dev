@@ -36,11 +36,12 @@ export default function Footer() {
           </div>
 
           <div className="md:col-span-1 border-l-2 border-black pl-8 border-l-0 pl-0 md:border-l-2 md:pl-8">
-             <h4 className="font-bold font-serif uppercase mb-4 text-sm tracking-wider">Kategoriler</h4>
+             <h4 className="font-bold font-serif uppercase mb-4 text-sm tracking-wider">Kampüs Rehberi</h4>
              <ul className="space-y-2 text-sm font-medium">
-               <li><a href="/?category=event" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Etkinlikler</a></li>
-               <li><a href="/?category=announcement" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Duyurular</a></li>
-               <li><a href="/?category=workshop" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Atölyeler</a></li>
+               <li><a href="/?view=official" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Yemekhane Menüsü</a></li>
+               <li><a href="https://tim.metu.edu.tr/ring-saatleri" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Ring Saatleri</a></li>
+               <li><a href="https://lib.metu.edu.tr" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Kütüphane Durumu</a></li>
+               <li><a href="https://oidb.metu.edu.tr/tr/akademik-takvim" target="_blank" className="hover:bg-neutral-100 block -ml-2 px-2 py-1 transition-colors">Akademik Takvim</a></li>
              </ul>
           </div>
 
