@@ -54,20 +54,20 @@ export default function CommunityView() {
                 <div className="mt-8">
                      {/* Popular Events - Replaced TrendingWidget */}
                     <div className="border-4 border-black p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                         <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2">
-                            <Calendar size={24} className="text-blue-600" />
+                        <h3 className="text-xl font-bold border-b-2 border-black pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2">
+                            <Calendar size={24} className="text-[#C8102E]" />
                             Popüler
                         </h3>
                         <div className="space-y-4">
                              {POPULAR_EVENTS.map(event => (
                                 <div key={event.id} onClick={() => router.push('/events/1')} className="group cursor-pointer">
                                     <div className="flex justify-between items-start mb-1">
-                                         <h4 className="font-bold font-serif text-neutral-900 group-hover:text-blue-600 transition-colors">{event.title}</h4>
+                                         <h4 className="font-bold font-serif text-neutral-900 group-hover:text-[#C8102E] transition-colors">{event.title}</h4>
                                          <span className="text-xs font-bold bg-black text-white px-2 py-1 uppercase">{event.date}</span>
                                     </div>
                                     <div className="flex justify-between items-end border-b border-neutral-100 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
                                         <p className="text-sm text-neutral-500 font-medium">{event.attendees} katılımcı</p>
-                                        <ArrowRight size={16} className="text-neutral-400 group-hover:translate-x-1 group-hover:text-blue-600 transition-all" />
+                                        <ArrowRight size={16} className="text-neutral-400 group-hover:translate-x-1 group-hover:text-[#C8102E] transition-all" />
                                     </div>
                                 </div>
                              ))}
