@@ -404,8 +404,8 @@ export default function VoiceView() {
 
       if (!activePoll) return;
 
-      // Unique ID for the poll based on its question
-      const pollId = btoa(unescape(encodeURIComponent(activePoll.question))).substring(0, 50);
+      // Robust poll ID based on question hash/content
+      const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
 
       try {
           const { error } = await supabase
@@ -427,7 +427,7 @@ export default function VoiceView() {
   };
 
   const fetchPollResults = async (poll: {question: string, options: string[]}) => {
-      const pollId = btoa(unescape(encodeURIComponent(poll.question))).substring(0, 50);
+      const pollId = poll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
       
       const { data, error } = await supabase
           .from('poll_votes')

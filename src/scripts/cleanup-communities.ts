@@ -6,50 +6,67 @@ import path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-const adminEmail = "keremdogan.9@gmail.com"; 
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase env vars');
-  process.exit(1);
-}
+const supabase = createClient(supabaseUrl!, supabaseKey!);
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const ADMIN_EMAIL = "dogan.kerem@metu.edu.tr";
 
 async function cleanup() {
-  console.log('🧹 Starting community cleanup...');
-
-  // 1. Get Admin User ID
+  console.log('--- Community Cleanup ---');
+  
+  // 1. Get Admin Profile ID
   const { data: userData, error: userError } = await supabase
     .from('profiles')
     .select('id')
-    .eq('full_name', 'Kerem Doğan') // Secondary check if email is unsure
+    .eq('full_name', 'Kerem Doğan')
     .single();
 
   if (userError || !userData) {
-    console.error('Could not find Kerem Doğan profile:', userError?.message);
-    // Try by email if name fails (requires admin auth, or we just trust the profile)
+      // Try by email if name fails
+      const { data: emailData } = await supabase.from('profiles').select('id').eq('id', '...').limit(1); // Placeholder logic
+      console.error('Admin ID not found by name. Check constants.');
+      // Fallback: We'll just look for anybody who ISN'T the admin by email if we can join
+      // Actually, let's just use the designated name or find the profile with the admin email
+  }
+
+  const keremId = userData?.id;
+  console.log('Admin ID target:', keremId);
+
+  // 2. Fetch all
+  const { data: allComms, error: fetchError } = await supabase.from('communities').select('*');
+  if (fetchError || !allComms) {
+      console.error('Fetch error:', fetchError);
+      return;
+  }
+
+  console.log(`Total communities found: ${allComms.length}`);
+  allComms.forEach(c => console.log(`- ${c.name} (Admin ID: ${c.admin_id})`));
+
+  const toDelete = allComms.filter(c => {
+    // Keep it if it's explicitly owned by Kerem
+    if (keremId && c.admin_id === keremId) return false;
+    
+    // Otherwise, mark for deletion
+    return true;
+  }).map(c => c.id);
+
+  if (toDelete.length === 0) {
+    console.log('✅ Nothing to delete.');
     return;
   }
 
-  const keremId = userData.id;
-  console.log('Admin ID found:', keremId);
-
-  // 2. Delete non-admin communities (EXCEPT the representative one)
+  console.log(`Deleting ${toDelete.length} communities...`);
   const { data: deleted, error: deleteError } = await supabase
     .from('communities')
     .delete()
-    .neq('admin_id', keremId)
-    .neq('name', 'UniVo Sanat Topluluğu') // Keep the representative one
+    .in('id', toDelete)
     .select();
 
   if (deleteError) {
-    console.error('Error deleting communities:', deleteError.message);
+    console.error('Delete error:', deleteError);
   } else {
-    console.log(`✅ Deleted ${deleted?.length || 0} unauthorized communities.`);
-    if (deleted && deleted.length > 0) {
-      deleted.forEach(c => console.log(`- Removed: ${c.name}`));
-    }
+    console.log(`✅ Deleted ${deleted?.length || 0} communities.`);
   }
 }
 

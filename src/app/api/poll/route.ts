@@ -39,18 +39,21 @@ export async function GET() {
       
       GÖREV:
       1. Şu anki tarihi analiz et: ${new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
-      2. Bu tarihte ODTÜ'de akademik veya sosyal olarak ne olduğunu TAHMİN ET / ARAŞTIR (Örn: Vize haftası mı? Bahar şenliği yaklaşıyor mu? Kayıt haftası mı? Kar tatili riski var mı?).
-      3. ODTÜ Kültürü (Devrim, "Hocam", Ringler, Çatı, Kütüphane sabahlamaları, Kediler) ile bu gündemi birleştir.
+      2. Bu tarihte/haftada ODTÜ'de akademik veya sosyal olarak ne olduğunu TAHMİN ET (Örn: Final haftası mı? Tatil mi? Kayıt dönemi mi?).
+      3. ODTÜ Kültürü ile bu gündemi birleştirerek HAFTALIK bir anket sorusu oluştur.
       
-      Bu analize dayanarak, öğrencilerin BUGÜN en çok konuşacağı tek bir anket sorusu oluştur.
+      KRİTİK KURALLAR:
+      - Soru metni içinde kesinlikle spesifik bir GÜN veya TARİH (Örn: "5 Ocak", "Bugün Pazartesi") BELİRTME. 
+      - Soru, tüm hafta boyunca yayında kalacağı için zamandan bağımsız ama haftalık gündeme uygun olmalı.
+      - ODTÜ jargonunu (Hocam, Devrim, Ring, Çatı vb.) doğal bir şekilde kullan.
       
       Çıktı Formatı (JSON):
       {
-        "question": "Gündem ve tarih odaklı soru metni",
+        "question": "Haftalık gündeme uygun, tarih ibaresi içermeyen soru metni",
         "options": ["Seçenek 1", "Seçenek 2", "Seçenek 3"]
       }
       
-      Sadece saf JSON döndür. Markdown yok.
+      Sadece saf JSON döndür.
     `;
 
     const result = await model.generateContent(prompt);
