@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { METU_DEPARTMENTS } from '@/lib/constants';
+import { METU_DEPARTMENTS, METU_CLASSES } from '@/lib/constants';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function RegisterPage() {
     fullName: '',
     department: '',
     studentId: '',
+    classYear: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,8 +64,9 @@ export default function RegisterPage() {
           .from('profiles')
           .update({
             full_name: formData.fullName,
-            department: formData.department || null,
+            department: formData.classYear === 'Hazırlık' ? null : (formData.department || null),
             student_id: formData.studentId || null,
+            class_year: formData.classYear || null,
           })
           .eq('id', authData.user.id);
 
@@ -138,25 +140,48 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="department" className="block text-sm font-medium text-neutral-700 mb-2">
-                Bölüm *
+              <label htmlFor="classYear" className="block text-sm font-medium text-neutral-700 mb-2">
+                Sınıf *
               </label>
               <select
-                id="department"
-                name="department"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                id="classYear"
+                name="classYear"
+                value={formData.classYear}
+                onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
                 required
                 className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white"
               >
-                <option value="">Bölüm Seçin</option>
-                {METU_DEPARTMENTS.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
+                <option value="">Sınıf Seçin</option>
+                {METU_CLASSES.map((cls) => (
+                  <option key={cls} value={cls}>
+                    {cls}
                   </option>
                 ))}
               </select>
             </div>
+
+            {formData.classYear !== 'Hazırlık' && (
+              <div>
+                <label htmlFor="department" className="block text-sm font-medium text-neutral-700 mb-2">
+                  Bölüm *
+                </label>
+                <select
+                  id="department"
+                  name="department"
+                  value={formData.department}
+                  onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  required
+                  className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none bg-white"
+                >
+                  <option value="">Bölüm Seçin</option>
+                  {METU_DEPARTMENTS.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label htmlFor="studentId" className="block text-sm font-medium text-neutral-700 mb-2">

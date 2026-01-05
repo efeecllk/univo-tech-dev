@@ -35,11 +35,12 @@ async function cleanup() {
   const keremId = userData.id;
   console.log('Admin ID found:', keremId);
 
-  // 2. Delete non-admin communities
+  // 2. Delete non-admin communities (EXCEPT the representative one)
   const { data: deleted, error: deleteError } = await supabase
     .from('communities')
     .delete()
     .neq('admin_id', keremId)
+    .neq('name', 'UniVo Sanat Topluluğu') // Keep the representative one
     .select();
 
   if (deleteError) {

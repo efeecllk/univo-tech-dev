@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // Interfaces
 interface Voice {
@@ -64,6 +65,7 @@ const WEEKLY_POLLS = [
 
 export default function VoiceView() {
   const { user } = useAuth();
+  const router = useRouter();
   const [voices, setVoices] = useState<Voice[]>([]);
   const [newStatus, setNewStatus] = useState('');
   // REMOVED: const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -393,24 +395,63 @@ export default function VoiceView() {
   const [userVote, setUserVote] = useState<number | null>(null);
   const [pollResults, setPollResults] = useState<number[]>([45, 32, 23]); // Mock initial percentages/counts
 
-  const handlePollVote = (index: number) => {
-      const newResults = [...pollResults];
-
-      if (userVote === index) {
-          // Retract vote
-          newResults[index] = Math.max(0, newResults[index] - 1);
-          setUserVote(null);
-      } else {
-          // Change vote or New vote
-          if (userVote !== null) {
-               // Remove old vote
-               newResults[userVote] = Math.max(0, newResults[userVote] - 1);
-          }
-          // Add new vote
-          newResults[index] += 1;
-          setUserVote(index);
+  const handlePollVote = async (index: number) => {
+      if (!user) {
+          alert('Oy kullanmak için giriş yapmalısınız.');
+          router.push('/login');
+          return;
       }
-      setPollResults(newResults);
+
+      if (!activePoll) return;
+
+      // Unique ID for the poll based on its question
+      const pollId = btoa(unescape(encodeURIComponent(activePoll.question))).substring(0, 50);
+
+      try {
+          const { error } = await supabase
+              .from('poll_votes')
+              .upsert({
+                  user_id: user.id,
+                  poll_id: pollId,
+                  option_index: index
+              }, { onConflict: 'user_id, poll_id' });
+
+          if (error) throw error;
+
+          setUserVote(index);
+          fetchPollResults(activePoll); // Refresh results from DB
+      } catch (e) {
+          console.error('Vote Error:', e);
+          alert('Oylama sırasında bir hata oluştu.');
+      }
+  };
+
+  const fetchPollResults = async (poll: {question: string, options: string[]}) => {
+      const pollId = btoa(unescape(encodeURIComponent(poll.question))).substring(0, 50);
+      
+      const { data, error } = await supabase
+          .from('poll_votes')
+          .select('option_index, user_id')
+          .eq('poll_id', pollId);
+
+      if (error) {
+          console.error('Fetch Results Error:', error);
+          return;
+      }
+
+      const counts = new Array(poll.options.length).fill(0);
+      data.forEach(v => {
+          if (v.option_index < counts.length) {
+              counts[v.option_index]++;
+          }
+      });
+      setPollResults(counts);
+
+      // Check if current user has voted
+      if (user) {
+          const myVote = data.find(v => v.user_id === user.id);
+          if (myVote) setUserVote(myVote.option_index);
+      }
   };
 
   const totalVotes = pollResults.reduce((a, b) => a + b, 0);
@@ -422,8 +463,7 @@ export default function VoiceView() {
             const res = await fetch('/api/poll');
             const data = await res.json();
             setActivePoll(data);
-            // Initialize with 0 votes for Realism (not Fake/Representative data)
-            setPollResults(new Array(data.options.length).fill(0)); 
+            fetchPollResults(data); 
         } catch (e) {
             console.error(e);
             setActivePoll({
@@ -435,7 +475,7 @@ export default function VoiceView() {
         }
     };
     fetchPoll();
-  }, []);
+  }, [user]);
 
   return (
     <div className="container mx-auto px-4 py-8">
