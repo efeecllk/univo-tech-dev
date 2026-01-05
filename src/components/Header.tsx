@@ -71,12 +71,12 @@ function HeaderContent() {
 
           {/* Logo */}
           <Link href="/?view=voice" className="flex items-center gap-0">
-            <div className="relative w-12 h-12 overflow-hidden">
+            <div className="relative w-16 h-16 overflow-hidden">
                 <Image 
-                    src="/logo_new.jpg" 
+                    src="/logo_black.png" 
                     alt="Univo Logo" 
                     fill 
-                    className="object-contain"
+                    className="object-cover"
                 />
             </div>
             <h1 className="text-2xl font-bold text-foreground font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
