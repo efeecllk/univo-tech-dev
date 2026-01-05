@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-white dark:bg-[#0a0a0a] border-t-4 border-black dark:border-neutral-700 mt-20 pb-12 transition-colors">
+    <footer className="bg-white dark:bg-[#0a0a0a] border-t-4 border-black dark:border-white mt-20 pb-12 transition-colors">
       {/* Decorative Strip */}
       <div className="h-2 bg-black dark:bg-white w-full mb-12 relative overflow-hidden transition-colors">
          <div className="absolute inset-0 bg-white dark:bg-black w-full h-full" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 25% 50%, 50% 100%, 75% 50%)' }}></div>
@@ -11,7 +11,7 @@ export default function Footer() {
           
           {/* Brand Column */}
           <div className="md:col-span-1 space-y-4">
-            <h3 className="text-4xl font-black font-serif uppercase tracking-tighter border-b-2 border-black dark:border-neutral-700 pb-2 inline-block dark:text-white transition-colors">
+            <h3 className="text-4xl font-black font-serif uppercase tracking-tighter border-b-2 border-black dark:border-white pb-2 inline-block dark:text-white transition-colors">
               Univo
             </h3>
             <p className="text-neutral-900 dark:text-neutral-200 font-serif italic leading-relaxed text-sm">
