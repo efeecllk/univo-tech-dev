@@ -50,6 +50,7 @@ export async function GET(request: Request) {
       
       return {
         id: voice.id,
+        user_id: voice.user_id, // include user_id
         content: voice.content,
         created_at: voice.created_at,
         is_anonymous: voice.is_anonymous,

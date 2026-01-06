@@ -743,7 +743,7 @@ export default function VoiceView() {
                                         </div>
                                         
                                         {/* Actions */}
-                                        <div className="flex items-center justify-between gap-2 pt-2 border-t border-neutral-50 dark:border-neutral-900 border-dashed">
+                                        <div className="flex items-center justify-between md:justify-start md:gap-6 gap-2 pt-2 border-t border-neutral-50 dark:border-neutral-900 border-dashed">
                                             <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-800/50 rounded-full px-2 py-1">
                                                 <button 
                                                     onClick={() => handleReaction(voice.id, 'like')}

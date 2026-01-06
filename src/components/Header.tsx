@@ -67,12 +67,12 @@ function HeaderContent() {
 
   return (
     <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-white transition-colors duration-300">
-      <div className="container mx-auto px-4">
+      <div className="w-full px-4 md:container md:mx-auto">
         <div className="flex items-center justify-between h-16 max-w-full">
 
           {/* Logo */}
           <Link href="/?view=voice" className="flex items-center gap-0">
-            <div className="relative w-16 h-16 overflow-hidden bg-transparent">
+            <div className="relative w-16 h-16 overflow-hidden bg-transparent shrink-0">
                 <Image 
                     src="/logo_black.png" 
                     alt="Univo Logo" 
@@ -87,7 +87,7 @@ function HeaderContent() {
 
           
           {/* Search Trigger (Mobile & Desktop) */}
-          <div className="flex items-center gap-1 md:gap-4">
+          <div className="flex items-center gap-1 md:gap-4 shrink-0">
              {/* Desktop Navigation */}
              <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (
@@ -138,26 +138,50 @@ function HeaderContent() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation Overlay */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-neutral-200 dark:border-neutral-800">
-            <nav className="flex flex-col gap-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  href={item.href}
-                  className={getLinkClass(item.id)}
+          <>
+              {/* Backdrop */}
+              <div 
+                  className="fixed inset-0 bg-black/50 z-40 md:hidden" 
                   onClick={() => setIsMenuOpen(false)}
-                >
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
-              <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
-                <AuthButton />
+                  style={{ top: '64px' }} // Start below header
+              />
+              
+              {/* Menu */}
+              <div className="absolute top-16 left-0 w-full bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-white shadow-lg z-50 md:hidden animate-in slide-in-from-top-2 duration-200">
+                <nav className="flex flex-col gap-4 p-4">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      className={getLinkClass(item.id)}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <item.icon size={20} />
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                   {user && (
+                        <Link
+                            href="/dashboard"
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`flex items-center gap-2 font-medium transition-colors ${
+                                pathname?.startsWith('/dashboard') 
+                                ? 'text-[#C8102E]' 
+                                : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
+                            }`}
+                        >
+                            <LayoutDashboard size={20} />
+                            <span>Kontrol Paneli</span>
+                        </Link>
+                    )}
+                  <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                    <AuthButton />
+                  </div>
+                </nav>
               </div>
-            </nav>
-          </div>
+          </>
         )}
       </div>
       
