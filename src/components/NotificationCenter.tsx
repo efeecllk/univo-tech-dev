@@ -114,6 +114,42 @@ export default function NotificationCenter() {
     }
   };
 
+  const handleFriendRequest = async (actorId: string, action: 'accept' | 'reject', notificationId: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // 1. Get friendship ID
+      const statusRes = await fetch(`/api/users/${actorId}/friend-request`, {
+        headers: { 'Authorization': `Bearer ${session.access_token}` }
+      });
+      const statusData = await statusRes.json();
+      
+      if (!statusData.friendshipId) {
+        console.error('Friendship not found');
+        return;
+      }
+
+      // 2. Respond to request
+      const response = await fetch(`/api/friend-requests/${statusData.friendshipId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ action })
+      });
+
+      if (response.ok) {
+        // Mark notification as read (or delete it)
+        markAsRead(notificationId);
+        // Optional: Trigger a refresh or show success toast
+      }
+    } catch (error) {
+      console.error(`Error handling friend request (${action}):`, error);
+    }
+  };
+
   const deleteNotification = async (notificationId: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -210,9 +246,27 @@ export default function NotificationCenter() {
                       <p className="text-sm text-neutral-800 dark:text-neutral-200 mb-1">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        {getRelativeTime(notification.created_at)}
-                      </p>
+                      
+                      {notification.type === 'friend_request' && !notification.read && notification.actor ? (
+                        <div className="flex gap-2 mt-2 mb-1">
+                          <button
+                            onClick={() => handleFriendRequest(notification.actor!.id, 'accept', notification.id)}
+                            className="bg-[#C8102E] text-white text-xs font-bold px-3 py-1.5 rounded-md hover:bg-[#A00D25] transition-colors"
+                          >
+                            Kabul Et
+                          </button>
+                          <button
+                            onClick={() => handleFriendRequest(notification.actor!.id, 'reject', notification.id)}
+                            className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-xs font-bold px-3 py-1.5 rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+                          >
+                            Reddet
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                          {getRelativeTime(notification.created_at)}
+                        </p>
+                      )}
                     </div>
 
                     <div className="flex items-start gap-1">

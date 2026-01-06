@@ -609,27 +609,27 @@ export default function VoiceView() {
         {/* Main Column: Forum / Letters */}
         <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
             {/* Weekly Poll - Moved above feed */}
-            <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
-                <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif uppercase tracking-tight text-center dark:text-white">
-                    Haftanın Anketi
-                </h3>
-                
-                 <div className="mb-4 bg-black dark:bg-black p-2 border border-black dark:border-white rounded-sm text-center">
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-white flex items-center justify-center gap-1">
-                         <span className="w-2 h-2 rounded-full bg-[#C8102E] animate-pulse"></span>
-                         Yapay Zeka Seçimi
+            {/* Weekly Poll - Moved above feed */}
+            <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors">
+                <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
+                    <h3 className="text-base font-bold font-serif uppercase tracking-tight dark:text-white">
+                        Haftanın Anketi
+                    </h3>
+                    <span className="text-[10px] font-bold uppercase tracking-widest bg-black text-white dark:bg-white dark:text-black px-2 py-0.5 rounded-sm flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#C8102E] animate-pulse"></span>
+                        AI
                     </span>
                  </div>
 
                 {pollLoading ? (
-                    <div className="text-center py-8 text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
+                    <div className="text-center py-4 text-xs text-neutral-400 animate-pulse">Yapay zeka anket hazırlıyor...</div>
                 ) : (
                     <>
-                        <h4 className="font-bold text-lg mb-6 font-serif text-center leading-tight dark:text-white">
+                        <h4 className="font-bold text-sm mb-3 font-serif leading-tight dark:text-white">
                             "{activePoll?.question}"
                         </h4>
                         
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                             {activePoll?.options.map((option, idx) => {
                                 const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
                                 const isSelected = userVote === idx;

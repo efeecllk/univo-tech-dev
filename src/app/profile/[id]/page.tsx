@@ -2,13 +2,13 @@
 
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2 } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
 import BadgeDisplay from '@/components/profile/BadgeDisplay';
 import ActivityTimeline, { ActivityItem } from '@/components/profile/ActivityTimeline';
-import UserFollowButton from '@/components/UserFollowButton';
+import FriendButton from '@/components/FriendButton';
 
 interface Profile {
   id: string;
@@ -52,8 +52,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const [badges, setBadges] = useState<any[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [followingCount, setFollowingCount] = useState(0);
+  const [friendCount, setFriendCount] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
   // Determine if viewing own profile
@@ -169,19 +168,14 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         `)
         .eq('user_id', resolvedId);
 
-      // Fetch Follow Counts from user_follows table
-      const { count: followers } = await supabase
-        .from('user_follows')
+      // Fetch Friend Count
+      const { count: friends } = await supabase
+        .from('friendships')
         .select('*', { count: 'exact', head: true })
-        .eq('following_id', resolvedId);
-      
-      const { count: following } = await supabase
-        .from('user_follows')
-        .select('*', { count: 'exact', head: true })
-        .eq('follower_id', resolvedId);
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${resolvedId},receiver_id.eq.${resolvedId}`);
 
-      setFollowersCount(followers || 0);
-      setFollowingCount(following || 0);
+      setFriendCount(friends || 0);
 
       if (attendanceData) {
         // Process Events for Display
@@ -368,12 +362,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
 
                     <div className="flex justify-center gap-6 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
                         <div className="text-center">
-                            <div className="text-lg font-bold text-neutral-900 dark:text-white">{followersCount}</div>
-                            <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Takipçi</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-lg font-bold text-neutral-900 dark:text-white">{followingCount}</div>
-                            <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Takip</div>
+                            <div className="text-lg font-bold text-neutral-900 dark:text-white">{friendCount}</div>
+                            <div className="text-xs text-neutral-500 uppercase tracking-wider font-semibold">Arkadaş</div>
                         </div>
                     </div>
 
@@ -408,12 +398,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         </div>
                     )}
 
-                    {/* Follow Button - Only for other users' profiles */}
+                    {/* Friend Button - Only for other users' profiles */}
                     {!isOwnProfile && (
-                        <UserFollowButton 
+                        <FriendButton 
                             targetUserId={targetId}
-                            onFollowChange={(isFollowing, newCount) => {
-                                setFollowersCount(newCount);
+                            onFriendshipChange={(status) => {
+                                // Refresh stats if accepted/unfriended
+                                // Ideally fetch fresh count
+                                if (status === 'accepted' || status === 'none') {
+                                    fetchProfileData();
+                                }
                             }}
                         />
                     )}
