@@ -265,35 +265,6 @@ export default function VoiceView() {
     }
   };
 
-// ... (skip lines until render) ...
-
-                                            <div className="flex items-center gap-6">
-                                                {/* Votes - Group removed to fix hover leak */}
-                                                <div className="flex items-center gap-1">
-                                                    <button 
-                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
-                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
-                                                        title="Yükselt"
-                                                    >
-                                                        <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
-                                                    </button>
-                                                    
-                                                    <span className={`text-sm font-bold w-6 text-center ${
-                                                        netVote > 0 ? 'text-green-600' : 
-                                                        netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'
-                                                    }`}>
-                                                        {netVote}
-                                                    </span>
-                                                    
-                                                    <button 
-                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
-                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
-                                                        title="Düşür"
-                                                    >
-                                                        <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
-                                                    </button>
-                                                </div>
-
   const handleCommentSubmit = async (e: React.FormEvent, voiceId: string) => {
       e.preventDefault();
       if (!newComment.trim() || isCommenting) return;
