@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function PATCH(
   request: Request,
@@ -19,18 +17,21 @@ export async function PATCH(
     }
 
     const token = authHeader.replace('Bearer ', '');
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Mark as read
     const { error } = await supabase
       .from('notifications')
       .update({ read: true })
       .eq('id', notificationId)
-      .eq('user_id', user.id); // Ensure user owns this notification
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Mark read error:', error);
@@ -58,18 +59,21 @@ export async function DELETE(
     }
 
     const token = authHeader.replace('Bearer ', '');
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Delete notification
     const { error } = await supabase
       .from('notifications')
       .delete()
       .eq('id', notificationId)
-      .eq('user_id', user.id); // Ensure user owns this notification
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Delete notification error:', error);

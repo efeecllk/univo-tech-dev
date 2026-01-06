@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function POST(
   request: Request,
@@ -19,6 +17,11 @@ export async function POST(
     }
 
     const token = authHeader.replace('Bearer ', '');
+    
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
@@ -31,7 +34,6 @@ export async function POST(
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
 
-    // Check if already following
     const { data: existing } = await supabase
       .from('user_follows')
       .select('id')
@@ -43,7 +45,6 @@ export async function POST(
       return NextResponse.json({ message: 'Already following' }, { status: 200 });
     }
 
-    // Create follow relationship
     const { error: followError } = await supabase
       .from('user_follows')
       .insert({
@@ -56,14 +57,12 @@ export async function POST(
       return NextResponse.json({ error: 'Failed to follow user' }, { status: 500 });
     }
 
-    // Get follower's name for notification
     const { data: followerProfile } = await supabase
       .from('profiles')
       .select('full_name')
       .eq('id', currentUserId)
       .single();
 
-    // Create notification
     await supabase
       .from('notifications')
       .insert({
@@ -73,7 +72,6 @@ export async function POST(
         message: `${followerProfile?.full_name || 'Bir kullanıcı'} seni takip etmeye başladı`
       });
 
-    // Get updated follower count
     const { count } = await supabase
       .from('user_follows')
       .select('*', { count: 'exact', head: true })
@@ -103,6 +101,11 @@ export async function DELETE(
     }
 
     const token = authHeader.replace('Bearer ', '');
+    
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
@@ -111,7 +114,6 @@ export async function DELETE(
 
     const currentUserId = user.id;
 
-    // Delete follow relationship
     const { error: unfollowError } = await supabase
       .from('user_follows')
       .delete()
@@ -123,7 +125,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Failed to unfollow user' }, { status: 500 });
     }
 
-    // Get updated follower count
     const { count } = await supabase
       .from('user_follows')
       .select('*', { count: 'exact', head: true })
@@ -153,6 +154,11 @@ export async function GET(
     }
 
     const token = authHeader.replace('Bearer ', '');
+    
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+    
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
     if (authError || !user) {
@@ -161,7 +167,6 @@ export async function GET(
 
     const currentUserId = user.id;
 
-    // Check if following
     const { data: followData } = await supabase
       .from('user_follows')
       .select('id')
@@ -169,7 +174,6 @@ export async function GET(
       .eq('following_id', targetUserId)
       .single();
 
-    // Get follower count
     const { count } = await supabase
       .from('user_follows')
       .select('*', { count: 'exact', head: true })

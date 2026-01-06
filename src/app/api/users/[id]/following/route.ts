@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(
   request: Request,
@@ -14,22 +12,26 @@ export async function GET(
     const { id: userId } = await params;
     const authHeader = request.headers.get('Authorization');
     
-    // Get current user (optional for this endpoint)
     let currentUserId: string | null = null;
+    let supabase;
+    
     if (authHeader) {
       const token = authHeader.replace('Bearer ', '');
+      supabase = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
       const { data: { user } } = await supabase.auth.getUser(token);
       currentUserId = user?.id || null;
+    } else {
+      supabase = createClient(supabaseUrl, supabaseAnonKey);
     }
 
-    // Get user's privacy settings
     const { data: profile } = await supabase
       .from('profiles')
       .select('show_following')
       .eq('id', userId)
       .single();
 
-    // Check privacy settings (only block if not own profile and privacy is off)
     if (!profile?.show_following && currentUserId !== userId) {
       return NextResponse.json({ 
         error: 'Following list is private',
@@ -37,7 +39,6 @@ export async function GET(
       }, { status: 403 });
     }
 
-    // Get following with profile info
     const { data: following, error } = await supabase
       .from('user_follows')
       .select(`
@@ -59,7 +60,6 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch following' }, { status: 500 });
     }
 
-    // For each followed user, check if current user follows them
     const followingWithStatus = await Promise.all(
       (following || []).map(async (follow: any) => {
         let isFollowing = false;
