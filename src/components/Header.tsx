@@ -118,7 +118,7 @@ function HeaderContent() {
             {/* Search */}
             <button 
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2.5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none"
+                className="hidden md:block p-2.5 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none"
                 aria-label="Search"
             >
                 <SearchIcon size={20} />
@@ -175,6 +175,16 @@ function HeaderContent() {
               {/* Menu */}
               <div className="fixed top-16 left-0 w-full h-[calc(100vh-64px)] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-white shadow-lg z-50 md:hidden animate-in slide-in-from-top-2 duration-200 overflow-y-auto">
                 <nav className="flex flex-col gap-4 p-4">
+                  <button
+                    onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsSearchOpen(true);
+                    }}
+                    className="flex items-center gap-2 font-medium text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E] transition-colors"
+                  >
+                    <SearchIcon size={20} />
+                    <span>Arama Yap</span>
+                  </button>
                   {navItems.map((item) => (
                     <Link
                       key={item.id}
