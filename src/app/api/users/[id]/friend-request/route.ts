@@ -165,7 +165,7 @@ export async function GET(
     // Get friendship status
     const { data: friendship } = await supabase
       .from('friendships')
-      .select('status, requester_id, receiver_id')
+      .select('id, status, requester_id, receiver_id')
       .or(`and(requester_id.eq.${currentUserId},receiver_id.eq.${otherUserId}),and(requester_id.eq.${otherUserId},receiver_id.eq.${currentUserId})`)
       .single();
 
