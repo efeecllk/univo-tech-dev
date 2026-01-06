@@ -59,9 +59,9 @@ export default function FriendListModal({ userId, isOpen, onClose, isOwnProfile 
       } else {
         setFriends(data.friends || []);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching friends:', err);
-      setError('Arkadaş listesi yüklenemedi.');
+      setError(err.message || 'Arkadaş listesi yüklenemedi.');
     } finally {
       setLoading(false);
     }
