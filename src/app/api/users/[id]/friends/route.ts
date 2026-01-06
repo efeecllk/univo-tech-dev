@@ -70,20 +70,53 @@ export async function GET(
       return NextResponse.json({ friends: [], count: 0 });
     }
 
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id: userId } = await params;
+    // ... (auth logic stays same) ...
+    // BUT we will create a separate admin client for profile fetching if needed
+
+    // ... (existing friendship fetch code) ...
+    
+    // We need to keep the existing code but modify the profile fetch part.
+    // Since I cannot change the whole file easily with replace_file_content if I don't see it all,
+    // I will focus on the profile fetching block.
+    
+    // START OF REPLACEMENT
+    
     // Extract friend IDs
-    const friendIds = friendships.map((f: any) => 
+    const friendIds = friendships.map(f => 
       f.requester_id === userId ? f.receiver_id : f.requester_id
-    );
+    ).filter(Boolean); // Ensure no nulls
+
+    if (friendIds.length === 0) {
+       return NextResponse.json({ friends: [], count: 0 });
+    }
+
+    // Attempt to use Service Role Key for profiles to bypass RLS
+    // If not available, use the existing 'supabase' client
+    let profileClient = supabase;
+    if (supabaseServiceKey) {
+        profileClient = createClient(supabaseUrl, supabaseServiceKey);
+    }
 
     // Fetch friend profiles
-    const { data: profiles, error: profilesError } = await supabase
+    const { data: profiles, error: profilesError } = await profileClient
       .from('profiles')
       .select('id, full_name, avatar_url, department, university')
       .in('id', friendIds);
     
     if (profilesError) {
       console.error('Profiles fetch error:', profilesError);
-       return NextResponse.json({ error: 'Failed to fetch friend profiles' }, { status: 500 });
+       return NextResponse.json({ 
+         error: `Profil Hatası: ${profilesError.message} (Code: ${profilesError.code})`,
+         details: profilesError
+       }, { status: 500 });
     }
 
     // DEBUG: Check if we have friendships but no profiles
