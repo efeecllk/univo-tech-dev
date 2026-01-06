@@ -43,14 +43,7 @@ export async function GET(
     // Fetch confirmed friendships
     const { data: friendships, error } = await supabase
       .from('friendships')
-      .select(`
-        id,
-        requester_id,
-        receiver_id,
-        created_at,
-        requester:profiles!friendships_requester_id_fkey (id, full_name, avatar_url, department, university),
-        receiver:profiles!friendships_receiver_id_fkey (id, full_name, avatar_url, department, university)
-      `)
+      .select('id, requester_id, receiver_id, created_at')
       .eq('status', 'accepted')
       .or(`requester_id.eq.${userId},receiver_id.eq.${userId}`)
       .order('created_at', { ascending: false });
@@ -60,17 +53,40 @@ export async function GET(
       return NextResponse.json({ error: 'Failed to fetch friends' }, { status: 500 });
     }
 
-    // Process friendships to get the "other" person
-    const friends = (friendships || []).map((f: any) => {
+    if (!friendships || friendships.length === 0) {
+      return NextResponse.json({ friends: [], count: 0 });
+    }
+
+    // Extract friend IDs
+    const friendIds = friendships.map((f: any) => 
+      f.requester_id === userId ? f.receiver_id : f.requester_id
+    );
+
+    // Fetch friend profiles
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url, department, university')
+      .in('id', friendIds);
+    
+    if (profilesError) {
+      console.error('Profiles fetch error:', profilesError);
+       return NextResponse.json({ error: 'Failed to fetch friend profiles' }, { status: 500 });
+    }
+
+    // Combine data
+    const friends = friendships.map((f: any) => {
       const isRequester = f.requester_id === userId;
-      const friendProfile = isRequester ? f.receiver : f.requester;
+      const friendId = isRequester ? f.receiver_id : f.requester_id;
+      const profile = profiles?.find((p: any) => p.id === friendId);
       
+      if (!profile) return null;
+
       return {
-        ...friendProfile,
+        ...profile,
         friendshipId: f.id,
         friendsSince: f.created_at
       };
-    });
+    }).filter(Boolean);
 
     return NextResponse.json({ 
       friends,
