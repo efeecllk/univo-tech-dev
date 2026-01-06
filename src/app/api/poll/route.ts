@@ -5,8 +5,8 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 // Ensure you have GEMINI_API_KEY in your .env.local file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-// Set revalidation to 1 week (604800 seconds)
-export const revalidate = 604800;
+// Set revalidation to 0 for debugging, or 1 hour
+export const revalidate = 0;
 
 const FALLBACK_POLLS = [
     { question: "ODTÜ'de kütüphane çalışma saatleri (7/24) yeterli mi?", options: ["Evet", "Hayır, yetersiz", "Haftasonu artırılmalı"] },
@@ -32,7 +32,7 @@ export async function GET() {
         return NextResponse.json(getRandomFallback());
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
       Sen ODTÜ (Orta Doğu Teknik Üniversitesi) kampüs gazetesinin yapay zeka editörüsün.

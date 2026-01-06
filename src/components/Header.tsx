@@ -68,7 +68,7 @@ function HeaderContent() {
   return (
     <header className="sticky top-0 z-[9999] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-black dark:border-white transition-colors duration-300">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 max-w-full">
 
           {/* Logo */}
           <Link href="/?view=voice" className="flex items-center gap-0">
@@ -77,7 +77,7 @@ function HeaderContent() {
                     src="/logo_black.png" 
                     alt="Univo Logo" 
                     fill 
-                    className="object-cover transition-all duration-300 dark:invert"
+                    className="object-cover transition-all duration-300 dark:invert dark:brightness-0"
                 />
             </div>
             <h1 className="text-2xl font-bold text-foreground dark:text-white font-serif tracking-tight group-hover:text-[#C8102E] transition-colors -ml-1">
@@ -87,7 +87,7 @@ function HeaderContent() {
 
           
           {/* Search Trigger (Mobile & Desktop) */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
              {/* Desktop Navigation */}
              <nav className="hidden md:flex items-center gap-8">
             {navItems.map((item) => (

@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 // Interfaces
 interface Voice {
   id: string;
+  user_id: string; // Added for ownership check
   content: string;
   created_at: string;
   is_anonymous: boolean;
@@ -77,6 +78,10 @@ export default function VoiceView() {
   const [newComment, setNewComment] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const [isCommenting, setIsCommenting] = useState(false);
+  
+  // Edit & Delete State
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
 
   // Hashtag Autocomplete System
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -326,6 +331,69 @@ export default function VoiceView() {
           }
       }
   };
+
+  const handleDelete = async (voiceId: string) => {
+      if (!confirm('Bu gönderiyi silmek istediğinize emin misiniz?')) return;
+      
+      // Optimistic update
+      setVoices(prev => prev.filter(v => v.id !== voiceId));
+
+      try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return;
+
+          const res = await fetch(`/api/voices/${voiceId}`, {
+              method: 'DELETE',
+              headers: { 
+                 'Authorization': `Bearer ${session.access_token}`
+              }
+          });
+
+          if (!res.ok) throw new Error('Delete failed');
+          toast.success('Gönderi silindi.');
+      } catch (e) {
+          console.error(e);
+          toast.error('Silme işlemi başarısız.');
+          fetchVoices(); // Revert
+      }
+  };
+
+  const startEdit = (voice: Voice) => {
+      setEditingId(voice.id);
+      setEditContent(voice.content);
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!editingId || !editContent.trim()) return;
+
+      const vId = editingId;
+      // Optimistic
+      setVoices(prev => prev.map(v => v.id === vId ? { ...v, content: editContent } : v));
+      setEditingId(null);
+
+      try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return;
+
+          const res = await fetch(`/api/voices/${vId}`, {
+              method: 'PUT',
+              headers: { 
+                 'Content-Type': 'application/json',
+                 'Authorization': `Bearer ${session.access_token}`
+              },
+              body: JSON.stringify({ content: editContent })
+          });
+
+          if (!res.ok) throw new Error('Update failed');
+          toast.success('Gönderi güncellendi.');
+      } catch (e) {
+          console.error(e);
+          toast.error('Güncelleme başarısız.');
+          fetchVoices();
+      }
+  };
+
 
   // Date & Issue Logic
   const today = new Date();
@@ -586,7 +654,7 @@ export default function VoiceView() {
                 </div>
             ) : (
                 <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
-                    <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>
+                    <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/register" className="underline font-bold text-black dark:text-white">kayıt olmalısın</Link>.</p>
                 </div>
             )}
 
@@ -639,10 +707,27 @@ export default function VoiceView() {
                                         </div>
 
                                         {/* Content */}
-                                        <div className="mb-4">
-                                            <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
-                                                {renderContentWithTags(voice.content)}
-                                            </p>
+                                        {/* Content - Check if Editing */}
+                                        {editingId === voice.id ? (
+                                            <form onSubmit={handleUpdate} className="mb-4">
+                                                <textarea
+                                                    className="w-full p-2 border border-black dark:border-white bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm"
+                                                    rows={3}
+                                                    value={editContent}
+                                                    onChange={e => setEditContent(e.target.value)}
+                                                />
+                                                <div className="flex justify-end gap-2 mt-2">
+                                                    <button type="button" onClick={() => setEditingId(null)} className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white">İptal</button>
+                                                    <button type="submit" className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm">Kaydet</button>
+                                                </div>
+                                            </form>
+                                        ) : (
+                                            <div className="mb-4 group/content relative">
+                                                <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
+                                                    {renderContentWithTags(voice.content)}
+                                                </p>
+                                            </div>
+                                        )}
                                         </div>
                                         
                                         {/* Actions */}
@@ -674,12 +759,29 @@ export default function VoiceView() {
 
                                             <button 
                                                 onClick={() => setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id)}
-                                                className={`flex items-center gap-2 text-sm font-bold transition-colors ml-auto ${activeCommentBox === voice.id ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'}`}
+                                                className={`flex items-center gap-2 text-sm font-bold transition-colors ${activeCommentBox === voice.id ? 'text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'}`}
                                             >
                                                 <MessageSquare size={16} />
                                                 <span>{voice.comments.length > 0 ? `${voice.comments.length} Yorum` : 'Yorum Yap'}</span>
                                             </button>
-                                        </div>
+
+                                            {/* Owner Actions */}
+                                            {user && voice.user_id === user.id && (
+                                                <div className="ml-auto flex items-center gap-3">
+                                                    <button 
+                                                        onClick={() => startEdit(voice)}
+                                                        className="text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 text-xs font-bold uppercase transition-colors"
+                                                    >
+                                                        Düzenle
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDelete(voice.id)}
+                                                        className="text-neutral-400 hover:text-red-600 dark:hover:text-red-400 text-xs font-bold uppercase transition-colors"
+                                                    >
+                                                        Sil
+                                                    </button>
+                                                </div>
+                                            )}
 
                                         {/* Comments */}
                                         {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (

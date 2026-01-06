@@ -310,8 +310,13 @@ export default function OfficialView() {
   });
 
   // Filtered Lists
-  // GÜNDEM: Unread Items AND NOT Emails (Announcements Only)
-  const agendaItems = allNews.filter(n => !readIds.includes(String(n.id)) && n.type !== 'email');
+  // GÜNDEM: Unread Items AND NOT Emails (Announcements Only) AND Last 7 Days
+  const agendaItems = allNews.filter(n => {
+      const isUnread = !readIds.includes(String(n.id));
+      const notEmail = n.type !== 'email';
+      const isRecent = parseDate(n.date) > (Date.now() - 7 * 24 * 60 * 60 * 1000);
+      return isUnread && notEmail && isRecent;
+  });
   
   const emailItems = allNews.filter(n => n.type === 'email');
   const historyItems = allNews.filter(n => readIds.includes(String(n.id)));
