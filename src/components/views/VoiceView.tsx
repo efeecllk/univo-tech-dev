@@ -616,7 +616,7 @@ export default function VoiceView() {
                 {activeTagFilter && (
                     <button 
                         onClick={() => setActiveTagFilter(null)}
-                        className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded hover:bg-red-200"
+                        className="text-xs bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 px-2 py-1 rounded hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                     >
                         {activeTagFilter} x
                     </button>
