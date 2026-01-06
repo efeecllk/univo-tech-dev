@@ -151,11 +151,16 @@ function HeaderContent() {
             
             {/* Mobile Menu Button */}
             <button
-                className="md:hidden p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                className="md:hidden p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors relative w-10 h-10 flex items-center justify-center overflow-hidden"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
             >
-                {isMenuOpen ? <X size={24} className="text-neutral-900 dark:text-white" /> : <Menu size={24} className="text-neutral-900 dark:text-white" />}
+                <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}>
+                    <Menu size={24} className="text-neutral-900 dark:text-white" />
+                </span>
+                <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}>
+                    <X size={24} className="text-neutral-900 dark:text-white" />
+                </span>
             </button>
           </div>
         </div>
@@ -182,7 +187,8 @@ function HeaderContent() {
                         setIsMenuOpen(false);
                         setIsSearchOpen(true);
                     }}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all group"
+                    className="flex items-center gap-4 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
+                    style={{ animationDelay: '0ms' }}
                   >
                     <SearchIcon size={20} className="group-hover:scale-110 transition-transform" />
                     <span>Arama Yap</span>
@@ -190,17 +196,18 @@ function HeaderContent() {
 
                   <div className="space-y-2">
                       <h3 className="text-xs font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 font-serif">Menü</h3>
-                      {navItems.map((item) => {
+                      {navItems.map((item, index) => {
                         const isActive = currentView === item.id;
                         return (
                             <Link
                             key={item.id}
                             href={item.href}
-                            className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg ${
+                            className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards ${
                                 isActive 
                                 ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                 : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                             }`}
+                            style={{ animationDelay: `${(index + 1) * 75}ms` }}
                             onClick={() => setIsMenuOpen(false)}
                             >
                             <item.icon size={24} className={isActive ? 'animate-pulse' : ''} />
@@ -212,11 +219,12 @@ function HeaderContent() {
                             <Link
                                 href="/dashboard"
                                 onClick={() => setIsMenuOpen(false)}
-                                className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg ${
+                                className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards ${
                                     pathname?.startsWith('/dashboard') 
                                     ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                     : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                                 }`}
+                                style={{ animationDelay: '300ms' }}
                             >
                                 <LayoutDashboard size={24} />
                                 <span>Kontrol Paneli</span>
@@ -224,7 +232,10 @@ function HeaderContent() {
                         )}
                   </div>
 
-                  <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
+                  <div 
+                    className="pt-6 border-t border-neutral-200 dark:border-neutral-800 animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
+                    style={{ animationDelay: '400ms' }}
+                  >
                     <AuthButton />
                   </div>
                 </nav>
