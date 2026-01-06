@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -419,6 +419,28 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     )}
                 </div>
             </div>
+
+            {/* Community Application Section - Only for own profile and non-admins */}
+            {isOwnProfile && (
+                <div className="bg-gradient-to-br from-[#C8102E]/5 to-[#C8102E]/10 dark:from-[#C8102E]/10 dark:to-[#C8102E]/20 rounded-xl shadow-sm border-2 border-[#C8102E]/20 dark:border-[#C8102E]/30 p-6 transition-colors">
+                    <h3 className="text-lg font-bold font-serif mb-2 text-neutral-800 dark:text-neutral-200">
+                        Topluluk Sahibi misiniz?
+                    </h3>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                        Kampüsünüzde bir topluluk yönetiyorsanız, Univo üzerinden etkinliklerinizi duyurabilir ve üyelerinizle iletişimde kalabilirsiniz.
+                    </p>
+                    <button
+                        onClick={() => {
+                            // For now, just mailto. Can be replaced with a modal/form later
+                            window.location.href = 'mailto:admin@univo.app?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
+                        }}
+                        className="w-full py-2.5 bg-[#C8102E] hover:bg-[#A00D25] text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm"
+                    >
+                        <Building2 size={16} />
+                        Başvuru Yap
+                    </button>
+                </div>
+            )}
 
             {/* Interests Widget */}
             {showInterests && (

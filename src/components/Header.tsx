@@ -183,18 +183,27 @@ function HeaderContent() {
               <div className="fixed top-16 left-0 w-full h-[calc(100vh-64px)] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-white shadow-lg z-50 md:hidden animate-in slide-in-from-top-2 duration-200 overflow-y-auto">
                 <nav className="flex flex-col p-6 space-y-6">
                   
-                  {/* Search Action */}
-                  <button
-                    onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsSearchOpen(true);
-                    }}
-                    className="flex items-center gap-4 p-4 rounded-xl text-neutral-600 dark:text-neutral-400 font-serif font-bold text-lg hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards w-full text-left"
-                    style={{ animationDelay: '0ms' }}
-                  >
-                    <SearchIcon size={24} className="group-hover:scale-110 transition-transform" />
-                    <span>Arama Yap</span>
-                  </button>
+                  {/* Top Actions Row */}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsSearchOpen(true);
+                      }}
+                      className="flex-1 flex items-center justify-center gap-3 p-4 rounded-xl text-neutral-600 dark:text-neutral-400 font-serif font-bold text-base hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
+                      style={{ animationDelay: '0ms' }}
+                    >
+                      <SearchIcon size={20} className="group-hover:scale-110 transition-transform" />
+                      <span>Ara</span>
+                    </button>
+                    
+                    <div 
+                      className="animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
+                      style={{ animationDelay: '50ms' }}
+                    >
+                      <AuthButton />
+                    </div>
+                  </div>
 
                   <div className="border-t-2 border-black dark:border-white my-4"></div>
                   
@@ -210,7 +219,7 @@ function HeaderContent() {
                                 ? 'bg-white text-black dark:bg-black dark:text-white shadow-md' 
                                 : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                             }`}
-                            style={{ animationDelay: `${(index + 1) * 75}ms` }}
+                            style={{ animationDelay: `${(index + 2) * 75}ms` }}
                             onClick={() => setIsMenuOpen(false)}
                             >
                             <item.icon size={24} className={isActive ? 'animate-pulse' : ''} />
@@ -218,7 +227,7 @@ function HeaderContent() {
                             </Link>
                         );
                       })}
-                       {user && (
+                       {user && isCommunityAdmin && (
                             <Link
                                 href="/dashboard"
                                 onClick={() => setIsMenuOpen(false)}
@@ -227,19 +236,12 @@ function HeaderContent() {
                                     ? 'bg-white text-black dark:bg-black dark:text-white shadow-md' 
                                     : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                                 }`}
-                                style={{ animationDelay: '300ms' }}
+                                style={{ animationDelay: '350ms' }}
                             >
                                 <LayoutDashboard size={24} />
                                 <span>Kontrol Paneli</span>
                             </Link>
                         )}
-                  </div>
-
-                  <div 
-                    className="pt-4 border-t border-neutral-200 dark:border-neutral-800 animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
-                    style={{ animationDelay: '400ms' }}
-                  >
-                    <AuthButton />
                   </div>
                 </nav>
               </div>
