@@ -1,35 +1,52 @@
 
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
-    
-    // Check session
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+    const { id } = await params;
+    const targetUserId = id;
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+        return NextResponse.json({ error: 'Server Configuration Error' }, { status: 500 });
+    }
+
+    // Get Auth Header
+    const authHeader = request.headers.get('Authorization');
+    if (!authHeader) {
+        return NextResponse.json({ error: 'Unauthorized: Missing Auth Header' }, { status: 401 });
+    }
+
+    // Initialize Supabase client with the user's token
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: authHeader } }
+    });
+
+    // Verify User
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const followerId = session.user.id;
-    const followingId = params.id;
+    const followerId = user.id;
 
-    if (followerId === followingId) {
+    if (followerId === targetUserId) {
       return NextResponse.json({ error: 'Cannot follow yourself' }, { status: 400 });
     }
 
     // Insert into followers table
-    // Assuming table structure: id, follower_id, following_id, created_at
     const { error } = await supabase
       .from('followers')
       .insert({
         follower_id: followerId,
-        following_id: followingId
+        following_id: targetUserId
       });
 
     if (error) {
