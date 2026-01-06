@@ -72,7 +72,7 @@ function HeaderContent() {
 
           {/* Left: Logo */}
           <Link href="/?view=voice" className="flex items-center gap-0 shrink-0">
-            <div className="relative w-16 h-16 overflow-hidden bg-transparent shrink-0">
+            <div className="relative w-12 h-12 md:w-16 md:h-16 overflow-hidden bg-transparent shrink-0">
                 <Image 
                     src="/logo_black.png" 
                     alt="Univo Logo" 
@@ -174,43 +174,57 @@ function HeaderContent() {
               
               {/* Menu */}
               <div className="fixed top-16 left-0 w-full h-[calc(100vh-64px)] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-white shadow-lg z-50 md:hidden animate-in slide-in-from-top-2 duration-200 overflow-y-auto">
-                <nav className="flex flex-col gap-4 p-4">
+                <nav className="flex flex-col p-6 space-y-6">
+                  
+                  {/* Search Action */}
                   <button
                     onClick={() => {
                         setIsMenuOpen(false);
                         setIsSearchOpen(true);
                     }}
-                    className="flex items-center gap-2 font-medium text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E] transition-colors"
+                    className="flex items-center gap-4 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all group"
                   >
-                    <SearchIcon size={20} />
+                    <SearchIcon size={20} className="group-hover:scale-110 transition-transform" />
                     <span>Arama Yap</span>
                   </button>
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      className={getLinkClass(item.id)}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <item.icon size={20} />
-                      <span>{item.label}</span>
-                    </Link>
-                  ))}
-                   {user && (
-                        <Link
-                            href="/dashboard"
-                            onClick={() => setIsMenuOpen(false)}
-                            className={`flex items-center gap-2 font-medium transition-colors ${
-                                pathname?.startsWith('/dashboard') 
-                                ? 'text-[#C8102E]' 
-                                : 'text-neutral-600 dark:text-neutral-400 hover:text-[#C8102E]'
+
+                  <div className="space-y-2">
+                      <h3 className="text-xs font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest px-2 font-serif">Menü</h3>
+                      {navItems.map((item) => {
+                        const isActive = currentView === item.id;
+                        return (
+                            <Link
+                            key={item.id}
+                            href={item.href}
+                            className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg ${
+                                isActive 
+                                ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
                             }`}
-                        >
-                            <LayoutDashboard size={20} />
-                            <span>Kontrol Paneli</span>
-                        </Link>
-                    )}
-                  <div className="pt-2 border-t border-neutral-200 dark:border-neutral-800">
+                            onClick={() => setIsMenuOpen(false)}
+                            >
+                            <item.icon size={24} className={isActive ? 'animate-pulse' : ''} />
+                            <span>{item.label}</span>
+                            </Link>
+                        );
+                      })}
+                       {user && (
+                            <Link
+                                href="/dashboard"
+                                onClick={() => setIsMenuOpen(false)}
+                                className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg ${
+                                    pathname?.startsWith('/dashboard') 
+                                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                    : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
+                                }`}
+                            >
+                                <LayoutDashboard size={24} />
+                                <span>Kontrol Paneli</span>
+                            </Link>
+                        )}
+                  </div>
+
+                  <div className="pt-6 border-t border-neutral-200 dark:border-neutral-800">
                     <AuthButton />
                   </div>
                 </nav>
