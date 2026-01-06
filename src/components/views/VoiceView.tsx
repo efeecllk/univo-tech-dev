@@ -334,6 +334,33 @@ export default function VoiceView() {
       }
   };
 
+  const handleFollow = async (targetUserId: string) => {
+      if (!user) return toast.error('Giriş yapmalısınız.');
+      if (targetUserId === user.id) return toast.error('Kendinizi takip edemezsiniz.');
+
+      try {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (!session) return;
+
+          const res = await fetch(`/api/users/${targetUserId}/follow`, {
+             method: 'POST',
+             headers: {
+                 'Authorization': `Bearer ${session.access_token}`
+             }
+          });
+
+          if (res.ok) {
+              toast.success('Kullanıcı takip edildi!');
+          } else {
+              const err = await res.json();
+              toast.error(err.error || 'Takip edilemedi');
+          }
+      } catch (e) {
+          console.error(e);
+          toast.error('Bir hata oluştu.');
+      }
+  };
+
   const handleDelete = async (voiceId: string) => {
       if (!confirm('Bu gönderiyi silmek istediğinize emin misiniz?')) return;
       
@@ -715,9 +742,65 @@ export default function VoiceView() {
                                                 {voice.user.department || 'Kampüs'}
                                             </span>
                                             
-                                            <span className="text-xs text-neutral-400 dark:text-neutral-500 ml-auto block">
-                                                {formatRelativeTime(voice.created_at)}
-                                            </span>
+
+                                            {/* 3-Dot Menu (Moved to Top Right) */}
+                                            <div className="ml-auto relative">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setActiveMenu(activeMenu === voice.id ? null : voice.id);
+                                                    }}
+                                                    className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                                >
+                                                    <MoreVertical size={16} />
+                                                </button>
+                                                
+                                                {activeMenu === voice.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                                        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
+                                                            
+                                                            {/* Owner Options */}
+                                                            {user && voice.user_id === user.id ? (
+                                                                <>
+                                                                    <button 
+                                                                        onClick={() => {
+                                                                            startEdit(voice);
+                                                                            setActiveMenu(null);
+                                                                        }}
+                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                    >
+                                                                        <Edit2 size={14} />
+                                                                        Düzenle
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => {
+                                                                            handleDelete(voice.id);
+                                                                            setActiveMenu(null);
+                                                                        }}
+                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                                                    >
+                                                                        <Trash2 size={14} />
+                                                                        Sil
+                                                                    </button>
+                                                                </>
+                                                            ) : (
+                                                                /* Non-Owner Options */
+                                                                <button 
+                                                                    onClick={() => {
+                                                                        handleFollow(voice.user_id);
+                                                                        setActiveMenu(null);
+                                                                    }}
+                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                >
+                                                                    <UserPlus size={14} />
+                                                                    Takip Et
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
 
                                         {/* Content */}
@@ -799,64 +882,10 @@ export default function VoiceView() {
                                                 </button>
                                             </div>
 
-                                            {/* More Options (3-Dot) */}
-                                            <div className="relative">
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setActiveMenu(activeMenu === voice.id ? null : voice.id);
-                                                    }}
-                                                    className="p-2 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                                >
-                                                    <MoreVertical size={18} />
-                                                </button>
-                                                
-                                                {activeMenu === voice.id && (
-                                                    <>
-                                                        <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
-                                                        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
-                                                            
-                                                            {/* Owner Options */}
-                                                            {user && voice.user_id === user.id ? (
-                                                                <>
-                                                                    <button 
-                                                                        onClick={() => {
-                                                                            startEdit(voice);
-                                                                            setActiveMenu(null);
-                                                                        }}
-                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
-                                                                    >
-                                                                        <Edit2 size={14} />
-                                                                        Düzenle
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => {
-                                                                            handleDelete(voice.id);
-                                                                            setActiveMenu(null);
-                                                                        }}
-                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                        Sil
-                                                                    </button>
-                                                                </>
-                                                            ) : (
-                                                                /* Non-Owner Options */
-                                                                <button 
-                                                                    onClick={() => {
-                                                                        toast.info('Takip özelliği yakında!');
-                                                                        setActiveMenu(null);
-                                                                    }}
-                                                                    className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
-                                                                >
-                                                                    <UserPlus size={14} />
-                                                                    Takip Et
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </div>
+                                            <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+                                                {formatRelativeTime(voice.created_at)}
+                                            </span>
+
                                         </div>
 
                                         {/* Comments Area - Full Width */}
