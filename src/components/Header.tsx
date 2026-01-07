@@ -166,10 +166,10 @@ function HeaderContent() {
               aria-label="Toggle menu"
             >
               <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}>
-                <Menu size={24} className="text-neutral-900 dark:text-white" />
+                <Menu size={28} className="text-neutral-900 dark:text-white" />
               </span>
               <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}>
-                <X size={24} className="text-neutral-900 dark:text-white" />
+                <X size={28} className="text-neutral-900 dark:text-white" />
               </span>
             </button>
           </div>
@@ -229,8 +229,8 @@ function HeaderContent() {
                       style={{ animationDelay: `${(index + 2) * 75}ms` }}
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <item.icon size={24} className={isActive ? 'animate-pulse' : ''} />
-                      <span>{item.label}</span>
+                      <item.icon size={28} className={isActive ? 'animate-pulse text-[#C8102E]' : 'text-neutral-500'} />
+                      <span className="text-xl">{item.label}</span>
                     </Link>
                   );
                 })}
