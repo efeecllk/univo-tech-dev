@@ -425,13 +425,35 @@ export default function OfficialView() {
         {/* Main Column */}
         <div className="lg:col-span-2 space-y-8">
             
+            {/* Pinned Announcement */}
+            {news[0] && (
+                <div className="border-4 border-black dark:border-white p-6 bg-yellow-50 dark:bg-yellow-900/20 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] relative">
+                     <div className="absolute -top-3 left-6 bg-red-600 text-white px-3 py-1 text-xs font-black uppercase tracking-wider -rotate-1 shadow-sm">
+                        Önemli Duyuru
+                    </div>
+                    <h3 className="text-xl font-bold mb-2 flex items-center gap-2 dark:text-white mt-2">
+                        <Megaphone size={20} className="text-red-600" />
+                        {news[0].title}
+                    </h3>
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-4 leading-relaxed">
+                        {news[0].summary}
+                    </p>
+                     <div className="flex justify-between items-center text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                        <span>{news[0].source} · {news[0].date}</span>
+                        <a href={news[0].link} className="flex items-center gap-1 hover:underline decoration-2 underline-offset-2 text-black dark:text-white">
+                            Detaylar <ArrowRight size={12}/>
+                        </a>
+                    </div>
+                </div>
+            )}
+
             {/* Tab Navigation */}
             <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-4 md:gap-8 relative overflow-x-auto no-scrollbar scroll-smooth">
                 {[
-                    { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length },
-                    { id: 'emails', label: 'E-POSTALAR', count: emails.filter(n => !readIds.includes(String(n.id))).length },
+                    { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="mb-0.5"/> },
+                    { id: 'emails', label: 'E-POSTALAR', count: emails.filter(n => !readIds.includes(String(n.id))).length, icon: <Mail size={14} className="mb-0.5"/> },
                     { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.length, icon: <GraduationCap size={14} className="mb-0.5"/> },
-                    { id: 'starred', label: 'YILDIZLILAR', count: starredIds.length },
+                    { id: 'starred', label: 'YILDIZLILAR', count: starredIds.length, icon: <Star size={14} className="mb-0.5"/> },
                     { id: 'history', label: '', icon: <Trash2 size={16} />, count: readIds.length }
                 ].map(tab => (
                     <button
@@ -470,21 +492,7 @@ export default function OfficialView() {
             </div>
 
             {/* Featured Post (Only show on Agenda for impact, or always? Let's hide on Archive) */}
-            {activeTab !== 'history' && news.length > 0 && (
-                <article className="bg-neutral-50 dark:bg-neutral-900 p-6 border border-neutral-200 dark:border-neutral-800 rounded-sm mb-6 transition-colors">
-                    <span className="inline-block bg-primary text-white text-xs px-2 py-1 font-bold mb-3">ÖNEMLİ DUYURU</span>
-                    <h4 className="text-2xl font-bold font-serif mb-3 leading-tight hover:underline cursor-pointer dark:text-white">
-                        {news[0].title}
-                    </h4>
-                    <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed mb-4">
-                        {news[0].summary}
-                    </p>
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="font-semibold text-neutral-900 dark:text-neutral-100">{news[0].source}</span>
-                        <span className="text-neutral-500 dark:text-neutral-400">{news[0].date}</span>
-                    </div>
-                </article>
-            )}
+
 
             {/* News List */}
             <div className="grid gap-6">
@@ -669,8 +677,8 @@ export default function OfficialView() {
         {/* Sidebar / Teknokent */}
         <div className="space-y-6">
             {/* Email Integration Card */}
-            <div className="bg-white dark:bg-neutral-900 border-b-4 border-black dark:border-white rounded-sm p-6 relative overflow-hidden transition-colors">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
+            <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors relative overflow-hidden">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-black dark:border-white pb-2 text-neutral-900 dark:text-white uppercase font-serif tracking-tight">
                     <Mail size={20} className="text-neutral-900 dark:text-white" />
                     E-Posta Entegrasyonu
                 </h3>
@@ -719,13 +727,12 @@ export default function OfficialView() {
             </div>
 
              {/* Teknokent Job */}
-             {/* Teknokent Job */}
             {news[1] && (
-                <article className="bg-white dark:bg-neutral-900 border-b-4 border-black dark:border-white rounded-sm p-6 relative transition-colors group cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
+                <article className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] relative transition-colors group cursor-pointer hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
                     <div className="absolute top-4 right-4 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-[10px] font-black px-2 py-1 uppercase rounded-sm">
                         Teknokent Fırsatı
                     </div>
-                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-neutral-900 dark:text-white">
+                     <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-black dark:border-white pb-2 text-neutral-900 dark:text-white uppercase font-serif tracking-tight">
                         <Briefcase size={20} className="text-neutral-900 dark:text-white" />
                         Kariyer & Staj
                     </h3>
@@ -743,8 +750,10 @@ export default function OfficialView() {
                 </article>
             )}
 
-            <div className="p-4 border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm rounded-lg transition-colors">
-                <h4 className="font-bold text-lg mb-4 text-center font-serif text-neutral-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 pb-2">Günün Menüsü</h4>
+            <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors rounded-sm">
+                <h4 className="font-bold text-xl mb-4 flex items-center gap-2 font-serif uppercase tracking-tight text-neutral-900 dark:text-white border-b-2 border-black dark:border-white pb-2">
+                    <span className="text-2xl">🍽️</span> Günün Menüsü
+                </h4>
                 
                 {loadingMenu ? (
                     <div className="text-center text-sm text-neutral-500 py-4">Menü Yükleniyor...</div>
