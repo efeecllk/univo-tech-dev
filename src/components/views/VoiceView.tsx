@@ -743,8 +743,8 @@ export default function VoiceView() {
                                         <div className="flex gap-4 items-start">
                                             {/* Avatar */}
                                             <div 
-                                                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white'}`}
-                                                style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color)' } : undefined}
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
+                                                style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
                                             >
                                                 {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
                                             </div>

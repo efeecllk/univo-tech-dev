@@ -332,7 +332,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     className="w-full h-full rounded-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full rounded-full flex items-center justify-center text-white text-3xl font-bold" style={{ backgroundColor: 'var(--primary-color)' }}>
+                                <div className="w-full h-full rounded-full flex items-center justify-center text-white text-3xl font-bold bg-primary" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
                                     {profile.full_name.charAt(0).toUpperCase()}
                                 </div>
                             )}
