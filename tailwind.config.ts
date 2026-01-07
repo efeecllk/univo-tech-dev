@@ -10,10 +10,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: 'var(--primary-color)',
-        'primary-hover': 'var(--primary-color-hover)',
-        'primary-dark': 'var(--primary-color-dark)',
-        'primary-light': 'var(--primary-color-light)',
+        primary: {
+            DEFAULT: 'rgb(var(--primary-rgb) / <alpha-value>)',
+            hover: 'rgb(var(--primary-hover-rgb) / <alpha-value>)',
+            light: 'rgb(var(--primary-light-rgb) / <alpha-value>)',
+            dark: 'rgb(var(--primary-dark-rgb) / <alpha-value>)',
+        }
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

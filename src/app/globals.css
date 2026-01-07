@@ -58,48 +58,49 @@ p {
 }
 
 :root {
-  --primary-color: #C8102E;
-  --primary-color-hover: #A00D25;
-  --primary-color-light: #E81D3E;
-  --primary-color-dark: #8a0b20;
+  /* Default: Red (Keep as default) */
+  --primary-rgb: 200 16 46;       /* #C8102E */
+  --primary-hover-rgb: 160 13 37; /* #A00D25 */
+  --primary-light-rgb: 232 29 62; /* #E81D3E */
+  --primary-dark-rgb: 138 11 32;  /* #8a0b20 */
 }
 
 :root[data-theme-color="blue"] {
-  --primary-color: #3b82f6;
-  --primary-color-hover: #2563eb;
-  --primary-color-light: #60a5fa;
-  --primary-color-dark: #1e40af;
+  --primary-rgb: 59 130 246;      /* #3b82f6 */
+  --primary-hover-rgb: 37 99 235; /* #2563eb */
+  --primary-light-rgb: 96 165 250;/* #60a5fa */
+  --primary-dark-rgb: 30 64 175;  /* #1e40af */
 }
 
 :root[data-theme-color="green"] {
-  --primary-color: #22c55e;
-  --primary-color-hover: #16a34a;
-  --primary-color-light: #4ade80;
-  --primary-color-dark: #15803d;
+  --primary-rgb: 34 197 94;       /* #22c55e */
+  --primary-hover-rgb: 22 163 74; /* #16a34a */
+  --primary-light-rgb: 74 222 128;/* #4ade80 */
+  --primary-dark-rgb: 21 128 61;  /* #15803d */
 }
 
 :root[data-theme-color="purple"] {
-  --primary-color: #a855f7;
-  --primary-color-hover: #9333ea;
-  --primary-color-light: #c084fc;
-  --primary-color-dark: #7e22ce;
+  --primary-rgb: 168 85 247;      /* #a855f7 */
+  --primary-hover-rgb: 147 51 234;/* #9333ea */
+  --primary-light-rgb: 192 132 252;/* #c084fc */
+  --primary-dark-rgb: 126 34 206; /* #7e22ce */
 }
 
 :root[data-theme-color="orange"] {
-  --primary-color: #f97316;
-  --primary-color-hover: #ea580c;
-  --primary-color-light: #fb923c;
-  --primary-color-dark: #c2410c;
+  --primary-rgb: 249 115 22;      /* #f97316 */
+  --primary-hover-rgb: 234 88 12; /* #ea580c */
+  --primary-light-rgb: 251 146 60;/* #fb923c */
+  --primary-dark-rgb: 194 65 12;  /* #c2410c */
 }
 
 a {
-  color: var(--primary-color);
+  color: rgb(var(--primary-rgb));
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: var(--primary-color-hover);
+  color: rgb(var(--primary-hover-rgb));
 }
 
 .container {
