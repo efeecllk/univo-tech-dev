@@ -259,7 +259,8 @@ export default function LoginPage() {
                         {/* Terms */}
                         <label className="flex items-start gap-3 p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none group mt-2">
                             <div 
-                                className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'border-transparent bg-[var(--primary-color)]' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
+                                className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'border-transparent' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
+                                style={acceptedTerms ? { backgroundColor: selectedUni?.color || 'var(--primary-color)' } : undefined}
                             >
                                 {acceptedTerms && <CheckCircle size={14} className="text-white" />}
                             </div>
