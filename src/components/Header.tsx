@@ -135,6 +135,7 @@ function HeaderContent() {
                     <li key={item.id}>
                       <Link
                         href={item.href}
+                        onClick={(e) => item.href === '#' && e.preventDefault()}
                         className={`flex items-center gap-2 px-3.5 py-2 transition-all duration-200 relative group ${isActive
                           ? 'text-[var(--primary-color)] font-bold'
                           : 'text-neutral-600 dark:text-neutral-400 hover:text-[var(--primary-color)] font-medium'
