@@ -19,7 +19,6 @@ interface MetuLoginResult {
       username: string;
       department: string;
   };
-  redirectUrl?: string; // Magic link
   error?: string;
 }
 
@@ -84,10 +83,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return { success: false, error: data.error || 'Giriş başarısız' };
         }
         
+        // If we received session tokens, set the session directly
+        if (data.session) {
+            const { error: setSessionError } = await supabase.auth.setSession({
+                access_token: data.session.access_token,
+                refresh_token: data.session.refresh_token
+            });
+            
+            if (setSessionError) {
+                console.error('Set session error:', setSessionError);
+                return { success: false, error: 'Oturum oluşturulamadı.' };
+            }
+        }
+        
         return { 
             success: true, 
-            studentInfo: data.studentInfo, 
-            redirectUrl: data.redirectUrl 
+            studentInfo: data.studentInfo
         };
      } catch (err: any) {
          return { success: false, error: err.message || 'Sunucu hatası' };

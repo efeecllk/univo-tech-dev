@@ -34,22 +34,13 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
 
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
-        <Link
-          href="/login"
-          onClick={onNavigate}
-          className="px-4 py-2 text-neutral-800 hover:text-neutral-900 font-medium border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
-        >
-          Giriş Yap
-        </Link>
-        <Link
-          href="/register"
-          onClick={onNavigate}
-          className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity !text-white bg-[var(--primary-color,#C8102E)]"
-        >
-          Kayıt Ol
-        </Link>
-      </div>
+      <Link
+        href="/login"
+        onClick={onNavigate}
+        className="px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-opacity !text-white bg-[var(--primary-color,#C8102E)] flex items-center gap-2"
+      >
+        <span>Üniversitenle Giriş Yap</span>
+      </Link>
     );
   }
 

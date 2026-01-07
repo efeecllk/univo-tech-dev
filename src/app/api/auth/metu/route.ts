@@ -189,6 +189,8 @@ export async function POST(request: Request) {
              }
         }
 
+        // --- DIRECT SESSION CREATION (No Magic Link Redirect) ---
+        // Generate a magic link token and immediately verify it server-side
         const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
             type: 'magiclink',
             email: eduEmail
@@ -196,23 +198,24 @@ export async function POST(request: Request) {
 
         if (linkError) throw linkError;
 
-        // FIX: Ensure redirect URL uses the actual request origin, not Supabase's configured Site URL
-        // causing localhost issues on mobile/LAN.
-        let actionLink = linkData.properties.action_link;
-        if (actionLink) {
-             const requestUrl = new URL(request.url);
-             const origin = requestUrl.origin; // e.g., http://192.168.1.5:3000 or https://univo.app
-             
-             // Replace the origin in the action link
-             const linkUrl = new URL(actionLink);
-             linkUrl.protocol = requestUrl.protocol;
-             linkUrl.host = requestUrl.host;
-             linkUrl.port = requestUrl.port;
-             actionLink = linkUrl.toString();
+        // Extract the token from the action link
+        const actionLink = linkData.properties.action_link;
+        const tokenHash = linkData.properties.hashed_token;
+
+        // Verify the OTP server-side to create a session immediately
+        const { data: sessionData, error: verifyError } = await supabaseAdmin.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: 'magiclink'
+        });
+
+        if (verifyError) {
+            console.error('OTP Verify Error:', verifyError);
+            throw verifyError;
         }
 
         console.log('ODTÜ Auth Success:', fullName, 'Dept:', department);
 
+        // Return session tokens directly - no redirect needed!
         return NextResponse.json({
             success: true,
             studentInfo: {
@@ -220,7 +223,11 @@ export async function POST(request: Request) {
                 username: username,
                 department: department
             },
-            redirectUrl: actionLink
+            session: sessionData.session ? {
+                access_token: sessionData.session.access_token,
+                refresh_token: sessionData.session.refresh_token,
+                expires_at: sessionData.session.expires_at
+            } : null
         });
 
     } catch (err: any) {
