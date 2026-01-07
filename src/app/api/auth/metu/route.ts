@@ -18,6 +18,7 @@ export async function POST(request: Request) {
     const client = wrapper(axios.create({ 
         jar,
         withCredentials: true,
+        timeout: 5000, // 5 second timeout for faster response
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -79,53 +80,20 @@ export async function POST(request: Request) {
         if (fullName) fullName = fullName.replace('You are logged in as', '').trim();
         
         // --- ENHANCED SCRAPING: Get Department & Courses ---
+        // SKIPPED FOR PERFORMANCE - Profile scraping causes timeout on Vercel
+        // Department can be entered manually by user
         let department = '';
         let courses: { name: string, url: string }[] = [];
-        try {
-            // 1. Find Profile URL from Dashboard
-            // Look for any link containing 'user/profile.php'
-            const profileUrl = $dash('a[href*="user/profile.php"]').first().attr('href');
-            
-            if (profileUrl) {
-                console.log('Navigating to Profile:', profileUrl);
-                const profileRes = await client.get(profileUrl);
-                const $prof = cheerio.load(profileRes.data);
-
-                // 2. Search for "Department" or "Bölüm"
-                // Strategy: Find the label, then get the text immediately following it.
-                // Moodle profiles often use <dt>Label</dt> <dd>Value</dd> OR <li><span>Label</span>Value</li>
-                
-                // Moodle Description List approach
-                const deptLabel = $prof('dt:contains("Department"), dt:contains("Bölüm")').first();
-                if (deptLabel.length > 0) {
-                    department = deptLabel.next('dd').text().trim();
-                } else {
-                    // List Item approach
-                    const listLabel = $prof('li span:contains("Department"), li span:contains("Bölüm")').first();
-                    if (listLabel.length > 0) {
-                        // The text might be in the parent li, keeping only text nodes? 
-                        // Or adjacent. Moodle structure varies.
-                        department = listLabel.parent().text().replace(listLabel.text(), '').trim();
-                    }
-                }
-                
-                console.log('Scraped Department:', department);
-
-                // 3. Scrape Enrolled Courses
-                // Look for links to courses: /course/view.php?id=XYZ
-                $prof('a[href*="/course/view.php?id="]').each((_, el) => {
-                    const url = $prof(el).attr('href') || '';
-                    const name = $prof(el).text().trim();
-                    // Basic filtering to avoid duplicates or generic links
-                    if (name && url && !courses.some(c => c.url === url)) {
-                        courses.push({ name, url });
-                    }
-                });
-                console.log('Scraped Courses:', courses.length);
-            }
-        } catch (scrapeErr) {
-            console.warn('Could not scrape department or courses:', scrapeErr);
-        }
+        // Profile scraping disabled to speed up login
+        // try {
+        //     const profileUrl = $dash('a[href*="user/profile.php"]').first().attr('href');
+        //     if (profileUrl) {
+        //         const profileRes = await client.get(profileUrl);
+        //         // ... scraping logic ...
+        //     }
+        // } catch (scrapeErr) {
+        //     console.warn('Could not scrape department or courses:', scrapeErr);
+        // }
 
         // --- 3. UNIVO AUTHENTICATION (Proxy Strategy) ---
         
