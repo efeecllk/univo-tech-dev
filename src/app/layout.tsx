@@ -34,17 +34,18 @@ export default function RootLayout({
                 }
                 
                 // Defensive cleanup for rogue extension/overlay
-                const observer = new MutationObserver(() => {
-                    const rogue = document.getElementById('preact-border-shadow-host');
-                    if (rogue) rogue.remove();
-                });
+                const cleanup = () => {
+                    const rogueId = document.getElementById('preact-border-shadow-host');
+                    if (rogueId) rogueId.remove();
+                    
+                    const rogueClass = document.querySelector('.animate-breathing');
+                    if (rogueClass) rogueClass.remove();
+                };
+                
+                const observer = new MutationObserver(cleanup);
                 observer.observe(document.documentElement, { childList: true, subtree: true });
                 
-                // Immediate check
-                window.addEventListener('load', () => {
-                    const rogue = document.getElementById('preact-border-shadow-host');
-                    if (rogue) rogue.remove();
-                });
+                window.addEventListener('load', cleanup);
               } catch (_) {}
             `,
           }}
@@ -55,7 +56,7 @@ export default function RootLayout({
           <ThemeProvider>
 
             <Header />
-            <main className="flex-1 bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
+            <main className="flex-1 transition-colors duration-300">
               <Toaster
                 position="top-center"
                 richColors
