@@ -165,7 +165,7 @@ export default function LoginPage() {
                 </div>
                 
                 <p className="fixed bottom-4 text-xs text-neutral-400 dark:text-neutral-600 text-center w-full">
-                    &copy; 2026 Univo. Öğrenciler tarafından geliştirilmiştir.
+                &copy; 2026 Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
                 </p>
             </div>
         );
@@ -297,7 +297,7 @@ export default function LoginPage() {
             </div>
             
             <p className="fixed bottom-4 text-xs text-neutral-400 dark:text-neutral-600 text-center w-full">
-                &copy; 2026 Univo. Öğrenciler tarafından geliştirilmiştir.
+                &copy; 2026 Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
             </p>
         </div>
     );
