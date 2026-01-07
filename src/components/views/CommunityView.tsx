@@ -44,7 +44,7 @@ export default function CommunityView() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Left Sidebar / Navigation (Category Filter) */}
         <div className="lg:col-span-1">
-             <div className="sticky top-24">
+             <div className="">
                 <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
                 <CategoryFilter
                     selectedCategory={selectedCategory}

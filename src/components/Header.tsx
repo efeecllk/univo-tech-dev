@@ -116,16 +116,21 @@ function HeaderContent() {
                   <li key={item.id}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full transition-all duration-300 relative group overflow-hidden ${isActive
-                        ? 'text-black dark:text-white font-bold bg-white dark:bg-black shadow-sm'
-                        : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'
+                      className={`flex items-center gap-2 px-3.5 py-2 transition-all duration-200 relative group ${isActive
+                        ? 'text-[var(--primary-color)] font-bold'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-[var(--primary-color)] font-medium'
                         }`}
                     >
-                      <item.icon size={18} className={`relative z-10 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
-                      <span className="text-sm font-medium relative z-10">{item.label}</span>
-                      {!isActive && (
-                        <span className="absolute inset-0 bg-neutral-200 dark:bg-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity rounded-full z-0"></span>
+                      <item.icon size={18} className={`relative z-10 transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                      <span className="text-sm relative z-10">{item.label}</span>
+                      
+                      {/* Active Underline */}
+                      {isActive && (
+                        <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--primary-color)] rounded-full animate-in fade-in zoom-in duration-200"></span>
                       )}
+                      
+                      {/* Hover Underline */}
+                       <span className={`absolute bottom-0 left-2 right-2 h-0.5 bg-[var(--primary-color)] rounded-full transition-all duration-200 ${isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0 group-hover:opacity-50 group-hover:scale-x-75'}`}></span>
                     </Link>
                   </li>
                 );

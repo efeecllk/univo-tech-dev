@@ -654,7 +654,7 @@ export default function OfficialView() {
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
                                                     onClick={(e) => e.stopPropagation()}
-                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass} !text-current`}
+                                                    className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn active:shadow-none active:translate-x-[1px] active:translate-y-[1px] ${shadowClass} ${activeColorClass} ${hoverClass}`}
                                                 >
                                                     <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
                                                     Kaynağa Git

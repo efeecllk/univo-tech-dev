@@ -71,9 +71,7 @@ export default function MetuLoginModal({ isOpen, onClose, onSuccess }: MetuLogin
                 
                 {/* Header */}
                 <div className="bg-[var(--primary-color)] text-white p-6 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                        <GraduationCap size={120} />
-                    </div>
+
                     <button 
                         onClick={onClose}
                         className="absolute right-4 top-4 text-white/80 hover:text-white transition-colors"

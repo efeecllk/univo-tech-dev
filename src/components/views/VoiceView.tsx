@@ -963,7 +963,7 @@ export default function VoiceView() {
 
                 {/* Sidebar: Polls & Stats - Shows first on mobile, last on desktop */}
                 <div className="order-first lg:order-last -mx-4 px-4 lg:mx-0 lg:px-0">
-                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-4 lg:pb-0 lg:flex-col lg:overflow-x-visible lg:sticky lg:top-24 lg:gap-8 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:pr-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="flex flex-row flex-nowrap gap-4 overflow-x-auto pb-4 lg:pb-0 lg:flex-col lg:overflow-x-visible lg:gap-8 lg:pr-2 snap-x snap-mandatory" style={{ scrollbarWidth: 'thin' }}>
                         {/* Weekly Poll */}
                         <div className="border-4 border-black dark:border-white p-4 bg-white dark:bg-neutral-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] transition-colors shrink-0 min-w-[280px] lg:min-w-0 snap-center">
                             <div className="flex items-center justify-between border-b-2 border-black dark:border-white pb-2 mb-3">
