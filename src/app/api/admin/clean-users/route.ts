@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import getSupabaseAdmin from '@/lib/supabase-admin';
 
 export async function GET(request: Request) {
   // Simple "Secret" protection (e.g. ?secret=univo_admin_123)
