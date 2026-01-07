@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function AuthButton() {
+export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) {
   const { user, profile, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -27,6 +27,7 @@ export default function AuthButton() {
   const handleSignOut = async () => {
     await signOut();
     setIsOpen(false);
+    if (onNavigate) onNavigate();
     router.push('/');
     router.refresh();
   };
@@ -36,12 +37,14 @@ export default function AuthButton() {
       <div className="flex items-center gap-3">
         <Link
           href="/login"
+          onClick={onNavigate}
           className="px-4 py-2 text-neutral-800 hover:text-neutral-900 font-medium border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors"
         >
           Giriş Yap
         </Link>
         <Link
           href="/register"
+          onClick={onNavigate}
           style={{ backgroundColor: '#C8102E', color: '#FFFFFF' }}
           className="px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity"
         >
@@ -78,7 +81,10 @@ export default function AuthButton() {
 
           <Link
             href={`/profile/${user.id}`}
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              if (onNavigate) onNavigate();
+            }}
             className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
             <User size={18} className="text-neutral-600 dark:text-neutral-400" />
@@ -87,7 +93,10 @@ export default function AuthButton() {
 
           <Link
             href="/settings"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              if (onNavigate) onNavigate();
+            }}
             className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
           >
             <Settings size={18} className="text-neutral-600 dark:text-neutral-400" />

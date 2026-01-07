@@ -199,7 +199,7 @@ function HeaderContent() {
                   className="animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
                   style={{ animationDelay: '50ms' }}
                 >
-                  <AuthButton />
+                  <AuthButton onNavigate={() => setIsMenuOpen(false)} />
                 </div>
               </div>
 
