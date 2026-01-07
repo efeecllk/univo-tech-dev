@@ -11,10 +11,7 @@ import MetuVerificationGuard from "@/components/auth/MetuVerificationGuard";
 export const metadata: Metadata = {
   title: "Univo - University Events & Announcements",
   description: "Your central hub for university events, announcements, and campus news. Stay connected with your campus community.",
-  icons: {
-    icon: '/univo-logo-transparent.png?v=3',
-    apple: '/univo-logo-transparent.png?v=3',
-  },
+
 };
 
 export default function RootLayout({
