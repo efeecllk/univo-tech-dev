@@ -193,11 +193,11 @@ export default function RSVPButton({
          {/* Success/Status Message Area */}
          {status === 'going' ? (
            <div className="flex flex-col gap-4 animate-fade-in">
-              <div className="p-4 bg-green-100 border-2 border-green-800 flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(22,101,52,1)]">
+              <div className="p-4 bg-green-100 dark:bg-green-900/30 border-2 border-green-800 dark:border-green-500 flex items-center gap-3 shadow-[4px_4px_0px_0px_rgba(22,101,52,1)] dark:shadow-[4px_4px_0px_0px_rgba(34,197,94,0.3)]">
                 <span className="text-2xl">🎉</span>
                 <div>
-                  <p className="font-black text-green-900 uppercase tracking-wide text-sm">Kaydınız Alındı</p>
-                  <p className="text-xs text-green-800 font-medium mt-0.5">Etkinlik gününü not etmeyi unutmayın!</p>
+                  <p className="font-black text-green-900 dark:text-green-100 uppercase tracking-wide text-sm">Kaydınız Alındı</p>
+                  <p className="text-xs text-green-800 dark:text-green-300 font-medium mt-0.5">Etkinlik gününü not etmeyi unutmayın!</p>
                 </div>
               </div>
               
