@@ -320,8 +320,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         {/* Left Column: Identity & Social */}
         <div className="lg:col-span-1 space-y-6">
             <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors">
-                <div className="h-32 w-full absolute top-0 left-0 bg-primary opacity-10 transition-colors" />
-                <div className="h-32 w-full absolute top-0 left-0 opacity-10" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
+                <div className="h-32 w-full absolute top-0 left-0 opacity-20" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
                 
                 <div className="pt-12 px-6 pb-6 text-center relative z-10">
                     <div className="w-28 h-28 mx-auto relative group/avatar">

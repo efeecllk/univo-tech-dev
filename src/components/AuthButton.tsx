@@ -67,7 +67,7 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
             className="w-8 h-8 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary text-white font-bold text-xs border border-transparent">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs border border-transparent" style={{ backgroundColor: 'var(--primary-color)' }}>
             {(profile?.full_name || 'U').charAt(0).toUpperCase()}
           </div>
         )}
