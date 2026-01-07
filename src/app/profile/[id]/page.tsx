@@ -325,7 +325,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 
                 <div className="pt-12 px-6 pb-6 text-center relative z-10">
                     <div className="w-28 h-28 mx-auto relative group/avatar">
-                        <div className="w-full h-full rounded-full p-1 border-2 border-neutral-100 dark:border-neutral-700 shadow-sm bg-white dark:bg-neutral-800 overflow-hidden">
+                        <div className="w-full h-full rounded-full p-1 border-2 border-neutral-100 dark:border-neutral-700 shadow-sm bg-transparent overflow-hidden">
                             {profile.avatar_url ? (
                                 <img 
                                     src={profile.avatar_url} 
@@ -333,7 +333,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     className="w-full h-full rounded-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center text-white text-3xl font-bold">
+                                <div className="w-full h-full rounded-full flex items-center justify-center text-white text-3xl font-bold" style={{ backgroundColor: 'var(--primary-color)' }}>
                                     {profile.full_name.charAt(0).toUpperCase()}
                                 </div>
                             )}
