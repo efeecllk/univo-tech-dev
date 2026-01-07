@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AuthButton() {
@@ -57,9 +57,9 @@ export default function AuthButton() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
       >
-        <img 
-          src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'User')}&background=C8102E&color=fff&length=1`} 
-          alt={profile?.full_name || 'User'} 
+        <img
+          src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.full_name || 'User')}&background=C8102E&color=fff&length=1`}
+          alt={profile?.full_name || 'User'}
           className="w-8 h-8 rounded-full object-cover border border-neutral-200 dark:border-neutral-700"
         />
         <span className="text-sm font-medium text-neutral-700 dark:text-neutral-200 hidden md:block">
@@ -83,6 +83,15 @@ export default function AuthButton() {
           >
             <User size={18} className="text-neutral-600 dark:text-neutral-400" />
             <span className="text-sm text-neutral-700 dark:text-neutral-200">Profilim</span>
+          </Link>
+
+          <Link
+            href="/settings"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <Settings size={18} className="text-neutral-600 dark:text-neutral-400" />
+            <span className="text-sm text-neutral-700 dark:text-neutral-200">Ayarlar</span>
           </Link>
 
           <button

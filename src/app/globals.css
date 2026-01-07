@@ -57,14 +57,39 @@ p {
     color: #d4d4d4;
 }
 
+:root {
+  --primary-color: #C8102E;
+  --primary-color-hover: #A00D25;
+}
+
+:root[data-theme-color="blue"] {
+  --primary-color: #3b82f6;
+  --primary-color-hover: #2563eb;
+}
+
+:root[data-theme-color="green"] {
+  --primary-color: #22c55e;
+  --primary-color-hover: #16a34a;
+}
+
+:root[data-theme-color="purple"] {
+  --primary-color: #a855f7;
+  --primary-color-hover: #9333ea;
+}
+
+:root[data-theme-color="orange"] {
+  --primary-color: #f97316;
+  --primary-color-hover: #ea580c;
+}
+
 a {
-  color: #C8102E;
+  color: var(--primary-color);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 a:hover {
-  color: #A00D25;
+  color: var(--primary-color-hover);
 }
 
 .container {
