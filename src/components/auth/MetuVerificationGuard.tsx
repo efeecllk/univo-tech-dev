@@ -54,7 +54,16 @@ export default function MetuVerificationGuard({ children }: { children: React.Re
         return () => subscription.unsubscribe();
     }, []);
 
-    if (loading) return null; // Or a loading spinner
+    if (loading) {
+        return (
+            <div className="fixed inset-0 z-[100] bg-white dark:bg-black flex items-center justify-center">
+                 <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 border-4 border-neutral-200 dark:border-neutral-800 border-t-[var(--primary-color)] rounded-full animate-spin"></div>
+                    <p className="text-sm font-medium text-neutral-500 animate-pulse">Yükleniyor...</p>
+                 </div>
+            </div>
+        );
+    }
 
     if (!isVerified && !['/login', '/register', '/forgot-password', '/auth/callback'].includes(pathname)) {
         return (
