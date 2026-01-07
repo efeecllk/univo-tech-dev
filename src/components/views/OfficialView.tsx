@@ -414,45 +414,14 @@ export default function OfficialView() {
                             key={index} 
                             onClick={() => setExpandedId(isExpanded ? null : item.id)}
                             className={`flex gap-4 items-start p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group
-                                ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800 border-primary'}
+                                ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
                                 ${isRead && activeTab !== 'history' ? 'hidden' : ''} 
                                 ${isRead ? 'opacity-75 grayscale border-neutral-300 dark:border-neutral-700' : ''}
                             `}
+                            style={{ borderLeftColor: isRead ? '' : 'var(--primary-color, #C8102E)' }}
                         >   
-                            {/* Expand Icon Indicator & Actions */}
+                            {/* Expand Icon Indicator */}
                             <div className="absolute right-4 top-4 flex items-center gap-3 z-20">
-                                {/* Action Buttons Group */}
-                                {user && activeTab !== 'history' && (
-                                    <div className="flex items-center gap-1 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm transition-opacity">
-                                        <button
-                                            onClick={(e) => handleMarkRead(String(item.id), e)}
-                                            title={isRead ? "Okundu" : "Okundu olarak işaretle"}
-                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isRead ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-neutral-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 dark:bg-neutral-800'}`}
-                                        >
-                                            <CheckCircle size={20} className={isRead ? 'fill-green-100 dark:fill-green-900/50' : ''} />
-                                        </button>
-                                        <div className="w-px h-5 bg-neutral-200 mx-1"></div>
-                                        <button
-                                            onClick={(e) => handleFollow(item.source, e)}
-                                            title={isFollowing ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-                                            className={`p-2 rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ${isFollowing ? 'text-primary bg-red-50 dark:bg-red-900/30' : 'text-neutral-400 hover:text-primary hover:bg-red-50 dark:hover:bg-red-900/30 dark:bg-neutral-800'}`}
-                                        >
-                                            <Bookmark size={20} className={isFollowing ? 'fill-primary' : ''} />
-                                        </button>
-                                    </div>
-                                )}
-
-                                {user && activeTab === 'history' && (
-                                     <button
-                                        onClick={(e) => handleUndoRead(String(item.id), e)}
-                                        title="Geri Al (Tekrar Gündeme Taşı)"
-                                        className="flex items-center gap-2 bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 shadow-sm text-[10px] font-black uppercase text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all hover:scale-105 active:scale-95"
-                                    >
-                                        <RotateCcw size={14} />
-                                        Geri Al
-                                    </button>
-                                )}
-                                
                                 <div className="text-neutral-300 group-hover:text-primary transition-colors font-bold ml-1 text-2xl leading-none select-none">
                                     {isExpanded ? '−' : '+'}
                                 </div>
@@ -481,6 +450,39 @@ export default function OfficialView() {
                                     <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-3 pt-2 border-t border-neutral-200 dark:border-neutral-800">
                                         {item.summary || 'Detaylar için bağlantıya tıklayınız.'}
                                     </p>
+                                    
+                                    {/* Responsive Actions Area */}
+                                    <div className="flex flex-wrap items-center gap-3 pt-2 mb-4">
+                                        {user && activeTab !== 'history' && (
+                                            <>
+                                                <button
+                                                    onClick={(e) => handleMarkRead(String(item.id), e)}
+                                                    className={`flex items-center gap-2 px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                                                        ${isRead ? 'bg-green-50 dark:bg-green-900/30 border-green-700 text-green-800 dark:text-green-400' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                                >
+                                                    <CheckCircle size={14} />
+                                                    {isRead ? 'Okundu' : 'Okundu Olarak İşaretle'}
+                                                </button>
+                                                <button
+                                                    onClick={(e) => handleFollow(item.source, e)}
+                                                    className={`flex items-center gap-2 px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
+                                                        ${isFollowing ? 'bg-primary text-white border-primary shadow-[4px_4px_0px_0px_rgba(200,16,46,0.5)]' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                                >
+                                                    <Bookmark size={14} className={isFollowing ? 'fill-white' : ''} />
+                                                    {isFollowing ? 'Favorilerimde' : 'Favorilere Ekle'}
+                                                </button>
+                                            </>
+                                        )}
+                                        {user && activeTab === 'history' && (
+                                            <button
+                                                onClick={(e) => handleUndoRead(String(item.id), e)}
+                                                className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white text-[10px] font-black uppercase tracking-wider bg-white dark:bg-neutral-800 text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
+                                            >
+                                                <RotateCcw size={14} />
+                                                Gündeme Geri Al
+                                            </button>
+                                        )}
+                                    </div>
                                     <a 
                                         href={item.link} 
                                         target="_blank" 
@@ -600,7 +602,7 @@ export default function OfficialView() {
                     <div className="space-y-6">
                         {menu.breakfast?.length > 0 && (
                              <div>
-                                <h5 className="font-bold text-neutral-500 dark:text-neutral-400 text-sm uppercase mb-2 flex items-center gap-2">
+                                <h5 className="font-bold text-neutral-900 dark:text-white text-sm uppercase mb-2 flex items-center gap-2">
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Kahvaltı
                                 </h5>
@@ -610,9 +612,9 @@ export default function OfficialView() {
                             </div>
                         )}
 
-                        {(menu.lunch?.length > 0) && (
+                         {(menu.lunch?.length > 0) && (
                             <div>
-                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2" style={{ color: 'var(--primary-color, #C8102E)' }}>
+                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2 text-neutral-900 dark:text-white">
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Öğle Yemeği
                                 </h5>
@@ -635,7 +637,7 @@ export default function OfficialView() {
 
                         {menu.dinner?.length > 0 && (
                             <div>
-                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2" style={{ color: 'var(--primary-color, #C8102E)' }}>
+                                <h5 className="font-bold text-sm uppercase mb-3 flex items-center gap-2 text-neutral-900 dark:text-white">
                                     <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}></span>
                                     Akşam Yemeği
                                 </h5>
