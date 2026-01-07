@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap, ArrowRight } from 'lucide-react';
+import MetuLoginModal from '@/components/auth/MetuLoginModal';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [showMetuModal, setShowMetuModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -109,6 +111,13 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* Recover Password Link */}
+            <div className="text-right">
+                <Link href="/forgot-password" className="text-xs text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-300">
+                    Şifremi Unuttum
+                </Link>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -117,11 +126,32 @@ export default function LoginPage() {
             >
               {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
             </button>
+            
+            <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-neutral-300 dark:border-neutral-700"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white dark:bg-neutral-900 text-neutral-500">veya</span>
+                </div>
+            </div>
+
+            <button
+               type="button" 
+               onClick={() => setShowMetuModal(true)}
+               className="w-full relative group overflow-hidden bg-black dark:bg-white text-white dark:text-black py-4 rounded-xl shadow-md border-2 border-transparent hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+                <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                    <GraduationCap size={24} />
+                </div>
+                <span className="font-black uppercase tracking-wide">ODTÜ İle Hızlı Giriş</span>
+            </button>
+
           </form>
 
           {/* Register Link */}
           <div className="mt-6 text-center">
-            <p className="text-neutral-600">
+            <p className="text-neutral-600 dark:text-neutral-400">
               Hesabınız yok mu?{' '}
               <Link href="/register" style={{ color: 'var(--primary-color, #C8102E)' }} className="font-semibold hover:underline">
                 Kayıt Olun
@@ -131,12 +161,24 @@ export default function LoginPage() {
 
           {/* Back to Home */}
           <div className="mt-4 text-center">
-            <Link href="/" className="text-neutral-500 text-sm hover:text-neutral-700">
+            <Link href="/" className="text-neutral-500 text-sm hover:text-neutral-700 dark:text-neutral-400">
               ← Ana Sayfaya Dön
             </Link>
           </div>
         </div>
       </div>
+      
+      <MetuLoginModal 
+        isOpen={showMetuModal}
+        onClose={() => setShowMetuModal(false)}
+        onSuccess={(data) => {
+            // Since we can't log them in directly without Service Role or stored password,
+            // we redirect them to Register to "Refresh" or "Link" their account.
+            // Or ideally, we should check if they exist.
+            sessionStorage.setItem('odtu_temp_auth', JSON.stringify(data));
+            router.push('/register');
+        }}
+      />
     </div>
   );
 }

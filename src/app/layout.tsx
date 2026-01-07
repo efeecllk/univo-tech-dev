@@ -6,6 +6,7 @@ import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import MetuVerificationGuard from "@/components/auth/MetuVerificationGuard";
 
 export const metadata: Metadata = {
   title: "Univo - University Events & Announcements",
@@ -55,24 +56,25 @@ export default function RootLayout({
       <body className="antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <AuthProvider>
           <ThemeProvider>
-
-            <Header />
-            <main className="flex-1 transition-colors duration-300">
-              <Toaster
-                position="top-center"
-                richColors
-                toastOptions={{
-                  style: {
-                    fontFamily: 'var(--font-inter), Inter, sans-serif',
-                    borderRadius: '12px',
-                    border: '1px solid #e5e5e5',
-                  },
-                }}
-              />
-              {children}
-            </main>
-            <Footer />
-            <ScrollToTopButton />
+            <MetuVerificationGuard>
+              <Header />
+              <main className="flex-1 transition-colors duration-300">
+                <Toaster
+                  position="top-center"
+                  richColors
+                  toastOptions={{
+                    style: {
+                      fontFamily: 'var(--font-inter), Inter, sans-serif',
+                      borderRadius: '12px',
+                      border: '1px solid #e5e5e5',
+                    },
+                  }}
+                />
+                {children}
+              </main>
+              <Footer />
+              <ScrollToTopButton />
+            </MetuVerificationGuard>
           </ThemeProvider>
         </AuthProvider>
       </body>
