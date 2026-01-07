@@ -21,7 +21,6 @@ const ALLOWED_DASHBOARD_USERS = [
 ];
 
 function HeaderContent() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCommunityAdmin, setIsCommunityAdmin] = useState(false);
   const searchParams = useSearchParams();
@@ -159,102 +158,57 @@ function HeaderContent() {
               <AuthButton />
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors relative w-10 h-10 flex items-center justify-center overflow-hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
-            >
-              <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-90 opacity-0 scale-50' : 'rotate-0 opacity-100 scale-100'}`}>
-                <Menu size={28} className="text-neutral-900 dark:text-white" />
-              </span>
-              <span className={`absolute transition-all duration-300 transform ${isMenuOpen ? 'rotate-0 opacity-100 scale-100' : '-rotate-90 opacity-0 scale-50'}`}>
-                <X size={28} className="text-neutral-900 dark:text-white" />
-              </span>
-            </button>
+            {/* Mobile Header Actions (Search & Auth) */}
+            <div className="flex md:hidden items-center gap-2">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-all"
+              >
+                <SearchIcon size={24} />
+              </button>
+              <AuthButton />
+            </div>
+
           </div>
         </div>
-
       </div>
 
-      {/* Mobile Navigation Overlay */}
-      {isMenuOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsMenuOpen(false)}
-            style={{ top: '64px' }} // Start below header
-          />
-
-          {/* Menu */}
-          <div className="fixed top-16 left-0 w-full h-[calc(100vh-64px)] bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-white shadow-lg z-50 md:hidden animate-in slide-in-from-top-2 duration-200 overflow-y-auto">
-            <nav className="flex flex-col p-6 space-y-6">
-
-              {/* Top Actions Row */}
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsSearchOpen(true);
-                  }}
-                  className="flex-1 flex items-center gap-3 p-4 rounded-xl text-neutral-600 dark:text-neutral-400 font-serif font-bold text-base hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all group animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
-                  style={{ animationDelay: '0ms' }}
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 z-[9999] px-6 py-3 safe-area-bottom">
+        <ul className="flex justify-between items-center">
+          {navItems.map((item) => {
+            const isActive = currentView === item.id;
+            return (
+              <li key={item.id}>
+                <Link
+                  href={item.href}
+                  className={`flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'text-[#C8102E]' : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300'
+                    }`}
                 >
-                  <SearchIcon size={20} className="group-hover:scale-110 transition-transform" />
-                  <span>Ara</span>
-                </button>
+                  <item.icon size={24} className={isActive ? 'fill-current' : ''} strokeWidth={isActive ? 2.5 : 2} />
+                  <span className="text-[10px] font-bold uppercase tracking-wide">{item.label.split(' ')[0]}</span>
+                </Link>
+              </li>
+            );
+          })}
 
-                <div
-                  className="animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards"
-                  style={{ animationDelay: '50ms' }}
-                >
-                  <AuthButton onNavigate={() => setIsMenuOpen(false)} />
-                </div>
-              </div>
+          {/* Dashboard Link for Mobile Bottom Nav */}
+          {user && canAccessDashboard && (
+            <li>
+              <Link
+                href="/dashboard"
+                className={`flex flex-col items-center gap-1 transition-all duration-300 ${pathname?.startsWith('/dashboard') ? 'text-[#C8102E]' : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-300'
+                  }`}
+              >
+                <LayoutDashboard size={24} strokeWidth={pathname?.startsWith('/dashboard') ? 2.5 : 2} />
+                <span className="text-[10px] font-bold uppercase tracking-wide">Panel</span>
+              </Link>
+            </li>
+          )}
+        </ul>
+      </nav>
 
-              <div className="border-t-2 border-black dark:border-white my-4"></div>
 
-              <div className="space-y-2">
-                {navItems.map((item, index) => {
-                  const isActive = currentView === item.id;
-                  return (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards ${isActive
-                        ? 'bg-white text-black dark:bg-black dark:text-white shadow-md'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
-                        }`}
-                      style={{ animationDelay: `${(index + 2) * 75}ms` }}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <item.icon size={28} className={isActive ? 'animate-pulse text-[#C8102E]' : 'text-neutral-500'} />
-                      <span className="text-xl">{item.label}</span>
-                    </Link>
-                  );
-                })}
-
-                {user && canAccessDashboard && (
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`flex items-center gap-4 p-4 rounded-xl transition-all font-serif font-bold text-lg animate-in slide-in-from-bottom-2 fade-in duration-500 fill-mode-backwards ${pathname?.startsWith('/dashboard')
-                      ? 'bg-white text-black dark:bg-black dark:text-white shadow-md'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900'
-                      }`}
-                    style={{ animationDelay: '350ms' }}
-                  >
-                    <LayoutDashboard size={24} />
-                    <span>Kontrol Paneli</span>
-                  </Link>
-                )}
-              </div>
-
-            </nav>
-          </div>
-        </>
-      )}
 
       <GlobalSearch isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
