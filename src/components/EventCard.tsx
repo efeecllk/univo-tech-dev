@@ -128,7 +128,7 @@ export default function EventCard({ event, isAttending = false }: EventCardProps
                                 {attendee.avatar_url ? (
                                     <img src={attendee.avatar_url} alt="user" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-primary text-white font-bold select-none">
+                                    <div className="w-full h-full flex items-center justify-center text-white font-bold select-none" style={{ backgroundColor: 'var(--primary-color)' }}>
                                         {attendee.full_name ? attendee.full_name.charAt(0).toUpperCase() : '?'}
                                     </div>
                                 )}

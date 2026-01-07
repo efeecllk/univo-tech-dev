@@ -27,6 +27,7 @@ export default function CategoryFilter({
           <button
             key={category.value}
             onClick={() => onCategoryChange(category.value)}
+            style={isSelected ? { backgroundColor: 'var(--primary-color)' } : undefined}
             className={`
                 w-full text-left px-4 py-3 border-2 border-black font-bold uppercase tracking-wide transition-all duration-200 relative
                 ${isSelected 
