@@ -62,8 +62,11 @@ export default function OfficialView() {
   const [loginError, setLoginError] = React.useState('');
 
   // Tab State
-  const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history'>('agenda');
+  const [activeTab, setActiveTab] = React.useState<'agenda' | 'emails' | 'history' | 'starred'>('agenda');
   const [followedSources, setFollowedSources] = React.useState<string[]>([]);
+  const [starredIds, setStarredIds] = React.useState<string[]>([]);
+  const [blockedSources, setBlockedSources] = React.useState<string[]>([]);
+  const [subscribedSources, setSubscribedSources] = React.useState<string[]>([]);
 
   // Check Session & Auto-Connect
   React.useEffect(() => {
@@ -73,9 +76,16 @@ export default function OfficialView() {
             const cached = localStorage.getItem('univo_cached_emails');
             const savedUser = localStorage.getItem('univo_email_user');
             const savedFollows = localStorage.getItem('univo_followed_sources');
+            const savedStars = localStorage.getItem('univo_starred_ids');
+            const savedBlocked = localStorage.getItem('univo_blocked_sources');
+            const savedSubscribed = localStorage.getItem('univo_subscribed_sources');
             
             if (cached) setEmails(JSON.parse(cached));
             if (savedFollows) setFollowedSources(JSON.parse(savedFollows));
+            if (savedStars) setStarredIds(JSON.parse(savedStars));
+            if (savedBlocked) setBlockedSources(JSON.parse(savedBlocked));
+            if (savedSubscribed) setSubscribedSources(JSON.parse(savedSubscribed));
+
             if (savedUser) {
                 setLoginForm(prev => ({ ...prev, username: savedUser }));
                 setIsEmailConnected(true); // Optimistically show connected if user exists
@@ -216,19 +226,45 @@ export default function OfficialView() {
       await supabase.from('announcement_reads').delete().match({ user_id: user.id, announcement_id: idStr });
   };
 
-  const handleFollow = async (topic: string, e?: React.MouseEvent) => {
-      if(e) {
-          e.preventDefault();
-          e.stopPropagation();
-      }
-      
-      setFollowedSources(prev => {
-          const isFollowing = prev.includes(topic);
-          const newFollows = isFollowing ? prev.filter(s => s !== topic) : [...prev, topic];
-          localStorage.setItem('univo_followed_sources', JSON.stringify(newFollows));
-          if (!isFollowing) toast.success(`"${topic}" favorilere eklendi.`);
-          return newFollows;
-      });
+  const handleStar = async (id: string, e?: React.MouseEvent) => {
+    if(e) { e.preventDefault(); e.stopPropagation(); }
+    const idStr = String(id);
+    setStarredIds(prev => {
+        const isStarred = prev.includes(idStr);
+        const newStars = isStarred ? prev.filter(i => i !== idStr) : [...prev, idStr];
+        localStorage.setItem('univo_starred_ids', JSON.stringify(newStars));
+        if (!isStarred) toast.success('Yıldızlılara eklendi.');
+        return newStars;
+    });
+  };
+
+  const handleBlockSource = (source: string) => {
+    if (!confirm(`"${source}" kaynağından gelen gönderileri gizlemek istediğinize emin misiniz?`)) return;
+    setBlockedSources(prev => {
+        const newBlocked = [...prev, source];
+        localStorage.setItem('univo_blocked_sources', JSON.stringify(newBlocked));
+        toast.info(`"${source}" engellendi.`);
+        return newBlocked;
+    });
+  };
+
+  const handleSubscribeSource = (source: string) => {
+    setSubscribedSources(prev => {
+        const isSubscribed = prev.includes(source);
+        const newSubs = isSubscribed ? prev.filter(s => s !== source) : [...prev, source];
+        localStorage.setItem('univo_subscribed_sources', JSON.stringify(newSubs));
+        if (!isSubscribed) toast.success(`"${source}" kaynağına abone olundu. Yeni içeriklerde bilgilendirileceksiniz.`);
+        return newSubs;
+    });
+  };
+
+  const handleClearHistory = async () => {
+    if (!confirm('Tüm geçmişi silmek istediğinize emin misiniz?')) return;
+    if (user) {
+        await supabase.from('announcement_reads').delete().eq('user_id', user.id);
+    }
+    setReadIds([]);
+    toast.success('Geçmiş temizlendi.');
   };
 
   // Helper to parse date string for sorting
@@ -312,19 +348,23 @@ export default function OfficialView() {
 
   // Filtered Lists
   // GÜNDEM: Unread Items AND NOT Emails (Announcements Only) AND Last 7 Days
-  const agendaItems = allNews.filter(n => {
-      const isUnread = !readIds.includes(String(n.id));
-      const notEmail = n.type !== 'email';
-      const isRecent = parseDate(n.date) > (Date.now() - 7 * 24 * 60 * 60 * 1000);
-      return isUnread && notEmail && isRecent;
-  });
-  
-  const emailItems = allNews.filter(n => n.type === 'email');
-  const historyItems = allNews.filter(n => readIds.includes(String(n.id)));
+  const filteredNews = allNews.filter(item => {
+    // 1. Blocked sources filter
+    if (blockedSources.includes(item.source)) return false;
 
-  let displayedItems = agendaItems;
-  if (activeTab === 'emails') displayedItems = emailItems;
-  if (activeTab === 'history') displayedItems = historyItems;
+    if (activeTab === 'agenda') return (item.type === 'announcement' || item.type === 'event');
+    if (activeTab === 'emails') return item.type === 'email';
+    if (activeTab === 'starred') return starredIds.includes(String(item.id));
+    if (activeTab === 'history') return readIds.includes(String(item.id));
+    return true;
+  });
+
+  const displayedItems = filteredNews.filter(item => {
+    if (activeTab === 'agenda' || activeTab === 'emails') {
+        return !readIds.includes(String(item.id));
+    }
+    return true;
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 relative">
@@ -351,16 +391,17 @@ export default function OfficialView() {
         <div className="lg:col-span-2 space-y-8">
             
             {/* Tab Navigation */}
-            <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-6 relative">
+            <div className="flex border-b-2 border-neutral-200 dark:border-neutral-800 mb-6 gap-4 md:gap-8 relative overflow-x-auto no-scrollbar scroll-smooth">
                 {[
-                    { id: 'agenda', label: 'GÜNDEM', count: agendaItems.length },
-                    { id: 'emails', label: 'E-POSTALAR', count: emailItems.length },
-                    { id: 'history', label: 'GEÇMİŞ', count: historyItems.length }
+                    { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length },
+                    { id: 'emails', label: 'E-POSTALARI', count: emails.filter(n => !readIds.includes(String(n.id))).length },
+                    { id: 'starred', label: 'YILDIZLAR', count: starredIds.length },
+                    { id: 'history', label: 'GEÇMİŞ', count: readIds.length }
                 ].map(tab => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
-                        className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 ${
+                        className={`pb-3 font-black text-sm tracking-wider uppercase transition-colors relative flex items-center gap-2 shrink-0 ${
                             activeTab === tab.id 
                             ? 'text-black dark:text-white' 
                             : 'text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300'
@@ -368,15 +409,26 @@ export default function OfficialView() {
                     >
                         {tab.label}
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold transition-colors ${
-                            activeTab === tab.id ? 'bg-black dark:bg-white text-white dark:text-black' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                            activeTab === tab.id 
+                            ? 'bg-black text-white dark:bg-white dark:text-black' 
+                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500'
                         }`}>
                             {tab.count}
                         </span>
                         {activeTab === tab.id && (
-                            <div className="absolute bottom-[-2px] left-0 right-0 h-[3px] bg-black dark:bg-white" />
+                            <div className="absolute bottom-[-2px] left-0 right-0 h-0.5 bg-black dark:bg-white animate-in fade-in slide-in-from-left-2 duration-300" />
                         )}
                     </button>
                 ))}
+
+                {activeTab === 'history' && readIds.length > 0 && (
+                    <button 
+                        onClick={handleClearHistory}
+                        className="ml-auto pb-3 text-[10px] font-black uppercase text-red-600 hover:text-red-700 transition-colors flex items-center gap-1"
+                    >
+                        <X size={12}/> Tümünü Sil
+                    </button>
+                )}
             </div>
 
             {/* Featured Post (Only show on Agenda for impact, or always? Let's hide on Archive) */}
@@ -415,13 +467,29 @@ export default function OfficialView() {
                             onClick={() => setExpandedId(isExpanded ? null : item.id)}
                             className={`flex gap-4 items-start p-4 transition-all duration-300 border-l-4 cursor-pointer relative bg-white dark:bg-neutral-900 shadow-sm group
                                 ${isExpanded ? 'bg-neutral-50 dark:bg-neutral-800 ring-1 ring-black/5 dark:ring-white/5' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}
-                                ${isRead && activeTab !== 'history' ? 'hidden' : ''} 
-                                ${isRead ? 'opacity-75 grayscale border-neutral-300 dark:border-neutral-700' : ''}
+                                ${isRead && (activeTab !== 'history' && activeTab !== 'starred') ? 'hidden' : ''} 
+                                ${isRead ? 'opacity-75 grayscale' : ''}
                             `}
-                            style={{ borderLeftColor: isRead ? '' : 'var(--primary-color, #C8102E)' }}
+                            style={{ 
+                                borderLeftColor: isRead 
+                                    ? 'transparent' 
+                                    : (item.type === 'event' 
+                                        ? '#2563eb' // Blue-600
+                                        : item.type === 'email' 
+                                            ? '#d97706' // Amber-600
+                                            : '#059669' // Emerald-600
+                                      )
+                            }}
                         >   
+                            {/* Star Indicator */}
+                            {starredIds.includes(String(item.id)) && (
+                                <div className="absolute -left-1.5 top-0 bottom-0 flex items-center pointer-events-none">
+                                    <Star size={12} className="fill-yellow-400 text-yellow-400" />
+                                </div>
+                            )}
+
                             {/* Expand Icon Indicator */}
-                            <div className="absolute right-4 top-4 flex items-center gap-3 z-20">
+                            <div className="absolute right-4 top-4 flex items-center gap-3 z-10">
                                 <div className="text-neutral-300 group-hover:text-primary transition-colors font-bold ml-1 text-2xl leading-none select-none">
                                     {isExpanded ? '−' : '+'}
                                 </div>
@@ -439,6 +507,35 @@ export default function OfficialView() {
                                     <span className={`text-xs font-bold uppercase ${item.type === 'event' ? 'text-blue-600' : item.type === 'email' ? 'text-amber-600' : 'text-emerald-600'}`}>
                                         {item.type === 'event' ? 'Etkinlik' : item.type === 'email' ? 'E-POSTA' : 'Duyuru'}
                                     </span>
+                                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{item.source}</span>
+                                    
+                                    {subscribedSources.includes(item.source) && (
+                                        <div className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-700 dark:text-emerald-400 rounded uppercase">
+                                            Abone
+                                        </div>
+                                    )}
+
+                                    {/* Source Controls - Only on agenda/starred/emails */}
+                                    {(activeTab !== 'history') && (
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-auto flex items-center gap-2">
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); handleSubscribeSource(item.source); }}
+                                                className={`text-[9px] font-black uppercase flex items-center gap-0.5 p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors
+                                                    ${subscribedSources.includes(item.source) ? 'text-emerald-600' : 'text-neutral-400'}`}
+                                                title={subscribedSources.includes(item.source) ? "Abonelikten Çık" : "Kaynağa Abone Ol"}
+                                            >
+                                                {subscribedSources.includes(item.source) ? <CheckCircle size={10}/> : <Megaphone size={10}/>}
+                                                {subscribedSources.includes(item.source) ? 'Abone' : 'Abone Ol'}
+                                            </button>
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); handleBlockSource(item.source); }}
+                                                className="text-[9px] font-black uppercase text-neutral-400 hover:text-red-500 flex items-center gap-0.5 p-1 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                                                title="Kaynağı Engelle"
+                                            >
+                                                <X size={10}/> Engelle
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 
                                 <h4 className={`text-lg font-bold font-serif mb-2 transition-colors ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : 'text-primary') : 'text-black dark:text-white'}`}>
@@ -452,34 +549,46 @@ export default function OfficialView() {
                                     </p>
                                     
                                     {/* Responsive Actions Area */}
-                                    <div className="flex flex-wrap items-center gap-3 pt-2 mb-4">
-                                        {user && activeTab !== 'history' && (
-                                            <>
-                                                <button
-                                                    onClick={(e) => handleMarkRead(String(item.id), e)}
-                                                    className={`flex items-center gap-2 px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                                                        ${isRead ? 'bg-green-50 dark:bg-green-900/30 border-green-700 text-green-800 dark:text-green-400' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
-                                                >
-                                                    <CheckCircle size={14} />
-                                                    {isRead ? 'Okundu' : 'Okundu Olarak İşaretle'}
-                                                </button>
-                                                <button
-                                                    onClick={(e) => handleFollow(item.source, e)}
-                                                    className={`flex items-center gap-2 px-4 py-2 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]
-                                                        ${isFollowing ? 'bg-primary text-white border-primary shadow-[4px_4px_0px_0px_rgba(200,16,46,0.5)]' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
-                                                >
-                                                    <Bookmark size={14} className={isFollowing ? 'fill-white' : ''} />
-                                                    {isFollowing ? 'Favorilerimde' : 'Favorilere Ekle'}
-                                                </button>
-                                            </>
-                                        )}
-                                        {user && activeTab === 'history' && (
+                                    <div className="flex flex-wrap items-center gap-2 pt-2 mb-4">
+                                        <button
+                                            onClick={(e) => handleMarkRead(String(item.id), e)}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]
+                                                ${isRead ? 'bg-green-50 dark:bg-green-900/30 border-green-700 text-green-800 dark:text-green-400' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                        >
+                                            {isRead ? <CheckCircle size={12} /> : <div className="w-3 h-3 rounded-full border-2 border-current" />}
+                                            {isRead ? 'Okundu' : 'Okundu İşaretle'}
+                                        </button>
+
+                                        <button
+                                            onClick={(e) => handleStar(String(item.id), e)}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]
+                                                ${starredIds.includes(String(item.id)) ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-600 text-yellow-700 dark:text-yellow-500' : 'bg-white dark:bg-neutral-800 border-black dark:border-white text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                        >
+                                            <Star size={12} className={starredIds.includes(String(item.id)) ? 'fill-yellow-400' : ''} />
+                                            {starredIds.includes(String(item.id)) ? 'Yıldızlı' : 'Yıldızla'}
+                                        </button>
+
+                                        <a 
+                                            href={item.link} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 border-2 text-[10px] font-black uppercase tracking-wider transition-all group/btn shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[1px] hover:translate-y-[1px]
+                                                ${item.type === 'email' 
+                                                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-700 text-amber-800 dark:text-amber-500 hover:bg-amber-100' 
+                                                    : 'bg-primary text-white border-black dark:border-white shadow-[3px_3px_0px_0px_var(--primary-color)]'}`}
+                                        >
+                                            <ArrowRight size={12} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                                            Kaynağa Git
+                                        </a>
+
+                                        {activeTab === 'history' && (
                                             <button
                                                 onClick={(e) => handleUndoRead(String(item.id), e)}
-                                                className="flex items-center gap-2 px-4 py-2 border-2 border-black dark:border-white text-[10px] font-black uppercase tracking-wider bg-white dark:bg-neutral-800 text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] transition-all"
+                                                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 border-2 border-neutral-200 dark:border-neutral-700 text-[10px] font-black uppercase tracking-wider bg-white dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
                                             >
-                                                <RotateCcw size={14} />
-                                                Gündeme Geri Al
+                                                <RotateCcw size={12} />
+                                                Geri Al
                                             </button>
                                         )}
                                     </div>
