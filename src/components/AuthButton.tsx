@@ -34,7 +34,7 @@ export default function AuthButton({ onNavigate }: { onNavigate?: () => void }) 
 
   if (!user) {
     return (
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <Link
           href="/login"
           onClick={onNavigate}

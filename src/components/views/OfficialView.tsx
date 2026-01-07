@@ -676,7 +676,8 @@ export default function OfficialView() {
 
         {/* Sidebar / Teknokent */}
         <div className="space-y-6">
-            {/* Email Integration Card */}
+            {/* Email Integration Card - Hide if already verified via ODTÜ Proxy */}
+            {!user?.user_metadata?.is_metu_verified && (
             <div className="border-4 border-black dark:border-white p-6 bg-white dark:bg-neutral-900 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] transition-colors relative overflow-hidden">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-black dark:border-white pb-2 text-neutral-900 dark:text-white uppercase font-serif tracking-tight">
                     <Mail size={20} className="text-neutral-900 dark:text-white" />
@@ -725,6 +726,7 @@ export default function OfficialView() {
                     </button>
                 )}
             </div>
+            )}
 
              {/* Teknokent Job */}
             {news[1] && (
