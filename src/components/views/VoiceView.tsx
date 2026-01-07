@@ -396,6 +396,8 @@ export default function VoiceView() {
 
             if (!res.ok) throw new Error('Delete failed');
             toast.success('Gönderi silindi.');
+            // Refresh to update allTags (trending topics)
+            fetchVoices();
         } catch (e) {
             console.error(e);
             toast.error('Silme işlemi başarısız.');
