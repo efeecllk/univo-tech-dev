@@ -120,8 +120,8 @@ function HeaderContent() {
               <Link
                 href="/dashboard"
                 className={`hidden md:flex items-center justify-center p-2.5 rounded-full transition-all ${pathname?.startsWith('/dashboard')
-                  ? 'bg-black text-white dark:bg-white dark:text-black shadow-md opacity-100'
-                  : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 opacity-70 hover:opacity-100'
+                  ? 'bg-neutral-100 text-black dark:bg-neutral-800 dark:text-white shadow-sm font-bold'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:text-black dark:hover:text-white'
                   }`}
                 title="Kontrol Paneli"
               >
@@ -225,7 +225,8 @@ function HeaderContent() {
                     </Link>
                   );
                 })}
-                {user && isCommunityAdmin && (
+
+                {user && (
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMenuOpen(false)}
