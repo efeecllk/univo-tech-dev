@@ -118,8 +118,8 @@ export default function LoginPage() {
                     
                     {/* Header */}
                     <div className="p-8 text-center border-b border-neutral-100 dark:border-neutral-800">
-                        <div className="w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                            <img src="/univo-logo-transparent.png" alt="Univo" className="w-16 h-16 object-contain" />
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                            <img src="/univo-logo-transparent.png" alt="Univo" className="w-full h-full object-cover" />
                         </div>
                         <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white">Univo'ya Giriş</h2>
                         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
@@ -259,7 +259,8 @@ export default function LoginPage() {
                         {/* Terms */}
                         <label className="flex items-start gap-3 p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none group mt-2">
                             <div 
-                                className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'border-transparent bg-[var(--primary-color)]' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
+                                className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'border-transparent' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
+                                style={acceptedTerms ? { backgroundColor: selectedUni?.color || 'var(--primary-color)' } : undefined}
                             >
                                 {acceptedTerms && <CheckCircle size={14} className="text-white" />}
                             </div>
