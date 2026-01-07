@@ -12,12 +12,24 @@ interface Profile {
   student_id?: string;
 }
 
+interface MetuLoginResult {
+  success: boolean;
+  studentInfo?: {
+      fullName: string;
+      username: string;
+      department: string;
+  };
+  redirectUrl?: string; // Magic link
+  error?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  signInWithMetu: (username: string, password: string) => Promise<MetuLoginResult>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +38,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signOut: async () => {},
   refreshProfile: async () => {},
+  signInWithMetu: async () => ({ success: false, error: 'Not implemented' }),
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -55,6 +68,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       await fetchProfile(user.id);
     }
+  };
+
+  const signInWithMetu = async (username: string, password: string): Promise<MetuLoginResult> => {
+     try {
+        const res = await fetch('/api/auth/metu', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            return { success: false, error: data.error || 'Giriş başarısız' };
+        }
+        
+        return { 
+            success: true, 
+            studentInfo: data.studentInfo, 
+            redirectUrl: data.redirectUrl 
+        };
+     } catch (err: any) {
+         return { success: false, error: err.message || 'Sunucu hatası' };
+     }
   };
 
   useEffect(() => {
@@ -90,7 +127,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signOut, refreshProfile, signInWithMetu }}>
       {children}
     </AuthContext.Provider>
   );
