@@ -95,6 +95,11 @@ function HeaderContent() {
     <>
 
 
+      {/* Mobile Top Right Notification - Global Floating */}
+      <div className="fixed top-28 right-4 z-[10001] lg:hidden bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full shadow-lg p-1 border border-neutral-200 dark:border-neutral-700">
+        <NotificationCenter />
+      </div>
+
       <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
