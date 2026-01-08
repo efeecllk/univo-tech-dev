@@ -95,10 +95,7 @@ function HeaderContent() {
     <>
 
 
-      {/* Mobile Top Right Notification - Global Floating */}
-      <div className="fixed top-28 right-4 z-[10001] lg:hidden bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full shadow-lg p-1 border border-neutral-200 dark:border-neutral-700">
-        <NotificationCenter />
-      </div>
+
 
       <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white transition-all duration-300 ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
@@ -287,7 +284,14 @@ function HeaderContent() {
                     </div>
                   )
                 ) : (
-                  <User size={22} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
+                  <div className="relative">
+                    <User size={22} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
+                    {/* Notification Dot - Top Left */}
+                    <span className="absolute -top-1 -left-1 flex h-2.5 w-2.5">
+                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary-color,#C8102E)] opacity-75"></span>
+                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--primary-color,#C8102E)]"></span>
+                    </span>
+                  </div>
                 )}
                 <span className="text-[10px] font-bold uppercase tracking-tight text-center leading-none">
                   {user ? 'Profil' : 'Giriş'}

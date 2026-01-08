@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X, Settings } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -12,6 +12,7 @@ import FriendButton from '@/components/FriendButton';
 import FriendListModal from '@/components/FriendListModal';
 import FollowedCommunitiesModal from '@/components/profile/FollowedCommunitiesModal';
 import { analyzeCourses, formatDetectionMessage } from '@/lib/course-analyzer';
+import NotificationCenter from '@/components/NotificationCenter';
 import { toast } from 'sonner';
 
 interface Profile {
@@ -633,6 +634,21 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 overflow-hidden relative group transition-colors">
                         <div className="h-32 w-full absolute top-0 left-0 opacity-20" style={{ backgroundImage: 'radial-gradient(currentColor 2px, transparent 2px)', backgroundSize: '20px 20px', color: 'var(--primary-color)' }} />
+
+                        {/* Mobile Actions: Settings (Left) & Notifications (Right) */}
+                        {isOwnProfile && (
+                            <>
+                                <button
+                                    onClick={() => router.push('/settings')}
+                                    className="absolute top-4 left-4 z-20 p-2 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-white dark:hover:bg-black transition-colors"
+                                >
+                                    <Settings size={20} />
+                                </button>
+                                <div className="absolute top-4 right-4 z-20 bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-full">
+                                    <NotificationCenter />
+                                </div>
+                            </>
+                        )}
 
                         <div className="pt-12 px-6 pb-6 text-center relative z-10">
                             <div
