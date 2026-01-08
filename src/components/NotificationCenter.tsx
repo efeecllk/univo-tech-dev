@@ -234,7 +234,7 @@ export default function NotificationCenter() {
       </button>
 
       {isOpen && (
-        <div className="fixed sm:absolute right-4 sm:right-0 left-4 sm:left-auto top-16 sm:top-full sm:mt-2 mx-auto sm:mx-0 bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-[10002] max-h-[calc(100vh-100px)] sm:max-h-[500px] flex flex-col rounded-none">
+        <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-32px)] origin-top-right bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-[10002] max-h-[500px] flex flex-col rounded-none">
           <div className="p-4 border-b-2 border-black dark:border-white flex justify-between items-center">
             <h3 className="font-bold font-serif text-lg dark:text-white">Bildirimler</h3>
             {unreadCount > 0 && (
