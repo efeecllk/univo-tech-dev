@@ -22,7 +22,7 @@ export async function GET(request: Request) {
       .from('campus_voices')
       .select(`
         *,
-        profiles:user_id (full_name, nickname, department, avatar_url),
+        profiles:user_id (full_name, nickname, department, avatar_url, student_id),
         voice_reactions (user_id, reaction_type),
         voice_comments (id, content, created_at, user_id, user:user_id (full_name))
       `)
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
         .from('campus_voices')
         .select(`
           *,
-          profiles:user_id (full_name, department, avatar_url),
+          profiles:user_id (full_name, department, avatar_url, student_id),
           voice_reactions (user_id, reaction_type),
           voice_comments (id, content, created_at, user_id, user:user_id (full_name))
         `)
@@ -97,12 +97,16 @@ export async function GET(request: Request) {
         user.department = cleanDept(user.department);
       }
 
+      // Determine if user is verified (has student_id)
+      const isVerified = !voice.is_anonymous && voice.profiles?.student_id && voice.profiles.student_id.length > 0;
+
       return {
         id: voice.id,
         user_id: voice.user_id,
         content: voice.content,
         is_anonymous: voice.is_anonymous,
         is_editors_choice: voice.is_editors_choice,
+        is_verified: isVerified,
         tags: voice.tags,
         user,
         counts: {

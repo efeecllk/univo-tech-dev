@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -125,7 +125,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       if (profileError) throw profileError;
       setProfile(profileData);
 
-      // 2. Fetch Badges (if exists)
+      // 2. Fetch Database Badges (if exists)
       const { data: badgesData } = await supabase
         .from('user_badges')
         .select(`
@@ -136,12 +136,37 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         `)
         .eq('user_id', resolvedId);
 
-      if (badgesData) {
-          const formattedBadges = badgesData.map((item: any) => ({
-              ...item.badge,
-              awarded_at: item.awarded_at
-          }));
-          setBadges(formattedBadges);
+      // Start building achievement badges array
+      const achievementBadges: any[] = [];
+      const now = new Date().toISOString();
+
+      // Verified Badge - Has student_id
+      if (profileData?.student_id && profileData.student_id.length > 0) {
+        achievementBadges.push({
+          id: 'verified',
+          name: 'Doğrulanmış Öğrenci',
+          description: 'ODTÜ öğrenci kimliği ile doğrulanmış hesap.',
+          icon: 'BadgeCheck',
+          color: '#3B82F6',
+          awarded_at: profileData.created_at || now
+        });
+      }
+
+      // Profile Completed Badge
+      const validDepts = ['Bilgisayar Mühendisliği', 'Elektrik-Elektronik Mühendisliği', 'Makina Mühendisliği', 'İnşaat Mühendisliği'];
+      const hasCompletedProfile = profileData?.student_id && 
+                                   profileData?.department && 
+                                   profileData?.class_year && 
+                                   profileData?.bio;
+      if (hasCompletedProfile) {
+        achievementBadges.push({
+          id: 'profile-complete',
+          name: 'Profil Tamamlandı',
+          description: 'Tüm profil bilgilerini eksiksiz doldurdu.',
+          icon: 'Sparkles',
+          color: '#8B5CF6',
+          awarded_at: profileData.updated_at || now
+        });
       }
 
       // 3. Fetch Events & Activities
@@ -263,6 +288,91 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             setActivities(allActivities.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
         }
       }
+
+      // === ACTIVITY-BASED BADGES (calculated after fetching activity data) ===
+      
+      // First Event Attended Badge
+      if (attendanceData && attendanceData.length > 0) {
+        const firstEvent = attendanceData.sort((a: any, b: any) => 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )[0];
+        achievementBadges.push({
+          id: 'first-event',
+          name: 'İlk Etkinlik',
+          description: 'İlk etkinliğine katılım sağladı!',
+          icon: 'Calendar',
+          color: '#10B981',
+          awarded_at: firstEvent.created_at || now
+        });
+      }
+
+      // First Post Made Badge
+      if (voicesData && voicesData.length > 0) {
+        const firstPost = voicesData.sort((a: any, b: any) => 
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        )[0];
+        achievementBadges.push({
+          id: 'first-post',
+          name: 'İlk Paylaşım',
+          description: 'Kampüsün Sesi\'nde ilk paylaşımını yaptı!',
+          icon: 'MessageSquare',
+          color: '#F59E0B',
+          awarded_at: firstPost.created_at || now
+        });
+      }
+
+      // Community Follower Badge
+      if (followed && followed > 0) {
+        achievementBadges.push({
+          id: 'community-follower',
+          name: 'Topluluk Takipçisi',
+          description: 'Bir topluluk takip etmeye başladı!',
+          icon: 'Users',
+          color: '#EC4899',
+          awarded_at: now
+        });
+      }
+
+      // Active Commenter Badge (5+ comments)
+      if (commentsData && commentsData.length >= 5) {
+        achievementBadges.push({
+          id: 'active-commenter',
+          name: 'Aktif Yorumcu',
+          description: 'Paylaşımlara 5\'ten fazla yorum yaptı!',
+          icon: 'Heart',
+          color: '#EF4444',
+          awarded_at: now
+        });
+      }
+
+      // Early Adopter Badge (profile created before 2026-02-01)
+      const createdAt = profileData?.created_at ? new Date(profileData.created_at) : null;
+      if (createdAt && createdAt < new Date('2026-02-01')) {
+        achievementBadges.push({
+          id: 'early-adopter',
+          name: 'Öncü Kullanıcı',
+          description: 'Univo\'nun ilk kullanıcılarından biri!',
+          icon: 'Flame',
+          color: '#F97316',
+          awarded_at: profileData.created_at
+        });
+      }
+
+      // Combine Database Badges with Achievement Badges
+      const dbBadges = badgesData ? badgesData.map((item: any) => ({
+        ...item.badge,
+        awarded_at: item.awarded_at
+      })) : [];
+
+      // Merge without duplicates (by id)
+      const allBadges = [...achievementBadges];
+      dbBadges.forEach((dbBadge: any) => {
+        if (!allBadges.find(b => b.id === dbBadge.id)) {
+          allBadges.push(dbBadge);
+        }
+      });
+
+      setBadges(allBadges);
 
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -474,8 +584,11 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         )}
                     </div>
 
-                    <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2">
+                    <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2 flex items-center justify-center gap-2">
                         {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
+                        {profile.student_id && profile.student_id.length > 0 && (
+                            <BadgeCheck size={20} className="text-blue-500 fill-blue-500" />
+                        )}
                     </h2>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
                         {(() => {

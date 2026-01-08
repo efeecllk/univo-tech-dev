@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, BadgeCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -18,6 +18,7 @@ interface Voice {
     created_at: string;
     is_anonymous: boolean;
     is_editors_choice: boolean;
+    is_verified?: boolean;
     tags: string[] | null;
     user: {
         full_name: string;
@@ -792,9 +793,14 @@ export default function VoiceView() {
                                                             {voice.user.nickname || 'Rumuzlu Öğrenci'}
                                                         </span>
                                                     ) : (
-                                                        <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
-                                                            {voice.user.full_name}
-                                                        </Link>
+                                                        <>
+                                                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline flex items-center gap-1">
+                                                                {voice.user.full_name}
+                                                                {voice.is_verified && (
+                                                                    <BadgeCheck size={16} className="text-blue-500 fill-blue-500" />
+                                                                )}
+                                                            </Link>
+                                                        </>
                                                     )}
 
                                                     {voice.user.department && (
@@ -1102,25 +1108,31 @@ export default function VoiceView() {
                                     </h3>
                                     <div className="space-y-3">
                                         {allTags.length > 0 ? (
-                                            allTags.slice(0, 5).map((topic, index) => (
-                                                <div 
-                                                    key={topic.tag} 
-                                                    onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} 
-                                                    className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? '' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
-                                                    style={activeTagFilter === topic.tag ? { backgroundColor: 'rgba(var(--primary-rgb, 200, 16, 46), 0.1)' } : {}}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-xl font-serif font-black text-neutral-300 dark:text-neutral-700 w-6">{index + 1}</span>
-                                                        <div className="flex flex-col">
-                                                            <span className={`font-bold transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
-                                                                {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
-                                                            </span>
-                                                            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
+                                            allTags.slice(0, 5).map((topic, index) => {
+                                                const isActive = activeTagFilter === topic.tag;
+                                                return (
+                                                    <div 
+                                                        key={topic.tag} 
+                                                        onClick={() => setActiveTagFilter(isActive ? null : topic.tag)} 
+                                                        className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-all border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${
+                                                            isActive 
+                                                                ? 'bg-primary/10 dark:bg-primary/20 ring-1 ring-primary/30' 
+                                                                : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <span className={`text-xl font-serif font-black w-6 ${isActive ? 'text-primary' : 'text-neutral-300 dark:text-neutral-700'}`}>{index + 1}</span>
+                                                            <div className="flex flex-col">
+                                                                <span className={`font-bold transition-colors font-serif ${isActive ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
+                                                                    {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
+                                                                </span>
+                                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
+                                                            </div>
                                                         </div>
+                                                        <ArrowRight size={16} className={`transition-transform ${isActive ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
                                                     </div>
-                                                    <ArrowRight size={16} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
-                                                </div>
-                                            ))
+                                                );
+                                            })
                                         ) : (
                                             <div className="text-center py-6 text-neutral-400 text-sm italic">
                                                 Henüz gündem oluşmadı.
