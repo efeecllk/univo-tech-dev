@@ -478,7 +478,15 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
                     </h2>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
-                        {cleanDept(profile.department)} • {profile.class_year || 'Sınıf Belirtilmemiş'}
+                        {(() => {
+                            const dept = cleanDept(profile.department);
+                            const classYr = profile.class_year || 'Sınıf Belirtilmemiş';
+                            // Avoid "Hazırlık • Hazırlık" duplication
+                            if (dept === 'Hazırlık' && classYr === 'Hazırlık') {
+                                return 'İngilizce Hazırlık Programı';
+                            }
+                            return `${dept} • ${classYr}`;
+                        })()}
                     </p>
 
                     <div className="flex justify-center gap-2 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">

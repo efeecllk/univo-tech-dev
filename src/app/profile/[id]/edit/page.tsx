@@ -230,7 +230,6 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
         .from('profiles')
         .update({
           full_name: formData.full_name,
-          nickname: formData.nickname,
           avatar_url: avatarUrl,
           department: formData.department,
           class_year: formData.class_year,

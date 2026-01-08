@@ -571,9 +571,8 @@ export default function VoiceView() {
 
         const { data, error } = await supabase
             .from('poll_votes')
-            .select('option_index, user_id, profiles:user_id!inner(id, is_archived)')
-            .eq('poll_id', pollId)
-            .eq('profiles.is_archived', false);
+            .select('option_index, user_id, profiles:user_id!inner(id)')
+            .eq('poll_id', pollId);
 
         if (error) {
             console.error('Fetch Results Error:', error);
