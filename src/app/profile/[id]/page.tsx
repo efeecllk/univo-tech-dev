@@ -145,7 +145,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       }
 
       // 3. Fetch Events & Activities
-      // Fetch user's attending events
+      // Fetch user's attending events with community category
       const { data: attendanceData } = await supabase
         .from('event_attendees')
         .select(`
@@ -157,7 +157,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             date,
             time,
             location,
-            category
+            category,
+            community:communities (
+                id,
+                name,
+                category
+            )
           )
         `)
         .eq('user_id', resolvedId);
@@ -411,6 +416,20 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const showInterests = isOwnProfile || profile.privacy_settings?.show_interests !== false;
   const showActivities = isOwnProfile || profile.privacy_settings?.show_activities !== false;
 
+  const cleanDept = (dept?: string) => {
+    if (!dept) return 'Bölüm Belirtilmemiş';
+    return dept
+        .replace(/\.base/gi, '')
+        .replace(/base/gi, '')
+        .replace(/dbe/gi, '')
+        .replace(/\.hazırlık/gi, '')
+        .replace(/hazırlık/gi, '')
+        .split('.')
+        .filter(Boolean)
+        .join(' ')
+        .trim() || 'Hazırlık';
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] py-12 px-4 transition-colors">
       <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -459,7 +478,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                         {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
                     </h2>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
-                        {profile.department || 'Bölüm Belirtilmemiş'} • {profile.class_year || 'Sınıf Belirtilmemiş'}
+                        {cleanDept(profile.department)} • {profile.class_year || 'Sınıf Belirtilmemiş'}
                     </p>
 
                     <div className="flex justify-center gap-2 mb-6 border-t border-b border-neutral-100 dark:border-neutral-800 py-3">
@@ -552,67 +571,10 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             </div>
 
-            {/* Bio / Headline Section (Moved to Sidebar) */}
-            {profile.bio && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 relative overflow-hidden transition-colors">
-                    <Quote size={40} className="absolute top-2 right-2 text-neutral-100 dark:text-neutral-800 -z-10 transform rotate-12" />
-                    <h2 className="text-lg font-bold font-serif mb-3 text-primary">Hakkımda</h2>
-                    <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed italic border-l-4 border-primary pl-4">
-                        {profile.bio}
-                    </p>
-                </div>
-            )}
-
-            {/* Interests Widget */}
-            {showInterests && (
-                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
-                    <h3 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
-                    <Heart size={20} className="text-primary" />
-                    İlgi Alanları
-                    </h3>
-                    {profile.interests && profile.interests.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {profile.interests.map(interest => (
-                                <span key={interest} className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-xs font-medium hover:bg-primary/10 hover:text-primary transition-colors cursor-default">
-                                    {interest}
-                                </span>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-sm text-neutral-500 italic">Henüz ilgi alanı belirtilmemiş.</p>
-                    )}
-                </div>
-            )}
-
-            {isOwnProfile && (
-                <div 
-                    className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm p-6 transition-colors"
-                    style={{ border: '2px solid var(--primary-color, #C8102E)' }}
-                >
-                    <h3 className="text-lg font-bold font-serif mb-2 text-neutral-800 dark:text-neutral-200">
-                        Topluluk Sahibi misiniz?
-                    </h3>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                        Kampüsünüzde bir topluluk yönetiyorsanız, Univo üzerinden etkinliklerinizi duyurabilir ve üyelerinizle iletişimde kalabilirsiniz.
-                    </p>
-                    <button
-                        onClick={() => {
-                            // For now, just mailto. Can be replaced with a modal/form later
-                            window.location.href = 'mailto:dogan.kerem@metu.edu.tr?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
-                        }}
-                        className="w-full py-2.5 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm hover:opacity-90"
-                        style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                    >
-                        <Building2 size={16} />
-                        Başvuru Yap
-                    </button>
-                </div>
-            )}
-
-            {/* Profile Completion Warning Card */}
+            {/* 1. Profile Completion Warning Card (Moved Up) */}
             {isOwnProfile && profile && 
              (!profile.student_id || !profile.department || !profile.class_year || profile.department === 'Öğrenci' || profile.department === 'Kampüs') && (
-                <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6 mb-6">
+                <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6">
                     <div className="flex gap-4">
                         <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">
                             <Users size={24} />
@@ -635,7 +597,32 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 </div>
             )}
 
-            {/* AI Profile Detection Card */}
+            {/* 2. Topluluk Sahibi misiniz? (Moved Up) */}
+            {isOwnProfile && (
+                <div 
+                    className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm p-6 transition-colors"
+                    style={{ border: '2px solid var(--primary-color, #C8102E)' }}
+                >
+                    <h3 className="text-lg font-bold font-serif mb-2 text-neutral-800 dark:text-neutral-200">
+                        Topluluk Sahibi misiniz?
+                    </h3>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                        Kampüsünüzde bir topluluk yönetiyorsanız, Univo üzerinden etkinliklerinizi duyurabilir ve üyelerinizle iletişimde kalabilirsiniz.
+                    </p>
+                    <button
+                        onClick={() => {
+                            window.location.href = 'mailto:dogan.kerem@metu.edu.tr?subject=Topluluk Yönetim Paneli Başvurusu&body=Merhaba,%0D%0A%0D%0ATopluluk adı:%0D%0ATopluluk açıklaması:%0D%0AÜniversite:%0D%0AIletişim bilgileri:%0D%0A';
+                        }}
+                        className="w-full py-2.5 text-white rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm hover:opacity-90"
+                        style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
+                    >
+                        <Building2 size={16} />
+                        Başvuru Yap
+                    </button>
+                </div>
+            )}
+
+            {/* 3. AI Profile Detection Card */}
             {isOwnProfile && showDetectionCard && detectionResult && (
                 <div className="bg-primary/5 dark:bg-primary/10 border-2 border-primary/30 rounded-xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-left-4 duration-500">
                     <div className="absolute top-0 right-0 p-2 opacity-10">
@@ -663,13 +650,48 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             Kapat
                         </button>
                     </div>
-                    
                     <button 
                         onClick={() => router.push(`/profile/${targetId}/edit`)}
                         className="w-full mt-2 py-1.5 text-xs text-neutral-500 hover:text-primary transition-colors hover:underline"
                     >
                         Bilgiler Yanlış, Kendim Düzenleyeceğim
                     </button>
+                </div>
+            )}
+
+            {/* 4. Interests Widget (Moved to Bottom) */}
+            {showInterests && (
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 transition-colors">
+                    <h3 className="text-lg font-bold font-serif mb-4 flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
+                    <Heart size={20} className="text-primary" />
+                    İlgi Alanları
+                    </h3>
+                    {profile.interests && profile.interests.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            {profile.interests.map(interest => (
+                                <span key={interest} className="px-3 py-1 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-xs font-medium hover:bg-primary/10 hover:text-primary transition-colors cursor-default">
+                                    {interest}
+                                </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-neutral-500 italic">Henüz ilgi alanı belirtilmemiş.</p>
+                    )}
+                </div>
+            )}
+
+        </div>
+
+        {/* Right Column: Bio & Activities */}
+        <div className="lg:col-span-2 space-y-8">
+            {/* Bio moved to Top of Right Column */}
+            {profile.bio && (
+                <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-6 relative overflow-hidden transition-colors">
+                    <Quote size={40} className="absolute top-2 right-2 text-neutral-100 dark:text-neutral-800 -z-10 transform rotate-12" />
+                    <h2 className="text-lg font-bold font-serif mb-3 text-primary">Hakkımda</h2>
+                    <p className="text-base text-neutral-700 dark:text-neutral-300 leading-relaxed italic border-l-4 border-primary pl-4">
+                        {profile.bio}
+                    </p>
                 </div>
             )}
 
@@ -716,8 +738,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     onClick={() => router.push(`/events/${event.id}`)}
                                     className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all cursor-pointer group"
                                 >
-                                    <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs rounded font-medium mb-3">
-                                        {event.category}
+                                    <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-[10px] uppercase rounded font-bold mb-3 tracking-wider">
+                                        {(event as any).community?.category || event.category || 'Etkinlik'}
                                     </span>
                                     <h3 className="font-bold text-lg mb-2 text-neutral-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
                                         {event.title}

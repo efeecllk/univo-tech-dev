@@ -50,6 +50,20 @@ const CLASS_OPTIONS = [
   'Yüksek Lisans', 'Doktora', 'Mezun', 'Akademisyen'
 ];
 
+const cleanDept = (dept?: string) => {
+    if (!dept) return '';
+    return dept
+        .replace(/\.base/gi, '')
+        .replace(/base/gi, '')
+        .replace(/dbe/gi, '')
+        .replace(/\.hazırlık/gi, '')
+        .replace(/hazırlık/gi, '')
+        .split('.')
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+};
+
 export default function EditProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { user } = useAuth();
@@ -98,7 +112,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
           full_name: data.full_name || '',
           nickname: data.nickname || '',
           avatar_url: data.avatar_url || '',
-          department: data.department || '',
+          department: cleanDept(data.department || ''),
           class_year: data.class_year || '',
           bio: data.bio || '',
           interests: data.interests || [],
@@ -214,8 +228,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
 
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: id,
+        .update({
           full_name: formData.full_name,
           nickname: formData.nickname,
           avatar_url: avatarUrl,
@@ -226,15 +239,16 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
           social_links: formData.social_links,
           privacy_settings: formData.privacy_settings,
           updated_at: new Date().toISOString()
-        });
+        })
+        .eq('id', id);
 
       if (error) throw error;
 
       router.push(`/profile/${id}`);
       router.refresh();
-    } catch (error) {
-      console.error('Error updating profile:', JSON.stringify(error, null, 2));
-      toast.error(`Profil güncellenirken bir hata oluştu.`);
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      toast.error(`Profil güncellenirken bir hata oluştu: ${error.message || 'Bilinmeyen hata'}`);
     } finally {
       setSaving(false);
     }
