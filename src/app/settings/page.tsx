@@ -5,13 +5,21 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, ChevronRight, User } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, Check, User, Users } from 'lucide-react';
+import { useTheme, ColorTheme } from '@/contexts/ThemeContext';
+
+const colorThemes: { id: ColorTheme; label: string; color: string }[] = [
+    { id: 'default', label: 'Varsayılan (Kırmızı)', color: '#C8102E' },
+    { id: 'blue', label: 'Okyanus Mavisi', color: '#3b82f6' },
+    { id: 'green', label: 'Orman Yeşili', color: '#22c55e' },
+    { id: 'purple', label: 'Kraliyet Moru', color: '#a855f7' },
+    { id: 'orange', label: 'Gün Batımı Turuncusu', color: '#f97316' },
+];
 
 export default function SettingsPage() {
     const { user, signOut } = useAuth();
     const router = useRouter();
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, colorTheme, setColorTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [privacySettings, setPrivacySettings] = useState({
         show_email: false,
@@ -79,7 +87,7 @@ export default function SettingsPage() {
 
     return (
         <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] pb-20">
-            {/* Header */}
+            {/* Mobile Header */}
             <div className="sticky top-0 z-50 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-200 dark:border-neutral-800 px-4 h-16 flex items-center gap-4">
                 <button 
                     onClick={() => router.back()}
@@ -110,11 +118,13 @@ export default function SettingsPage() {
                     </div>
                 </section>
 
-                {/* Appearance */}
+                {/* Appearance Section */}
                 <section>
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Görünüm</h2>
-                    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-                        <div className="p-4 flex items-center justify-between">
+                    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden p-4 space-y-6">
+                        
+                        {/* Theme Mode */}
+                        <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                                     {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
@@ -128,10 +138,37 @@ export default function SettingsPage() {
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${theme === 'dark' ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
                         </div>
+
+                        {/* Color Theme */}
+                        <div>
+                            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
+                                Renk Teması
+                            </label>
+                            <div className="grid grid-cols-5 gap-2">
+                                {colorThemes.map((t) => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setColorTheme(t.id)}
+                                        className={`group relative aspect-square rounded-full flex items-center justify-center transition-all ${
+                                            colorTheme === t.id 
+                                            ? 'ring-2 ring-offset-2 ring-black dark:ring-white dark:ring-offset-neutral-900' 
+                                            : 'hover:scale-110'
+                                        }`}
+                                        style={{ backgroundColor: t.color }}
+                                        title={t.label}
+                                    >
+                                        {colorTheme === t.id && (
+                                            <Check size={16} className="text-white drop-shadow-md" strokeWidth={3} />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
-                {/* Privacy */}
+                {/* Privacy Section */}
                 <section>
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Gizlilik</h2>
                     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden divide-y divide-neutral-100 dark:divide-neutral-800">
@@ -195,7 +232,7 @@ export default function SettingsPage() {
 
                 <button 
                     onClick={handleSignOut}
-                    className="w-full p-4 flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-xl font-bold transition-colors"
+                    className="w-full p-4 flex items-center justify-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/10 dark:hover:bg-red-900/20 rounded-xl font-bold transition-colors shadow-sm border border-red-100 dark:border-red-900/30"
                 >
                     <LogOut size={20} />
                     Çıkış Yap
