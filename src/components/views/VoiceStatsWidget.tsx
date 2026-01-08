@@ -33,7 +33,13 @@ export default function VoiceStatsWidget({
     const { user } = useAuth(); // Needed for poll "Yapay Zeka" badge pulsing if we want, or simple rendering
 
     return (
-        <div className="md:hidden mb-6 bg-white dark:bg-neutral-900 border-2 border-black dark:border-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+        <div
+            className="md:hidden mb-6 p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] border-2 transition-colors duration-300"
+            style={{
+                borderColor: 'var(--primary-color, #C8102E)',
+                backgroundColor: 'rgba(var(--primary-rgb), 0.03)'
+            }}
+        >
             <div className="flex flex-row flex-nowrap items-start gap-4 overflow-x-auto p-4 snap-x snap-mandatory" style={{ scrollbarWidth: 'none' }}>
                 {/* Weekly Poll */}
                 <div className="border-4 border-black dark:border-white p-4 bg-neutral-50 dark:bg-black/50 transition-colors shrink-0 w-[80vw] snap-center">
