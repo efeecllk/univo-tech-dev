@@ -26,7 +26,7 @@ export async function GET(request: Request) {
         voice_reactions (user_id, reaction_type),
         voice_comments (id, content, created_at, user_id, user:user_id (full_name))
       `)
-      .eq('moderation_status', 'approved');
+      .eq('moderation_status', 'approved') as any;
 
     // 2. Fallback if nickname column doesn't exist yet
     if (error && error.message.includes('nickname')) {

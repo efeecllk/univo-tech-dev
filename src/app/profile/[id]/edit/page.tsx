@@ -131,14 +131,17 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
   };
 
   const handlePrivacyToggle = (key: keyof PrivacySettings) => {
-      setFormData(prev => ({
-          ...prev,
-          privacy_settings: {
-              ...prev.privacy_settings!,
-              [key]: !prev.privacy_settings![key]
-          }
-      }));
-  };
+    setFormData(prev => {
+        const currentVal = prev.privacy_settings?.[key] ?? true; // Defaults to true
+        return {
+            ...prev,
+            privacy_settings: {
+                ...prev.privacy_settings!,
+                [key]: !currentVal
+            }
+        };
+    });
+};
 
   const handleInterestToggle = (interest: string) => {
     setFormData(prev => {
@@ -522,7 +525,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
 
                     <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
                         <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_polls ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
+                            {formData.privacy_settings?.show_polls !== false ? <Eye size={20} className="text-[#C8102E]" /> : <EyeOff size={20} className="text-neutral-400" />}
                             <div>
                                 <span className="font-medium text-neutral-900 dark:text-white block">Anket Katılımlarımı Göster</span>
                                 <span className="text-xs text-neutral-500 dark:text-neutral-400">Katılımcı listesinde isminiz veya rumuzunuz görünür.</span>
@@ -530,7 +533,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                         </div>
                         <input 
                             type="checkbox" 
-                            checked={formData.privacy_settings?.show_polls} 
+                            checked={formData.privacy_settings?.show_polls !== false} 
                             onChange={() => handlePrivacyToggle('show_polls')}
                             className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
                         />

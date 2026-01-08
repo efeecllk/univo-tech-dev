@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         option_index,
         profiles:user_id (id, full_name, nickname, privacy_settings)
       `)
-      .eq('poll_id', pollId);
+      .eq('poll_id', pollId) as any;
 
     if (error && error.message.includes('nickname')) {
         const fallback = await supabase
@@ -28,7 +28,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                 option_index,
                 profiles:user_id (id, full_name, privacy_settings)
             `)
-            .eq('poll_id', pollId);
+            .eq('poll_id', pollId) as any; // Added 'as any' here
         data = fallback.data;
         error = fallback.error;
     }
