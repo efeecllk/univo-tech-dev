@@ -634,7 +634,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 <div className="lg:col-span-1 space-y-6">
                         {/* Mobile Actions: Settings (Left) & Notifications (Right) - Outside Card */}
                         {isOwnProfile && (
-                            <div className="flex justify-between items-center px-2 z-10 relative">
+                            <div className="flex justify-between items-center px-2 z-30 relative">
                                 <button
                                     onClick={() => router.push('/settings')}
                                     className="p-2.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors shadow-sm"
