@@ -342,8 +342,14 @@ function HeaderContent() {
                     {/* Notification Dot - Shows only when unreadCount > 0 */}
                     {unreadCount > 0 && (
                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-50">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary-color,#C8102E)] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--primary-color,#C8102E)] ring-2 ring-white dark:ring-black"></span>
+                          <span 
+                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
+                            style={{ backgroundColor: 'var(--primary-color)' }}
+                          ></span>
+                          <span 
+                            className="relative inline-flex rounded-full h-2.5 w-2.5 ring-2 ring-white dark:ring-black"
+                            style={{ backgroundColor: 'var(--primary-color)' }}
+                          ></span>
                        </span>
                     )}
                   </div>
