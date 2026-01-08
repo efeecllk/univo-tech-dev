@@ -203,19 +203,19 @@ function HeaderContent() {
       {/* Mobile Bottom Navigation - Moved outside header to prevent transform issues */}
       {/* Mobile Bottom Navigation - Shows on mobile only (below lg) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-neutral-200 dark:border-neutral-800 safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <div className="flex items-center justify-center h-16 w-full px-1">
-          <ul className="flex justify-around items-center w-full h-full max-w-sm">
+        <div className="flex items-center justify-center h-16 w-full px-2">
+          <ul className="grid grid-cols-4 gap-0 w-full h-full max-w-md mx-auto">
             {navItems.map((item) => {
               const isActive = pathname === '/' && currentView === item.id;
               return (
-                <li key={item.id} className="flex-1 flex justify-center items-center h-full">
+                <li key={item.id} className="flex justify-center items-center h-full">
                   <Link
                     href={item.href}
                     className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${isActive ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
                       }`}
                   >
-                    <item.icon size={20} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
-                    <span className={`text-[9px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
+                    <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
+                    <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
                       {item.label}
                     </span>
                     {/* Animated Underline */}
@@ -226,25 +226,31 @@ function HeaderContent() {
             })}
 
             {/* Profile Link (4th item) */}
-            <li className="flex-1 flex justify-center items-center h-full">
+            <li className="flex justify-center items-center h-full">
               <Link
                 href={user ? `/profile/${user.id}` : '/login'}
                 className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
                   }`}
               >
-                {user && profile?.avatar_url ? (
-                  <div className={`relative w-5 h-5 rounded-full overflow-hidden border ${pathname?.startsWith('/profile') ? 'border-[var(--primary-color,#C8102E)]' : 'border-current'}`}>
-                    <Image
-                      src={profile.avatar_url}
-                      alt="Profile"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+                {user ? (
+                  profile?.avatar_url ? (
+                    <div className={`relative w-6 h-6 rounded-full overflow-hidden border-2 ${pathname?.startsWith('/profile') ? 'border-[var(--primary-color,#C8102E)]' : 'border-transparent'}`}>
+                      <Image
+                        src={profile.avatar_url}
+                        alt="Profile"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs bg-[var(--primary-color,#C8102E)] shadow-sm">
+                      {(profile?.full_name || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )
                 ) : (
-                  <User size={20} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
+                  <User size={22} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
                 )}
-                <span className="text-[9px] font-bold uppercase tracking-tight text-center leading-none">
+                <span className="text-[10px] font-bold uppercase tracking-tight text-center leading-none">
                   {user ? 'Profil' : 'Giriş'}
                 </span>
                 <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
