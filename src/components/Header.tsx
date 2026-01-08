@@ -253,7 +253,7 @@ function HeaderContent() {
                   >
                     <item.icon size={22} className="transition-transform duration-300" strokeWidth={isActive ? 2.5 : 2} />
                     <span className={`text-[10px] font-bold uppercase tracking-tight text-center leading-none transition-all duration-300`}>
-                       {item.label === 'Resmi Gündem' ? 'Resmi' : item.label}
+                       {item.label}
                     </span>
                     {/* Animated Underline */}
                     <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${isActive ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
