@@ -184,7 +184,7 @@ function HeaderContent() {
                 <AuthButton />
               </div>
 
-              {/* Mobile Header Actions (Search & Auth) */}
+              {/* Mobile Header Actions (Search) */}
               <div className="flex xl:hidden items-center gap-2">
                 {/* Mobile Notification Center */}
                 <NotificationCenter />
@@ -195,7 +195,7 @@ function HeaderContent() {
                 >
                   <SearchIcon size={24} />
                 </button>
-                <AuthButton />
+                {/* AuthButton removed from mobile header */}
               </div>
             </div>
           </div>
@@ -229,20 +229,31 @@ function HeaderContent() {
               );
             })}
 
-            {/* Dashboard Link */}
-            {user && canAccessDashboard && (
-              <li className="flex-1 flex justify-center items-center h-full">
-                <Link
-                  href="/dashboard"
-                  className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/dashboard') ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
-                    }`}
-                >
-                  <LayoutDashboard size={20} strokeWidth={pathname?.startsWith('/dashboard') ? 2.5 : 2} />
-                  <span className="text-[9px] font-bold uppercase tracking-tight text-center leading-none">Panel</span>
-                  <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/dashboard') ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
-                </Link>
-              </li>
-            )}
+            {/* Profile Link (4th item) */}
+            <li className="flex-1 flex justify-center items-center h-full">
+              <Link
+                href={user ? `/profile/${user.id}` : '/login'}
+                className={`relative flex flex-col items-center justify-center w-full h-full gap-0.5 transition-all duration-300 active:scale-95 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'text-[var(--primary-color,#C8102E)]' : 'text-neutral-400 dark:text-neutral-500'
+                  }`}
+              >
+                {user && profile?.avatar_url ? (
+                  <div className={`relative w-5 h-5 rounded-full overflow-hidden border ${pathname?.startsWith('/profile') ? 'border-[var(--primary-color,#C8102E)]' : 'border-current'}`}>
+                    <Image
+                      src={profile.avatar_url}
+                      alt="Profile"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <User size={20} strokeWidth={pathname?.startsWith('/profile') || pathname === '/login' ? 2.5 : 2} />
+                )}
+                <span className="text-[9px] font-bold uppercase tracking-tight text-center leading-none">
+                  {user ? 'Profil' : 'Giriş'}
+                </span>
+                <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-[var(--primary-color,#C8102E)] rounded-full transition-all duration-300 ${pathname?.startsWith('/profile') || pathname === '/login' ? 'w-8 opacity-100' : 'w-0 opacity-0'}`}></span>
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>
