@@ -484,78 +484,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                 </div>
             </div>
 
-            {/* Privacy Settings */}
-            <div className="space-y-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
-                <h2 className="text-lg font-semibold flex items-center gap-2 text-[#C8102E]">
-                    <Lock size={20} />
-                    Gizlilik Ayarları
-                </h2>
-                <div className="space-y-3">
-                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
-                        <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_interests ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
-                            <div>
-                                <span className="font-medium text-neutral-900 dark:text-white block">İlgi Alanlarımı Göster</span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Profilinizde seçtiğiniz ilgi alanları herkese açık olur.</span>
-                            </div>
-                        </div>
-                        <input 
-                            type="checkbox" 
-                            checked={formData.privacy_settings?.show_interests} 
-                            onChange={() => handlePrivacyToggle('show_interests')}
-                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
-                        />
-                    </label>
 
-                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
-                        <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_activities ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
-                            <div>
-                                <span className="font-medium text-neutral-900 dark:text-white block">Aktivitelerimi Göster</span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Katıldığınız etkinlikler ve paylaşımlarınız profilde görünür.</span>
-                            </div>
-                        </div>
-                        <input 
-                            type="checkbox" 
-                            checked={formData.privacy_settings?.show_activities} 
-                            onChange={() => handlePrivacyToggle('show_activities')}
-                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
-                        />
-                    </label>
-
-                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
-                        <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_friends ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
-                            <div>
-                                <span className="font-medium text-neutral-900 dark:text-white block">Arkadaşlarımı Göster</span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Arkadaş listeniz profilde görünür.</span>
-                            </div>
-                        </div>
-                        <input 
-                            type="checkbox" 
-                            checked={formData.privacy_settings?.show_friends} 
-                            onChange={() => handlePrivacyToggle('show_friends')}
-                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
-                        />
-                    </label>
-
-                    <label className="flex items-center justify-between p-3 border border-neutral-200 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800">
-                        <div className="flex items-center gap-3">
-                            {formData.privacy_settings?.show_polls !== false ? <Eye size={20} className="text-green-600" /> : <EyeOff size={20} className="text-neutral-400" />}
-                            <div>
-                                <span className="font-medium text-neutral-900 dark:text-white block">Anket Katılımlarımı Göster</span>
-                                <span className="text-xs text-neutral-500 dark:text-neutral-400">Katılımcı listesinde isminiz veya rumuzunuz görünür.</span>
-                            </div>
-                        </div>
-                        <input 
-                            type="checkbox" 
-                            checked={formData.privacy_settings?.show_polls !== false} 
-                            onChange={() => handlePrivacyToggle('show_polls')}
-                            className="w-5 h-5 text-[#C8102E] rounded focus:ring-0 accent-[#C8102E]"
-                        />
-                    </label>
-                </div>
-            </div>
 
             {/* Interests */}
             <div className="space-y-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">

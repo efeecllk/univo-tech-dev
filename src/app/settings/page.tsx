@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, Check, User, Users } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, Check, User, Users, Heart, BarChart2 } from 'lucide-react';
 import { useTheme, ColorTheme } from '@/contexts/ThemeContext';
 
 const colorThemes: { id: ColorTheme; label: string; color: string }[] = [
@@ -25,7 +25,8 @@ export default function SettingsPage() {
         show_email: false,
         show_interests: true,
         show_activities: true,
-        show_friends: true
+        show_friends: true,
+        show_polls: true
     });
     const [loading, setLoading] = useState(true);
 
@@ -231,6 +232,44 @@ export default function SettingsPage() {
                                 style={{ backgroundColor: privacySettings.show_activities ? 'var(--primary-color)' : undefined }}
                             >
                                 <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_activities ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                        </div>
+
+                        <div className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-pink-100 text-pink-600 rounded-lg">
+                                    <Heart size={20} />
+                                </div>
+                                <div>
+                                    <div className="font-medium text-neutral-900 dark:text-white">İlgi Alanları</div>
+                                    <div className="text-xs text-neutral-500">İlgi alanlarını profilinde göster</div>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => updatePrivacy('show_interests', !privacySettings.show_interests)}
+                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                style={{ backgroundColor: privacySettings.show_interests ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_interests ? 'translate-x-6' : 'translate-x-0'}`} />
+                            </button>
+                        </div>
+
+                        <div className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                                    <BarChart2 size={20} />
+                                </div>
+                                <div>
+                                    <div className="font-medium text-neutral-900 dark:text-white">Anket Katılımları</div>
+                                    <div className="text-xs text-neutral-500">Anket katılımlarını profilinde göster</div>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => updatePrivacy('show_polls', !privacySettings.show_polls)}
+                                className="relative w-12 h-6 rounded-full transition-colors duration-200 ease-in-out bg-neutral-200"
+                                style={{ backgroundColor: privacySettings.show_polls ? 'var(--primary-color)' : undefined }}
+                            >
+                                <span className={`absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ease-in-out ${privacySettings.show_polls ? 'translate-x-6' : 'translate-x-0'}`} />
                             </button>
                         </div>
 
