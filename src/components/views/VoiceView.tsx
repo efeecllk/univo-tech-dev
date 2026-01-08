@@ -664,10 +664,11 @@ export default function VoiceView() {
                         {activeTagFilter && (
                             <button
                                 onClick={() => setActiveTagFilter(null)}
-                                className="text-xs font-black uppercase bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 px-3 py-1.5 rounded-full flex items-center gap-2 transition-all hover:bg-primary active:scale-95 shadow-sm group"
+                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
+                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                             >
-                                <span className="group-hover:text-white transition-colors">{activeTagFilter}</span>
-                                <X size={12} strokeWidth={3} className="group-hover:text-white transition-colors" />
+                                <span>{activeTagFilter}</span>
+                                <X size={12} strokeWidth={3} />
                             </button>
                         )}
                     </div>
@@ -1102,7 +1103,12 @@ export default function VoiceView() {
                                     <div className="space-y-3">
                                         {allTags.length > 0 ? (
                                             allTags.slice(0, 5).map((topic, index) => (
-                                                <div key={topic.tag} onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-red-50 dark:bg-red-900/10' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}>
+                                                <div 
+                                                    key={topic.tag} 
+                                                    onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} 
+                                                    className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-100 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? '' : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'}`}
+                                                    style={activeTagFilter === topic.tag ? { backgroundColor: 'rgba(var(--primary-rgb, 200, 16, 46), 0.1)' } : {}}
+                                                >
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-xl font-serif font-black text-neutral-300 dark:text-neutral-700 w-6">{index + 1}</span>
                                                         <div className="flex flex-col">

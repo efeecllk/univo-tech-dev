@@ -580,30 +580,41 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             </div>
 
             {/* 1. Profile Completion Warning Card (Moved Up) */}
-            {isOwnProfile && profile && 
-             (!profile.student_id || !profile.department || !profile.class_year || profile.department === 'Öğrenci' || profile.department === 'Kampüs') && (
-                <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6">
-                    <div className="flex gap-4">
-                        <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">
-                            <Users size={24} />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-lg font-bold font-serif mb-1 text-amber-900 dark:text-amber-100">
-                                Profilini Tamamla!
-                            </h3>
-                            <p className="text-sm text-amber-800/80 dark:text-amber-200/60 mb-4 leading-relaxed">
-                                Görünüşe göre profilin henüz tam değil. Profilini tamamlarsan mavi doğrulama rozeti kazanırsın!
-                            </p>
-                            <button 
-                                onClick={() => router.push(`/profile/${targetId}/edit`)}
-                                className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-bold hover:bg-amber-700 transition-colors shadow-sm"
-                            >
-                                Bilgilerimi Güncelle
-                            </button>
+            {isOwnProfile && profile && (() => {
+                // Check if profile is incomplete
+                const validDepts = ['Bilgisayar Mühendisliği', 'Elektrik-Elektronik Mühendisliği', 'Makina Mühendisliği', 'İnşaat Mühendisliği', 'Endüstri Mühendisliği', 'Havacılık ve Uzay Mühendisliği', 'Kimya Mühendisliği', 'Çevre Mühendisliği', 'Gıda Mühendisliği', 'Jeoloji Mühendisliği', 'Maden Mühendisliği', 'Metalurji ve Malzeme Mühendisliği', 'Petrol ve Doğalgaz Mühendisliği', 'Mimarlık', 'Şehir ve Bölge Planlama', 'Endüstriyel Tasarım', 'Psikoloji', 'Sosyoloji', 'Felsefe', 'Tarih', 'İktisat', 'İşletme', 'Siyaset Bilimi ve Kamu Yönetimi', 'Uluslararası İlişkiler', 'Matematik', 'Fizik', 'Kimya', 'Biyoloji', 'İstatistik', 'Moleküler Biyoloji ve Genetik', 'İngilizce Öğretmenliği', 'Okul Öncesi Eğitimi', 'Bilgisayar ve Öğretim Teknolojileri Eğitimi', 'Fen Bilgisi Öğretmenliği', 'İlköğretim Matematik Öğretmenliği', 'Beden Eğitimi ve Spor', 'Diğer', 'İngilizce Hazırlık Programı'];
+                const validClasses = ['Hazırlık', '1. Sınıf', '2. Sınıf', '3. Sınıf', '4. Sınıf', 'Yüksek Lisans', 'Doktora', 'Mezun'];
+                
+                const hasValidStudentId = profile.student_id && profile.student_id.length > 0;
+                const hasValidDept = profile.department && validDepts.includes(profile.department);
+                const hasValidClass = profile.class_year && validClasses.includes(profile.class_year);
+                
+                const isIncomplete = !hasValidStudentId || !hasValidDept || !hasValidClass;
+                
+                return isIncomplete ? (
+                    <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800/50 rounded-xl p-6">
+                        <div className="flex gap-4">
+                            <div className="p-3 bg-amber-100 dark:bg-amber-800/30 text-amber-600 dark:text-amber-400 rounded-full shrink-0 h-fit">
+                                <Users size={24} />
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="text-lg font-bold font-serif mb-1 text-amber-900 dark:text-amber-100">
+                                    Profilini Tamamla!
+                                </h3>
+                                <p className="text-sm text-amber-800/80 dark:text-amber-200/60 mb-4 leading-relaxed">
+                                    Görünüşe göre profilin henüz tam değil. Profilini tamamlarsan mavi doğrulama rozeti kazanırsın!
+                                </p>
+                                <button 
+                                    onClick={() => router.push(`/profile/${targetId}/edit`)}
+                                    className="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-bold hover:bg-amber-700 transition-colors shadow-sm"
+                                >
+                                    Bilgilerimi Güncelle
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                ) : null;
+            })()}
 
             {/* 2. Topluluk Sahibi misiniz? (Moved Up) */}
             {isOwnProfile && (
