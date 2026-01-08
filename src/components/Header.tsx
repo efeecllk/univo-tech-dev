@@ -94,7 +94,7 @@ function HeaderContent() {
   return (
     <>
       {/* Mobile Top Right Notification - Standalone */}
-      <div className="fixed top-3 right-3 z-[10001] lg:hidden">
+      <div className="fixed top-3 right-3 z-[10001] lg:hidden bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm rounded-full shadow-sm p-0.5 border border-neutral-200 dark:border-neutral-800">
         <NotificationCenter />
       </div>
 
