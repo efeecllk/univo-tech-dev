@@ -244,10 +244,10 @@ export default function SettingsPage() {
                             
                             <div className="space-y-4">
                                 {[
-                                    { id: 'show_friends', label: 'Arkadaş Listesi', desc: 'Arkadaşlarını profilinde göster', icon: Users, color: 'text-green-600 bg-green-100' },
-                                    { id: 'show_activities', label: 'Son Aktiviteler', desc: 'Son aktivitelerini göster', icon: Bell, color: 'text-orange-600 bg-orange-100' },
-                                    { id: 'show_interests', label: 'İlgi Alanları', desc: 'İlgi alanlarını profilinde göster', icon: Heart, color: 'text-pink-600 bg-pink-100' },
-                                    { id: 'show_polls', label: 'Anket Katılımları', desc: 'Anket katılımlarını profilinde göster', icon: BarChart2, color: 'text-indigo-600 bg-indigo-100' },
+                                    { id: 'show_friends', label: 'Arkadaş Listesi', desc: 'Arkadaşlarını profilinde göster', icon: Users, color: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400' },
+                                    { id: 'show_activities', label: 'Son Aktiviteler', desc: 'Son aktivitelerini göster', icon: Bell, color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400' },
+                                    { id: 'show_interests', label: 'İlgi Alanları', desc: 'İlgi alanlarını profilinde göster', icon: Heart, color: 'text-pink-600 bg-pink-100 dark:bg-pink-900/30 dark:text-pink-400' },
+                                    { id: 'show_polls', label: 'Anket Katılımları', desc: 'Anket katılımlarını profilinde göster', icon: BarChart2, color: 'text-indigo-600 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-400' },
                                 ].map((item) => (
                                     <div key={item.id} className="flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 transition-all">
                                         <div className="flex items-center gap-4">
@@ -375,10 +375,10 @@ export default function SettingsPage() {
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Gizlilik</h2>
                     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden divide-y divide-neutral-100 dark:divide-neutral-800">
                         {[
-                            { id: 'show_friends', label: 'Arkadaş Listesi', desc: 'Arkadaşlarını profilinde göster', icon: Users, color: 'bg-green-100 text-green-600' },
-                            { id: 'show_activities', label: 'Son Aktiviteler', desc: 'Son aktivitelerini göster', icon: Bell, color: 'bg-orange-100 text-orange-600' },
-                            { id: 'show_interests', label: 'İlgi Alanları', desc: 'İlgi alanlarını profilinde göster', icon: Heart, color: 'bg-pink-100 text-pink-600' },
-                            { id: 'show_polls', label: 'Anket Katılımları', desc: 'Anket katılımlarını profilinde göster', icon: BarChart2, color: 'bg-indigo-100 text-indigo-600' },
+                            { id: 'show_friends', label: 'Arkadaş Listesi', desc: 'Arkadaşlarını profilinde göster', icon: Users, color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' },
+                            { id: 'show_activities', label: 'Son Aktiviteler', desc: 'Son aktivitelerini göster', icon: Bell, color: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400' },
+                            { id: 'show_interests', label: 'İlgi Alanları', desc: 'İlgi alanlarını profilinde göster', icon: Heart, color: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400' },
+                            { id: 'show_polls', label: 'Anket Katılımları', desc: 'Anket katılımlarını profilinde göster', icon: BarChart2, color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400' },
                         ].map((item) => (
                             <div key={item.id} className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-3">

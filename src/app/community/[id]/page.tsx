@@ -80,8 +80,8 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Profile Info */}
         <div className="lg:col-span-1">
-           <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sticky top-24">
-              <div className="w-24 h-24 bg-neutral-100 rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-dashed border-neutral-300">
+           <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] sticky top-24 transition-colors">
+              <div className="w-24 h-24 bg-neutral-100 dark:bg-neutral-800 rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700">
                   {community.logo_url ? (
                       <img src={community.logo_url} alt={community.name} className="w-full h-full rounded-full object-cover" />
                   ) : (
@@ -89,25 +89,25 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                   )}
               </div>
               
-              <h1 className="text-2xl font-black font-serif text-center mb-2 leading-tight">
+              <h1 className="text-2xl font-black font-serif text-center mb-2 leading-tight dark:text-white">
                   {community.name}
               </h1>
 
               {/* Stats */}
-              <div className="grid grid-cols-2 gap-2 border-y-2 border-neutral-100 py-4 my-4 text-center">
+              <div className="grid grid-cols-2 gap-2 border-y-2 border-neutral-100 dark:border-neutral-800 py-4 my-4 text-center">
                   <div>
-                      <span className="block font-bold text-xl">{followerCount}</span>
+                      <span className="block font-bold text-xl dark:text-white">{followerCount}</span>
                       <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-widest">Takipçi</span>
                   </div>
                   <div>
-                      <span className="block font-bold text-xl">{eventCount}</span>
+                      <span className="block font-bold text-xl dark:text-white">{eventCount}</span>
                       <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-widest">Etkinlik</span>
                   </div>
               </div>
 
               <div className="mb-6">
-                  <h3 className="text-sm font-bold uppercase mb-2">Hakkında</h3>
-                  <p className="text-sm text-neutral-600 font-serif leading-relaxed">
+                  <h3 className="text-sm font-bold uppercase mb-2 dark:text-white">Hakkında</h3>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 font-serif leading-relaxed">
                       {community.description || 'Bu topluluk hakkında henüz bir açıklama girilmemiş.'}
                   </p>
               </div>
@@ -115,9 +115,21 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
               <div className="space-y-3">
                   <FollowButton communityId={community.id} initialIsFollowing={false} />
                   <div className="flex justify-center gap-4 text-neutral-400 pt-2">
-                      <Instagram size={20} className="hover:text-black cursor-pointer" />
-                      <Twitter size={20} className="hover:text-black cursor-pointer" />
-                      <Globe size={20} className="hover:text-black cursor-pointer" />
+                      {community.instagram_url && (
+                          <a href={community.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors">
+                              <Instagram size={20} />
+                          </a>
+                      )}
+                      {community.twitter_url && (
+                          <a href={community.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors">
+                              <Twitter size={20} />
+                          </a>
+                      )}
+                      {community.website_url && (
+                          <a href={community.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-black dark:hover:text-white transition-colors">
+                              <Globe size={20} />
+                          </a>
+                      )}
                   </div>
               </div>
            </div>
@@ -125,7 +137,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
 
         {/* Right: Events */}
         <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold border-b-2 border-black pb-2 mb-6 flex items-center gap-2 font-serif">
+            <h2 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-6 flex items-center gap-2 font-serif dark:text-white">
                 <Calendar size={20} />
                 Yaklaşan Etkinlikler
             </h2>
@@ -139,10 +151,10 @@ export default async function CommunityPage({ params }: { params: Promise<{ id: 
                     ))}
                 </div>
             ) : (
-                <div className="bg-neutral-50 border-2 border-dashed border-neutral-200 p-12 text-center rounded-lg">
-                    <Calendar size={48} className="mx-auto text-neutral-300 mb-4" />
-                    <h3 className="text-lg font-bold text-neutral-500 font-serif">Planlanmış etkinlik yok</h3>
-                    <p className="text-neutral-400 text-sm mt-1">Bu topluluğun yakın zamanda etkinliği bulunmuyor.</p>
+                <div className="bg-neutral-50 dark:bg-neutral-900 border-2 border-dashed border-neutral-200 dark:border-neutral-800 p-12 text-center rounded-lg">
+                    <Calendar size={48} className="mx-auto text-neutral-300 dark:text-neutral-700 mb-4" />
+                    <h3 className="text-lg font-bold text-neutral-500 dark:text-neutral-400 font-serif mb-2">Planlanmış etkinlik yok</h3>
+                    <p className="text-neutral-400 dark:text-neutral-600 text-sm">Bu topluluğun yakın zamanda etkinliği bulunmuyor.</p>
                 </div>
             )}
         </div>

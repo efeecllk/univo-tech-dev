@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
-import { Rocket, ChevronDown, Check } from 'lucide-react';
+import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, profile } = useAuth();
@@ -15,6 +15,7 @@ export default function SettingsPage() {
     const [community, setCommunity] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
     const isAdmin = user?.email === ADMIN_EMAIL || profile?.full_name === ADMIN_NAME;
 
@@ -40,8 +41,18 @@ export default function SettingsPage() {
             name: formData.get('name') as string,
             category: formData.get('category') as string,
             description: formData.get('description') as string,
-            logo_url: formData.get('logo_url') as string,
+            logo_url: community.logo_url, // Use state/prop, but actually form might not have it if we use custom UI. 
+            // Better: rely on community.logo_url state if we update it immediately on upload?
+            // Actually, handleUpdate reads from formData. If I use a hidden input for logo_url it works.
+            // But let's just use the 'community' state which I should update on upload.
+            // Wait, 'community' state is the source of truth? Yes.
+            // So:
+            instagram_url: formData.get('instagram_url') as string,
+            twitter_url: formData.get('twitter_url') as string,
+            website_url: formData.get('website_url') as string,
         };
+        // Explicitly set logo_url from state because file upload updates state directly
+        if (community.logo_url) updates.logo_url = community.logo_url;
 
         try {
             const { error } = await supabase
@@ -58,6 +69,35 @@ export default function SettingsPage() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+        const file = e.target.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `communities/${community.id}/${Date.now()}.${fileExt}`;
+
+        setUploading(true);
+        try {
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+            // Update local state immediately
+            setCommunity({ ...community, logo_url: data.publicUrl });
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Logo yüklenirken hata oluştu!');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const removeLogo = () => {
+        setCommunity({ ...community, logo_url: '' });
     };
 
     if (loading) {
@@ -122,6 +162,53 @@ export default function SettingsPage() {
             
             <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-colors">
                 <form className="space-y-6" onSubmit={handleUpdate}>
+                    {/* Logo Upload Section - Requested to be at top but user just said "Ayarlar kartının en üstünde olsun". 
+                        I will put it inside the form at the top. 
+                    */}
+                    <div>
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Topluluk Logosu</label>
+                        {community.logo_url ? (
+                            <div className="relative w-32 h-32 rounded-full overflow-hidden group border-4 border-neutral-100 dark:border-neutral-800 mx-auto md:mx-0">
+                                <img src={community.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button 
+                                        type="button" 
+                                        onClick={removeLogo}
+                                        className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-4">
+                                <div className="w-32 h-32 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-col items-center justify-center gap-1 bg-neutral-50 dark:bg-neutral-800/50 text-neutral-400">
+                                    <Upload size={24} />
+                                    <span className="text-xs font-bold">Logo Yükle</span>
+                                </div>
+                                <div className="flex-1">
+                                    <input 
+                                        type="file" 
+                                        accept="image/*"
+                                        onChange={handleLogoUpload}
+                                        disabled={uploading}
+                                        className="hidden" 
+                                        id="logo-upload"
+                                    />
+                                    <label 
+                                        htmlFor="logo-upload" 
+                                        className={`inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-[var(--primary-color)] hover:text-white dark:text-neutral-300 transition-colors rounded-lg cursor-pointer font-bold text-sm ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                                    >
+                                        {uploading ? 'Yükleniyor...' : 'Fotoğraf Seç'}
+                                    </label>
+                                    <p className="text-xs text-neutral-500 mt-2">
+                                        JPG, PNG veya GIF. Maksimum 5MB.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div>
                         <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Topluluk Adı</label>
                         <input 
@@ -152,13 +239,39 @@ export default function SettingsPage() {
                     </div>
 
                     <div>
-                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Logo URL</label>
-                        <input 
-                            name="logo_url"
-                            type="text" 
-                            defaultValue={community?.logo_url}
-                            className="w-full border-2 border-neutral-300 dark:border-neutral-700 p-3 font-serif hover:border-[var(--primary-color)] focus:border-[var(--primary-color)] bg-white dark:bg-neutral-800 dark:text-white outline-none transition-colors"
-                        />
+                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Sosyal Medya Hesapları</label>
+                        <div className="space-y-3">
+                            <div className="relative">
+                                <Instagram className="absolute top-3 left-3 text-neutral-400" size={20} />
+                                <input 
+                                    name="instagram_url"
+                                    type="text" 
+                                    placeholder="Instagram Profili (Örn: https://instagram.com/univo)"
+                                    defaultValue={community?.instagram_url}
+                                    className="w-full pl-10 pr-4 py-3 border-2 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white hover:border-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none transition-colors"
+                                />
+                            </div>
+                            <div className="relative">
+                                <Twitter className="absolute top-3 left-3 text-neutral-400" size={20} />
+                                <input 
+                                    name="twitter_url"
+                                    type="text" 
+                                    placeholder="Twitter Profili (X)"
+                                    defaultValue={community?.twitter_url}
+                                    className="w-full pl-10 pr-4 py-3 border-2 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white hover:border-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none transition-colors"
+                                />
+                            </div>
+                            <div className="relative">
+                                <Globe className="absolute top-3 left-3 text-neutral-400" size={20} />
+                                <input 
+                                    name="website_url"
+                                    type="text" 
+                                    placeholder="Web Sitesi URL"
+                                    defaultValue={community?.website_url}
+                                    className="w-full pl-10 pr-4 py-3 border-2 border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white hover:border-[var(--primary-color)] focus:border-[var(--primary-color)] outline-none transition-colors"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="pt-4 border-t border-neutral-200">
