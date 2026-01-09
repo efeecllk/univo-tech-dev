@@ -432,29 +432,47 @@ export default function VoiceView() {
         const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
         
         try {
+            // Optimistic Update
+            const newResults = [...pollResults];
+            
             if (userVote === index) {
-                // Remove vote if clicking same option
+                // Remove vote logic
+                if (newResults[index] > 0) newResults[index]--;
+                setPollResults(newResults);
+                setUserVote(null);
+
                 const { error } = await supabase
                     .from('poll_votes')
                     .delete()
                     .match({ user_id: user.id, poll_id: pollId });
                 
-                if (error) throw error;
-                setUserVote(null);
+                if (error) {
+                    throw error;
+                }
                 toast.success('Oyunuz geri alındı.');
             } else {
-                // Upsert new vote
+                // Change/Add vote logic
+                if (userVote !== null && newResults[userVote] > 0) newResults[userVote]--; // Remove old vote count
+                newResults[index]++; // Add new vote count
+                setPollResults(newResults);
+                setUserVote(index);
+
                 const { error } = await supabase
                     .from('poll_votes')
                     .upsert({ user_id: user.id, poll_id: pollId, option_index: index }, { onConflict: 'user_id, poll_id' });
                 
-                if (error) throw error;
-                setUserVote(index);
+                if (error) {
+                    throw error;
+                }
+                // Don't toast on vote, visual feedback is enough
             }
-            fetchPollResults(activePoll);
+            // Background fetch to ensure consistency
+            setTimeout(() => fetchPollResults(activePoll), 500);
         } catch (e) {
             console.error('Vote Error:', e);
             toast.error('Oylama sırasında bir hata oluştu.');
+            // Revert on error
+            fetchPollResults(activePoll); 
         }
     };
 
