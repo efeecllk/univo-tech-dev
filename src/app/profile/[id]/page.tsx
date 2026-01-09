@@ -14,6 +14,7 @@ import FollowedCommunitiesModal from '@/components/profile/FollowedCommunitiesMo
 import { analyzeCourses, formatDetectionMessage } from '@/lib/course-analyzer';
 import NotificationCenter from '@/components/NotificationCenter';
 import { toast } from 'sonner';
+import { toTitleCase } from '@/lib/utils';
 
 interface Profile {
     id: string;
@@ -679,7 +680,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                             </div>
 
                             <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white mt-4 mb-2">
-                                {profile.full_name.split(' ').map(word => word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1).toLocaleLowerCase('tr-TR')).join(' ')}
+                                {toTitleCase(profile.full_name)}
                             </h2>
                             <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-widest mb-6">
                                 {(() => {
