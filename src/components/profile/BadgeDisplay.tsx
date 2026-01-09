@@ -69,7 +69,7 @@ export default function BadgeDisplay({ badges, showTitle = true }: BadgeDisplayP
               </span>
               
               {/* Tooltip - Modern Theme */}
-              <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-white dark:bg-neutral-800 text-black dark:text-white text-xs rounded-xl py-3 px-4 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl border border-neutral-200 dark:border-neutral-700 transform group-hover:translate-y-0 translate-y-2">
+              <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-48 bg-white dark:bg-neutral-800 text-black dark:text-white text-xs rounded-xl py-3 px-4 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-[20000] shadow-xl border border-neutral-200 dark:border-neutral-700 transform group-hover:translate-y-0 translate-y-2">
                 <p className="font-bold mb-1 font-sans text-sm">{badge.name}</p>
                 <p className="text-neutral-600 dark:text-neutral-300 font-medium leading-relaxed">{badge.description}</p>
                 {badge.awarded_at && (

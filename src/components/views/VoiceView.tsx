@@ -429,58 +429,67 @@ export default function VoiceView() {
             return;
         }
         if (!activePoll) return;
+        
+        // Prevent spam clicking while processing
+        if (pollLoading) return;
+
         const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
         
+        // Snapshot for rollback
+        const previousResults = [...pollResults];
+        const previousVote = userVote;
+
         try {
             // Optimistic Update
             const newResults = [...pollResults];
+            let action: 'vote' | 'retract' = 'vote';
             
             // Check if we are clicking the SAME option we already voted for (Retraction)
             if (userVote === index) {
-                // Decrement count if > 0
+                // Retract: Decrement count if > 0
                 if (newResults[index] > 0) newResults[index]--;
-                
-                // Update State IMMEDIATELY
-                setPollResults(newResults);
                 setUserVote(null);
+                action = 'retract';
+                toast.success('Oyunuz geri alındı.');
 
-                // Perform DB Operation
+            } else {
+                // Vote/Change: 
+                if (userVote !== null && newResults[userVote] > 0) newResults[userVote]--; // Remove old vote count
+                newResults[index]++; // Add new vote count
+                setUserVote(index);
+                action = 'vote';
+            }
+            
+            // Update UI immediately
+            setPollResults(newResults);
+
+            // Perform DB Operation
+            if (action === 'retract') {
                 const { error } = await supabase
                     .from('poll_votes')
                     .delete()
                     .eq('user_id', user.id)
                     .eq('poll_id', pollId);
                 
-                if (error) {
-                    throw error;
-                }
-                toast.success('Oyunuz geri alındı.');
+                if (error) throw error;
             } else {
-                // Changing or Adding Vote
-                if (userVote !== null && newResults[userVote] > 0) newResults[userVote]--; // Remove old vote count
-                newResults[index]++; // Add new vote count
-                
-                // Update State IMMEDIATELY
-                setPollResults(newResults);
-                setUserVote(index);
-
-                // Perform DB Operation
                 const { error } = await supabase
                     .from('poll_votes')
                     .upsert({ user_id: user.id, poll_id: pollId, option_index: index }, { onConflict: 'user_id, poll_id' });
                 
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
             }
             
-            // Background fetch to ensure consistency (Silent)
-            setTimeout(() => fetchPollResults(activePoll), 1000);
+            // Success: No need to re-fetch immediately as we trust our optimistic update.
+            // But we can do a background verification later if needed.
+            
         } catch (e) {
             console.error('Vote Error:', e);
             toast.error('Oylama sırasında bir hata oluştu.');
+            
             // Revert State on Error
-            fetchPollResults(activePoll); 
+            setPollResults(previousResults);
+            setUserVote(previousVote);
         }
     };
 

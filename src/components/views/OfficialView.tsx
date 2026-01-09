@@ -97,7 +97,22 @@ export default function OfficialView() {
             }
 
             // Verify with server (Cookie check)
-            const res = await fetch('/api/auth/imap', { credentials: 'include' });
+            // Prepare starred UIDs to ensure they are fetched
+            let starredHeader = '[]';
+            if (savedStars) {
+                const ids = JSON.parse(savedStars);
+                const emailUids = ids
+                    .filter((id: string) => id.startsWith('email-'))
+                    .map((id: string) => parseInt(id.replace('email-', ''), 10));
+                starredHeader = JSON.stringify(emailUids);
+            }
+
+            const res = await fetch('/api/auth/imap', { 
+                headers: {
+                    'X-Starred-Uids': starredHeader
+                },
+                credentials: 'include' 
+            });
             if (res.ok) {
                 const data = await res.json();
                 
@@ -146,10 +161,19 @@ export default function OfficialView() {
       setLoginError('');
 
       try {
+          // Get starred UIDs to fetch them immediately upon login
+          const savedStars = localStorage.getItem('univo_starred_ids');
+          let starredUids: number[] = [];
+          if (savedStars) {
+              starredUids = JSON.parse(savedStars)
+                .filter((id: string) => id.startsWith('email-'))
+                .map((id: string) => parseInt(id.replace('email-', ''), 10));
+          }
+
           const res = await fetch('/api/auth/imap', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(loginForm),
+              body: JSON.stringify({ ...loginForm, starredUids }),
               credentials: 'include' // Ensure cookie is set
           });
 

@@ -69,6 +69,16 @@ export default function NotificationCenter() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   const fetchNotifications = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -258,10 +268,10 @@ export default function NotificationCenter() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-32px)] origin-top-right bg-white dark:bg-neutral-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] z-[10002] max-h-[500px] flex flex-col rounded-none">
-          <div className="p-4 border-b-2 border-black dark:border-white flex flex-col gap-2">
+        <div className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-32px)] origin-top-right bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-2xl z-[10002] max-h-[500px] flex flex-col rounded-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex flex-col gap-2">
             <div className="flex justify-between items-center">
-                <h3 className="font-bold font-serif text-lg dark:text-white">Bildirimler</h3>
+                <h3 className="font-bold text-lg dark:text-white">Bildirimler</h3>
                 {notifications.length > 0 && (
                   <button 
                     onClick={clearAllNotifications}

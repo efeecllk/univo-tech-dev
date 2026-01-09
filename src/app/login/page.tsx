@@ -108,10 +108,18 @@ export default function LoginPage() {
             if (result.success) {
                 // Auto-Connect Email Service (Silent)
                 try {
+                    let starredUids: number[] = [];
+                    const savedStars = localStorage.getItem('univo_starred_ids');
+                    if (savedStars) {
+                        starredUids = JSON.parse(savedStars)
+                            .filter((id: string) => id.startsWith('email-'))
+                            .map((id: string) => parseInt(id.replace('email-', ''), 10));
+                    }
+
                     await fetch('/api/auth/imap', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, password }),
+                        body: JSON.stringify({ username, password, starredUids }),
                         // credentials: 'include' is default for same-origin, but good to be explicit if needed
                     });
                 } catch (imapErr) {

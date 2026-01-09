@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import imaps from 'imap-simple';
 
 // Helper to fetch emails (Reusable for GET and POST)
-async function fetchRecentEmails(username: string, password: string) {
+async function fetchRecentEmails(username: string, password: string, extraUids: number[] = []) {
     // Normalize username: Remove domain if present, as ODTÜ IMAP usually expects NetID
     const cleanUsername = username.includes('@') ? username.split('@')[0] : username;
 
@@ -45,16 +45,23 @@ async function fetchRecentEmails(username: string, password: string) {
 
     // 3. Take only the top 15 latest
     const top15 = searchRes.slice(0, 15);
+    
+    // Collect UIDs to fetch fully
+    let uidsToFetch = top15.map(m => m.attributes.uid);
 
-    // 4. If we have messages, fetch their FULL headers now
+    // 4. Add Extra UIDs (Starred) if provided
+    if (extraUids && extraUids.length > 0) {
+        // Filter out UIDs we already have in top15 to avoid duplicates
+        const newUids = extraUids.filter(uid => !uidsToFetch.includes(uid));
+        uidsToFetch = [...uidsToFetch, ...newUids];
+    }
+
+    // 5. If we have messages, fetch their FULL headers now
     let emails: any[] = [];
     
-    if (top15.length > 0) {
-        // imap-simple doesn't have a direct "fetch by UIDs" helper that returns specific bodies easily 
-        // without re-searching, but we can search by UID range or specific UIDs.
-        // Generating a UID search criteria for these specific emails:
-        const uids = top15.map(m => m.attributes.uid);
-        const fetchCriteria = [['UID', uids]];
+    if (uidsToFetch.length > 0) {
+        // Fetch specific UIDs
+        const fetchCriteria = [['UID', uidsToFetch]];
         const fetchPartsOptions = {
             bodies: ['HEADER'], 
             markSeen: false,
@@ -105,7 +112,10 @@ export async function GET(request: Request) {
 
         if (!username || !password) throw new Error('Invalid session');
 
-        const emails = await fetchRecentEmails(username, password);
+        const starredHeader = request.headers.get('X-Starred-Uids');
+        const starredUids = starredHeader ? JSON.parse(starredHeader) : [];
+
+        const emails = await fetchRecentEmails(username, password, starredUids);
         return NextResponse.json({ emails, username });
 
     } catch (error: any) {
@@ -116,14 +126,14 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { username, password } = body;
+    const { username, password, starredUids } = body; // starredUids: [123, 456]
 
     if (!username || !password) {
       return NextResponse.json({ error: 'Kullanıcı adı ve şifre gereklidir.' }, { status: 400 });
     }
 
-    // Attempt fetch to verify credentials
-    const emails = await fetchRecentEmails(username, password);
+    // Attempt fetch to verify credentials AND get starred emails
+    const emails = await fetchRecentEmails(username, password, starredUids || []);
 
     // If successful, set HTTP-only cookie
     const sessionValue = Buffer.from(`${username}:${password}`).toString('base64');
