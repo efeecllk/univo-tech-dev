@@ -7,6 +7,14 @@ import * as cheerio from 'cheerio';
 import getSupabaseAdmin from '@/lib/supabase-admin';
 import { analyzeCourses } from '@/lib/course-analyzer';
 
+// Helper for Turkish Title Case
+function toTitleCase(str: string) {
+    if (!str) return '';
+    return str.replace(/\s+/g, ' ').trim().toLocaleLowerCase('tr-TR').split(' ').map(word => 
+        word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1)
+    ).join(' ');
+}
+
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
@@ -65,7 +73,10 @@ export async function POST(request: Request) {
         
         const $dash = cheerio.load(loginRes.data);
         let fullName = $dash('.usertext').text() || $dash('.user-name').text() || $dash('#action-menu-toggle-1 span.userbutton span.usertext').text();
-        if (fullName) fullName = fullName.replace('You are logged in as', '').trim();
+        if (fullName) {
+            fullName = fullName.replace('You are logged in as', '').trim();
+            fullName = toTitleCase(fullName);
+        }
         
         // --- SCRAPING & ANALYSIS ---
         let courses: { name: string, url: string }[] = [];
