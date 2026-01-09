@@ -594,495 +594,510 @@ export default function VoiceView() {
                 </div>
             </div>
 
-            {isGlobalMode ? (
-                // GLOBAL MODE PLACEHOLDER
-                <div className="flex flex-col items-center justify-center py-20 min-h-[50vh] text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="relative w-64 h-64 mb-8 group perspective-1000">
-                        {/* Globe Animation/Icon */}
-                        <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-                        <Globe className="w-full h-full text-blue-600 dark:text-blue-400 animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-6xl">🌍</span>
-                        </div>
-                    </div>
-
-                    <h2 className="text-4xl md:text-5xl font-black font-serif text-neutral-900 dark:text-white mb-6">
-                        Global Sohbet
-                    </h2>
-
-                    <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
-                        Sınırlar kalkıyor! Dünyanın dört bir yanındaki üniversite öğrencileriyle çok yakında burada buluşacaksın.
-                    </p>
-
-                    <div className="flex gap-4">
-                        <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
-                            <Lock size={18} />
-                            Erişime Kapalı
-                        </span>
-                    </div>
-                </div>
-            ) : (
-                <>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Main Column: Forum / Letters - Shows last on mobile, first on desktop */}
-                        <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
-                            <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
-                                <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
-                                    <MessageSquare size={24} />
-                                    Öğrenci Kürsüsü
-                                </h3>
-
-                                <div className="flex items-center gap-4">
-                                    {activeTagFilter && (
-                                        <button
-                                            onClick={() => setActiveTagFilter(null)}
-                                            className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
-                                            style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
-                                        >
-                                            <span>{activeTagFilter}</span>
-                                            <X size={12} strokeWidth={3} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Input Area */}
-                            {user ? (
-                                <div className="bg-neutral-50 dark:bg-transparent p-6 border border-neutral-200 dark:border-none mb-8 rounded-sm shadow-sm dark:shadow-none relative">
-                                    <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-0 dark:text-white">
-                                        <MessageSquare size={100} />
-                                    </div>
-
-                                    <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white">
-                                        Sesini Duyur
-                                    </h4>
-
-                                    <form onSubmit={handlePost} className="relative z-50">
-                                        <textarea
-                                            ref={textareaRef}
-                                            rows={3}
-                                            maxLength={280}
-                                            className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                            style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
-                                            placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
-                                            value={newStatus}
-                                            onChange={handleTextChange}
-                                            onClick={(e) => setCursorPos(e.currentTarget.selectionStart)}
-                                            onKeyUp={(e) => setCursorPos(e.currentTarget.selectionStart)}
-                                        />
-
-                                        {showSuggestions && (
-                                            <div className="absolute left-0 bottom-full mb-1 w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg z-[1000] max-h-48 overflow-y-auto">
-                                                <ul className="py-1">
-                                                    {suggestionList.map(tag => (
-                                                        <li
-                                                            key={tag}
-                                                            onClick={() => insertTag(tag)}
-                                                            className="px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer font-bold font-serif text-sm flex items-center gap-2 dark:text-neutral-200"
-                                                        >
-                                                            <Tag size={12} />
-                                                            {tag}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-
-                                        <div className="flex justify-between items-center border-t border-neutral-200 dark:border-neutral-800 pt-3">
-                                            <label className="flex items-center gap-2 cursor-pointer group">
-                                                <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${isAnonymous ? 'bg-neutral-900 dark:bg-white border-neutral-900 dark:border-white' : 'border-neutral-300 dark:border-neutral-700 group-hover:border-neutral-900 dark:group-hover:border-white'}`}>
-                                                    {isAnonymous && <span className="text-white dark:text-black text-[10px] choice">✓</span>}
-                                                </div>
-                                                <input
-                                                    type="checkbox"
-                                                    className="hidden"
-                                                    checked={isAnonymous}
-                                                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                                                />
-                                                <span className={`text-sm ${isAnonymous ? 'font-bold text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>Anonim Paylaş</span>
-                                            </label>
-
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-xs text-neutral-400 dark:text-neutral-500">{newStatus.length}/280</span>
-                                                <button
-                                                    type="submit"
-                                                    disabled={!newStatus.trim() || isPosting}
-                                                    className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
-                                                >
-                                                    <Send size={14} />
-                                                    {isPosting ? 'Yayınlanıyor...' : 'Yayınla'}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                            ) : (
-                                <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
-                                    <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/login" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>
-                                </div>
-                            )}
-
-                            <div className="space-y-6">
-                                {isLoading ? (
-                                    <div className="text-center py-12 text-neutral-400 animate-pulse">Yükleniyor...</div>
-                                ) : voices.length === 0 ? (
-                                    <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
-                                ) : (
-                                    voices.map((voice) => {
-                                        const reactions = voice.reactions || [];
-                                        const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
-                                        const likeCount = reactions.filter(r => r.reaction_type === 'like').length;
-                                        const dislikeCount = reactions.filter(r => r.reaction_type === 'dislike').length;
-                                        const netVote = likeCount - dislikeCount;
-
-                                        return (
-                                            <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
-                                                {voice.is_editors_choice && (
-                                                    <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
-                                                        <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
-                                                        Editörün Seçimi
-                                                    </div>
-                                                )}
-
-                                                <div className="flex gap-4 items-start">
-                                                    <div
-                                                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
-                                                        style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
-                                                    >
-                                                        {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
-                                                    </div>
-
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                            {voice.is_anonymous ? (
-                                                                <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">
-                                                                    {voice.user.nickname || 'Rumuzlu Öğrenci'}
-                                                                </span>
-                                                            ) : (
-                                                                <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
-                                                                    {voice.user.full_name}
-                                                                </Link>
-                                                            )}
-                                                            {(voice.user.department || voice.user.class_year) && (
-                                                                <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
-                                                                    {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
-                                                                </span>
-                                                            )}
-                                                            <div className="ml-auto relative">
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        setActiveMenu(activeMenu === voice.id ? null : voice.id);
-                                                                    }}
-                                                                    className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                                                                >
-                                                                    <MoreVertical size={16} />
-                                                                </button>
-                                                                {activeMenu === voice.id && (
-                                                                    <>
-                                                                        <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
-                                                                        <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
-                                                                            {user && voice.user_id === user.id ? (
-                                                                                <>
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            startEdit(voice);
-                                                                                            setActiveMenu(null);
-                                                                                        }}
-                                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
-                                                                                    >
-                                                                                        <Edit2 size={14} />
-                                                                                        Düzenle
-                                                                                    </button>
-                                                                                    <button
-                                                                                        onClick={() => {
-                                                                                            handleDelete(voice.id);
-                                                                                            setActiveMenu(null);
-                                                                                        }}
-                                                                                        className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
-                                                                                    >
-                                                                                        <Trash2 size={14} />
-                                                                                        Sil
-                                                                                    </button>
-                                                                                </>
-                                                                            ) : !voice.is_anonymous ? (
-                                                                                <FriendButton
-                                                                                    targetUserId={voice.user_id}
-                                                                                    variant="menu-item"
-                                                                                />
-                                                                            ) : null}
-                                                                        </div>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {editingId === voice.id ? (
-                                                            <form onSubmit={handleUpdate} className="mb-4">
-                                                                <textarea
-                                                                    className="w-full p-2 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors"
-                                                                    rows={3}
-                                                                    value={editContent}
-                                                                    onChange={e => setEditContent(e.target.value)}
-                                                                />
-                                                                <div className="flex justify-end gap-2 mt-2">
-                                                                    <button type="button" onClick={() => setEditingId(null)} className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white">İptal</button>
-                                                                    <button type="submit" className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm">Kaydet</button>
-                                                                </div>
-                                                            </form>
-                                                        ) : (
-                                                            <div className="mb-4 group/content relative">
-                                                                <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
-                                                                    {renderContentWithTags(voice.content)}
-                                                                </p>
-                                                            </div>
-                                                        )}
-
-                                                        <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
-                                                            <div className="flex items-center gap-6">
-                                                                <div className="flex items-center gap-1">
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
-                                                                        className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
-                                                                        title="Yükselt"
-                                                                    >
-                                                                        <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
-                                                                    </button>
-                                                                    <span className={`text-sm font-bold w-6 text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                                                                        {netVote}
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
-                                                                        className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
-                                                                        title="Düşür"
-                                                                    >
-                                                                        <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
-                                                                    </button>
-                                                                </div>
-                                                                <button
-                                                                    onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
-                                                                    className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
-                                                                >
-                                                                    <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
-                                                                        <MessageSquare size={18} />
-                                                                    </div>
-                                                                    <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
-                                                                </button>
-                                                                <button
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation();
-                                                                        navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
-                                                                        toast.success('Link kopyalandı!');
-                                                                    }}
-                                                                    className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
-                                                                >
-                                                                    <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
-                                                                        <Share2 size={18} />
-                                                                    </div>
-                                                                </button>
-                                                            </div>
-                                                            <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
-                                                                {formatRelativeTime(voice.created_at)}
-                                                            </span>
-                                                        </div>
-
-                                                        {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
-                                                            <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
-                                                                <div className="space-y-4 mb-4">
-                                                                    {voice.comments.map(comment => (
-                                                                        <div key={comment.id} className="flex gap-3">
-                                                                            <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
-                                                                                {comment.user.charAt(0)}
-                                                                            </div>
-                                                                            <div className="flex-1 bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3">
-                                                                                <div className="flex justify-between items-baseline mb-1">
-                                                                                    <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
-                                                                                        {comment.user}
-                                                                                    </Link>
-                                                                                    <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
-                                                                                </div>
-                                                                                <p className="text-sm text-neutral-700 dark:text-neutral-300">{comment.content}</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                                {activeCommentBox === voice.id && (
-                                                                    <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
-                                                                        <input
-                                                                            type="text"
-                                                                            placeholder="Yorumunu yaz..."
-                                                                            className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-[#C8102E] font-serif dark:text-white transition-colors"
-                                                                            value={newComment}
-                                                                            onChange={(e) => setNewComment(e.target.value)}
-                                                                            autoFocus
-                                                                        />
-                                                                        <button
-                                                                            type="submit"
-                                                                            disabled={!newComment.trim() || isCommenting}
-                                                                            className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
-                                                                        >
-                                                                            {isCommenting ? '...' : <Send size={14} />}
-                                                                        </button>
-                                                                    </form>
-                                                                )}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </article>
-                                        );
-                                    })
-                                )}
+            <AnimatePresence mode="wait">
+                {isGlobalMode ? (
+                    <motion.div
+                        key="global"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex flex-col items-center justify-center py-20 min-h-[50vh] text-center"
+                    >
+                        <div className="relative w-64 h-64 mb-8 group perspective-1000">
+                            {/* Globe Animation/Icon */}
+                            <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+                            <Globe className="w-full h-full text-blue-600 dark:text-blue-400 animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-6xl">🌍</span>
                             </div>
                         </div>
 
-                        {/* Sidebar: Polls & Stats - Shows first on mobile, last on desktop */}
-                        <div className="order-first lg:order-last -mx-4 px-4 lg:mx-0 lg:px-0">
-                            <VoiceStatsWidget
-                                activePoll={activePoll}
-                                pollLoading={pollLoading}
-                                pollResults={pollResults}
-                                totalVotes={totalVotes}
-                                userVote={userVote}
-                                onPollVote={handlePollVote}
-                                allTags={allTags}
-                                activeTagFilter={activeTagFilter}
-                                onTagFilterChange={setActiveTagFilter}
-                                activeUsers={activeUsers}
-                                issueNumber={issueNumber}
-                                onVotersClick={fetchVoters}
-                            />
+                        <h2 className="text-4xl md:text-5xl font-black font-serif text-neutral-900 dark:text-white mb-6">
+                            Global Sohbet
+                        </h2>
 
-                            <div className="hidden lg:flex lg:flex-col lg:gap-8 lg:pr-2">
-                                {/* Desktop Poll - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                                    <div className="flex items-center justify-between border-b-2 border-black dark:border-neutral-600 pb-2 mb-4">
-                                        <h3 className="text-lg font-black font-serif uppercase tracking-tight dark:text-white">
-                                            Haftanın Anketi
-                                        </h3>
-                                    </div>
+                        <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
+                            Sınırlar kalkıyor! Dünyanın dört bir yanındaki üniversite öğrencileriyle çok yakında burada buluşacaksın.
+                        </p>
 
-                                    {activePoll && (
-                                        <>
-                                            <h4 className="font-bold text-sm mb-4 font-serif leading-tight dark:text-white">"{activePoll.question}"</h4>
-                                            <div className="space-y-3">
-                                                {activePoll.options.map((option, idx) => {
-                                                    const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
-                                                    const isSelected = userVote === idx;
-                                                    const showResults = userVote !== null;
-
-                                                    return (
-                                                        <button
-                                                            key={idx}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                handlePollVote(idx);
-                                                            }}
-                                                            className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden rounded-md ${isSelected
-                                                                ? 'border-black dark:border-neutral-300 bg-white dark:bg-neutral-800'
-                                                                : 'border-neutral-200 dark:border-neutral-700 hover:border-black dark:hover:border-neutral-200'
-                                                                }`}
-                                                        >
-                                                            {showResults && (
-                                                                <div
-                                                                    className="absolute top-0 left-0 h-full bg-neutral-200 dark:bg-neutral-700 transition-all duration-500 ease-out"
-                                                                    style={{ width: `${percentage}%` }}
-                                                                />
-                                                            )}
-
-                                                            <div className="relative p-3 flex justify-between items-center z-10">
-                                                                <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
-                                                                    {option}
-                                                                </span>
-                                                                {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
-                                                            </div>
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-                                            {userVote !== null && (
-                                                <button
-                                                    onClick={fetchVoters}
-                                                    className="w-full text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium font-serif hover:text-primary hover:underline transition-colors block"
-                                                >
-                                                    {totalVotes} oy kullanıldı
-                                                </button>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Trending Topics (Desktop) - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                                    <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
-                                        <TrendingUp size={20} style={{ color: 'var(--primary-color, #C8102E)' }} />
-                                        Kampüste Gündem
+                        <div className="flex gap-4">
+                            <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
+                                <Lock size={18} />
+                                Erişime Kapalı
+                            </span>
+                        </div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="odtu"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full"
+                    >
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Main Column: Forum / Letters - Shows last on mobile, first on desktop */}
+                            <div className="lg:col-span-2 space-y-8 order-last lg:order-first">
+                                <div className="flex justify-between items-end border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-6">
+                                    <h3 className="text-xl font-bold flex items-center gap-2 font-serif dark:text-white">
+                                        <MessageSquare size={24} />
+                                        Öğrenci Kürsüsü
                                     </h3>
-                                    <div className="space-y-3">
-                                        {allTags.length > 0 ? (
-                                            allTags.slice(0, 5).map((topic, index) => (
-                                                <div
-                                                    key={topic.tag}
-                                                    onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)}
-                                                    className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-white dark:bg-neutral-900 shadow-sm' : 'hover:bg-white dark:hover:bg-neutral-900'}`}
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <span className="text-lg font-serif font-black text-neutral-400 dark:text-neutral-600 w-5">{index + 1}</span>
-                                                        <div className="flex flex-col">
-                                                            <span className={`font-bold text-sm transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
-                                                                {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
-                                                            </span>
-                                                            <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
-                                                        </div>
-                                                    </div>
-                                                    <ArrowRight size={14} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="text-center py-4 text-neutral-400 text-xs italic font-serif">
-                                                Henüz gündem oluşmadı.
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
 
-                                {/* Campus Pulse (Desktop) - Newspaper Theme */}
-                                <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                                    <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white text-center">
-                                        Kampüs Nabzı
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-3 text-center">
-                                        <div
-                                            className="p-3 bg-white dark:bg-neutral-900 rounded border-2 border-[var(--primary-color)]"
-                                            style={{
-                                                borderColor: 'var(--primary-color, #C8102E)'
-                                            }}
-                                        >
-                                            <span
-                                                className="block text-3xl font-black font-serif animate-pulse"
-                                                style={{ color: 'var(--primary-color, #C8102E)' }}
+                                    <div className="flex items-center gap-4">
+                                        {activeTagFilter && (
+                                            <button
+                                                onClick={() => setActiveTagFilter(null)}
+                                                className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
+                                                style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                             >
-                                                {activeUsers}
-                                            </span>
-                                            <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
-                                                Aktif Öğrenci
-                                            </span>
+                                                <span>{activeTagFilter}</span>
+                                                <X size={12} strokeWidth={3} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Input Area */}
+                                {user ? (
+                                    <div className="bg-neutral-50 dark:bg-transparent p-6 border border-neutral-200 dark:border-none mb-8 rounded-sm shadow-sm dark:shadow-none relative">
+                                        <div className="absolute top-0 right-0 p-2 opacity-5 dark:opacity-0 dark:text-white">
+                                            <MessageSquare size={100} />
                                         </div>
-                                        <div className="p-3 bg-white dark:bg-neutral-900 rounded border-2 border-neutral-200 dark:border-neutral-700">
-                                            <span className="block text-3xl font-black font-serif text-black dark:text-white">
-                                                {issueNumber}
-                                            </span>
-                                            <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
-                                                Gündem Sayısı
-                                            </span>
+
+                                        <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white">
+                                            Sesini Duyur
+                                        </h4>
+
+                                        <form onSubmit={handlePost} className="relative z-50">
+                                            <textarea
+                                                ref={textareaRef}
+                                                rows={3}
+                                                maxLength={280}
+                                                className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                                style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
+                                                placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
+                                                value={newStatus}
+                                                onChange={handleTextChange}
+                                                onClick={(e) => setCursorPos(e.currentTarget.selectionStart)}
+                                                onKeyUp={(e) => setCursorPos(e.currentTarget.selectionStart)}
+                                            />
+
+                                            {showSuggestions && (
+                                                <div className="absolute left-0 bottom-full mb-1 w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-lg z-[1000] max-h-48 overflow-y-auto">
+                                                    <ul className="py-1">
+                                                        {suggestionList.map(tag => (
+                                                            <li
+                                                                key={tag}
+                                                                onClick={() => insertTag(tag)}
+                                                                className="px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer font-bold font-serif text-sm flex items-center gap-2 dark:text-neutral-200"
+                                                            >
+                                                                <Tag size={12} />
+                                                                {tag}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+
+                                            <div className="flex justify-between items-center border-t border-neutral-200 dark:border-neutral-800 pt-3">
+                                                <label className="flex items-center gap-2 cursor-pointer group">
+                                                    <div className={`w-4 h-4 border transition-colors flex items-center justify-center ${isAnonymous ? 'bg-neutral-900 dark:bg-white border-neutral-900 dark:border-white' : 'border-neutral-300 dark:border-neutral-700 group-hover:border-neutral-900 dark:group-hover:border-white'}`}>
+                                                        {isAnonymous && <span className="text-white dark:text-black text-[10px] choice">✓</span>}
+                                                    </div>
+                                                    <input
+                                                        type="checkbox"
+                                                        className="hidden"
+                                                        checked={isAnonymous}
+                                                        onChange={(e) => setIsAnonymous(e.target.checked)}
+                                                    />
+                                                    <span className={`text-sm ${isAnonymous ? 'font-bold text-black dark:text-white' : 'text-neutral-500 dark:text-neutral-400'}`}>Anonim Paylaş</span>
+                                                </label>
+
+                                                <div className="flex items-center gap-3">
+                                                    <span className="text-xs text-neutral-400 dark:text-neutral-500">{newStatus.length}/280</span>
+                                                    <button
+                                                        type="submit"
+                                                        disabled={!newStatus.trim() || isPosting}
+                                                        className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center gap-2 transition-colors"
+                                                    >
+                                                        <Send size={14} />
+                                                        {isPosting ? 'Yayınlanıyor...' : 'Yayınla'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                ) : (
+                                    <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">
+                                        <p className="text-neutral-600 dark:text-neutral-400">Paylaşım yapmak için <Link href="/login" className="underline font-bold text-black dark:text-white">giriş yapmalısın</Link>.</p>
+                                    </div>
+                                )}
+
+                                <div className="space-y-6">
+                                    {isLoading ? (
+                                        <div className="text-center py-12 text-neutral-400 animate-pulse">Yükleniyor...</div>
+                                    ) : voices.length === 0 ? (
+                                        <div className="text-center py-12 text-neutral-500 italic font-serif">Henüz bir ses yok. İlk sen ol!</div>
+                                    ) : (
+                                        voices.map((voice) => {
+                                            const reactions = voice.reactions || [];
+                                            const myReaction = user ? reactions.find(r => r.user_id === user.id)?.reaction_type : null;
+                                            const likeCount = reactions.filter(r => r.reaction_type === 'like').length;
+                                            const dislikeCount = reactions.filter(r => r.reaction_type === 'dislike').length;
+                                            const netVote = likeCount - dislikeCount;
+
+                                            return (
+                                                <article key={voice.id} className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}>
+                                                    {voice.is_editors_choice && (
+                                                        <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                                                            <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
+                                                            Editörün Seçimi
+                                                        </div>
+                                                    )}
+
+                                                    <div className="flex gap-4 items-start">
+                                                        <div
+                                                            className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
+                                                            style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                                                        >
+                                                            {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
+                                                        </div>
+
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                                {voice.is_anonymous ? (
+                                                                    <span className="font-bold text-neutral-600 dark:text-neutral-400 italic">
+                                                                        {voice.user.nickname || 'Rumuzlu Öğrenci'}
+                                                                    </span>
+                                                                ) : (
+                                                                    <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
+                                                                        {voice.user.full_name}
+                                                                    </Link>
+                                                                )}
+                                                                {(voice.user.department || voice.user.class_year) && (
+                                                                    <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
+                                                                        {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
+                                                                    </span>
+                                                                )}
+                                                                <div className="ml-auto relative">
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            setActiveMenu(activeMenu === voice.id ? null : voice.id);
+                                                                        }}
+                                                                        className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                                                                    >
+                                                                        <MoreVertical size={16} />
+                                                                    </button>
+                                                                    {activeMenu === voice.id && (
+                                                                        <>
+                                                                            <div className="fixed inset-0 z-10" onClick={() => setActiveMenu(null)} />
+                                                                            <div className="absolute right-0 top-full mt-1 bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 shadow-xl rounded-lg z-20 w-40 overflow-hidden py-1">
+                                                                                {user && voice.user_id === user.id ? (
+                                                                                    <>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                startEdit(voice);
+                                                                                                setActiveMenu(null);
+                                                                                            }}
+                                                                                            className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 flex items-center gap-2"
+                                                                                        >
+                                                                                            <Edit2 size={14} />
+                                                                                            Düzenle
+                                                                                        </button>
+                                                                                        <button
+                                                                                            onClick={() => {
+                                                                                                handleDelete(voice.id);
+                                                                                                setActiveMenu(null);
+                                                                                            }}
+                                                                                            className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                                                                        >
+                                                                                            <Trash2 size={14} />
+                                                                                            Sil
+                                                                                        </button>
+                                                                                    </>
+                                                                                ) : !voice.is_anonymous ? (
+                                                                                    <FriendButton
+                                                                                        targetUserId={voice.user_id}
+                                                                                        variant="menu-item"
+                                                                                    />
+                                                                                ) : null}
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {editingId === voice.id ? (
+                                                                <form onSubmit={handleUpdate} className="mb-4">
+                                                                    <textarea
+                                                                        className="w-full p-2 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors"
+                                                                        rows={3}
+                                                                        value={editContent}
+                                                                        onChange={e => setEditContent(e.target.value)}
+                                                                    />
+                                                                    <div className="flex justify-end gap-2 mt-2">
+                                                                        <button type="button" onClick={() => setEditingId(null)} className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white">İptal</button>
+                                                                        <button type="submit" className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm">Kaydet</button>
+                                                                    </div>
+                                                                </form>
+                                                            ) : (
+                                                                <div className="mb-4 group/content relative">
+                                                                    <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
+                                                                        {renderContentWithTags(voice.content)}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+
+                                                            <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900">
+                                                                <div className="flex items-center gap-6">
+                                                                    <div className="flex items-center gap-1">
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'like'); }}
+                                                                            className={`p-2 rounded-full transition-all ${myReaction === 'like' ? 'text-green-600 bg-green-50 dark:bg-green-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-500'}`}
+                                                                            title="Yükselt"
+                                                                        >
+                                                                            <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
+                                                                        </button>
+                                                                        <span className={`text-sm font-bold w-6 text-center ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                                                            {netVote}
+                                                                        </span>
+                                                                        <button
+                                                                            onClick={(e) => { e.stopPropagation(); handleReaction(voice.id, 'dislike'); }}
+                                                                            className={`p-2 rounded-full transition-all ${myReaction === 'dislike' ? 'text-red-600 bg-red-50 dark:bg-red-900/20' : 'text-neutral-400 dark:text-neutral-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500'}`}
+                                                                            title="Düşür"
+                                                                        >
+                                                                            <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
+                                                                        </button>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
+                                                                        className={`flex items-center gap-2 group transition-colors ${activeCommentBox === voice.id ? 'text-blue-500' : 'text-neutral-400 dark:text-neutral-500 hover:text-blue-500'}`}
+                                                                    >
+                                                                        <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20">
+                                                                            <MessageSquare size={18} />
+                                                                        </div>
+                                                                        <span className="text-sm font-medium">{voice.comments.length > 0 ? voice.comments.length : ''}</span>
+                                                                    </button>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
+                                                                            toast.success('Link kopyalandı!');
+                                                                        }}
+                                                                        className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
+                                                                    >
+                                                                        <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
+                                                                            <Share2 size={18} />
+                                                                        </div>
+                                                                    </button>
+                                                                </div>
+                                                                <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+                                                                    {formatRelativeTime(voice.created_at)}
+                                                                </span>
+                                                            </div>
+
+                                                            {(activeCommentBox === voice.id || (voice.comments.length > 0 && activeCommentBox === voice.id)) && (
+                                                                <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
+                                                                    <div className="space-y-4 mb-4">
+                                                                        {voice.comments.map(comment => (
+                                                                            <div key={comment.id} className="flex gap-3">
+                                                                                <div className="w-8 h-8 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center text-xs font-bold text-neutral-500 dark:text-neutral-400">
+                                                                                    {comment.user.charAt(0)}
+                                                                                </div>
+                                                                                <div className="flex-1 bg-neutral-50 dark:bg-neutral-900 rounded-2xl rounded-tl-none p-3">
+                                                                                    <div className="flex justify-between items-baseline mb-1">
+                                                                                        <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
+                                                                                            {comment.user}
+                                                                                        </Link>
+                                                                                        <span className="text-[10px] text-neutral-400 dark:text-neutral-500">{formatRelativeTime(comment.created_at)}</span>
+                                                                                    </div>
+                                                                                    <p className="text-sm text-neutral-700 dark:text-neutral-300">{comment.content}</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                    {activeCommentBox === voice.id && (
+                                                                        <form onSubmit={(e) => handleCommentSubmit(e, voice.id)} className="flex gap-2 mt-4 pt-2">
+                                                                            <input
+                                                                                type="text"
+                                                                                placeholder="Yorumunu yaz..."
+                                                                                className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-[#C8102E] font-serif dark:text-white transition-colors"
+                                                                                value={newComment}
+                                                                                onChange={(e) => setNewComment(e.target.value)}
+                                                                                autoFocus
+                                                                            />
+                                                                            <button
+                                                                                type="submit"
+                                                                                disabled={!newComment.trim() || isCommenting}
+                                                                                className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                                                                            >
+                                                                                {isCommenting ? '...' : <Send size={14} />}
+                                                                            </button>
+                                                                        </form>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </article>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Sidebar: Polls & Stats - Shows first on mobile, last on desktop */}
+                            <div className="order-first lg:order-last -mx-4 px-4 lg:mx-0 lg:px-0">
+                                <VoiceStatsWidget
+                                    activePoll={activePoll}
+                                    pollLoading={pollLoading}
+                                    pollResults={pollResults}
+                                    totalVotes={totalVotes}
+                                    userVote={userVote}
+                                    onPollVote={handlePollVote}
+                                    allTags={allTags}
+                                    activeTagFilter={activeTagFilter}
+                                    onTagFilterChange={setActiveTagFilter}
+                                    activeUsers={activeUsers}
+                                    issueNumber={issueNumber}
+                                    onVotersClick={fetchVoters}
+                                />
+
+                                <div className="hidden lg:flex lg:flex-col lg:gap-8 lg:pr-2">
+                                    {/* Desktop Poll - Newspaper Theme */}
+                                    <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                        <div className="flex items-center justify-between border-b-2 border-black dark:border-neutral-600 pb-2 mb-4">
+                                            <h3 className="text-lg font-black font-serif uppercase tracking-tight dark:text-white">
+                                                Haftanın Anketi
+                                            </h3>
+                                        </div>
+
+                                        {activePoll && (
+                                            <>
+                                                <h4 className="font-bold text-sm mb-4 font-serif leading-tight dark:text-white">"{activePoll.question}"</h4>
+                                                <div className="space-y-3">
+                                                    {activePoll.options.map((option, idx) => {
+                                                        const percentage = totalVotes === 0 ? 0 : Math.round((pollResults[idx] / totalVotes) * 100);
+                                                        const isSelected = userVote === idx;
+                                                        const showResults = userVote !== null;
+
+                                                        return (
+                                                            <button
+                                                                key={idx}
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    handlePollVote(idx);
+                                                                }}
+                                                                className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden rounded-md ${isSelected
+                                                                    ? 'border-black dark:border-neutral-300 bg-white dark:bg-neutral-800'
+                                                                    : 'border-neutral-200 dark:border-neutral-700 hover:border-black dark:hover:border-neutral-200'
+                                                                    }`}
+                                                            >
+                                                                {showResults && (
+                                                                    <div
+                                                                        className="absolute top-0 left-0 h-full bg-neutral-200 dark:bg-neutral-700 transition-all duration-500 ease-out"
+                                                                        style={{ width: `${percentage}%` }}
+                                                                    />
+                                                                )}
+
+                                                                <div className="relative p-3 flex justify-between items-center z-10">
+                                                                    <span className={isSelected ? 'text-black dark:text-white' : 'text-neutral-800 dark:text-neutral-200 group-hover:text-black dark:group-hover:text-white transition-colors'}>
+                                                                        {option}
+                                                                    </span>
+                                                                    {showResults && <span className="text-sm font-black dark:text-white">{percentage}%</span>}
+                                                                </div>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                                {userVote !== null && (
+                                                    <button
+                                                        onClick={fetchVoters}
+                                                        className="w-full text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium font-serif hover:text-primary hover:underline transition-colors block"
+                                                    >
+                                                        {totalVotes} oy kullanıldı
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Trending Topics (Desktop) - Newspaper Theme */}
+                                    <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                        <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white flex items-center gap-2">
+                                            <TrendingUp size={20} style={{ color: 'var(--primary-color, #C8102E)' }} />
+                                            Kampüste Gündem
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {allTags.length > 0 ? (
+                                                allTags.slice(0, 5).map((topic, index) => (
+                                                    <div
+                                                        key={topic.tag}
+                                                        onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)}
+                                                        className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-white dark:bg-neutral-900 shadow-sm' : 'hover:bg-white dark:hover:bg-neutral-900'}`}
+                                                    >
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-lg font-serif font-black text-neutral-400 dark:text-neutral-600 w-5">{index + 1}</span>
+                                                            <div className="flex flex-col">
+                                                                <span className={`font-bold text-sm transition-colors font-serif ${activeTagFilter === topic.tag ? 'text-primary' : 'text-neutral-900 dark:text-white group-hover:text-primary'}`}>
+                                                                    {topic.tag.startsWith('#') ? topic.tag : `#${topic.tag}`}
+                                                                </span>
+                                                                <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium">{topic.count} gönderi</span>
+                                                            </div>
+                                                        </div>
+                                                        <ArrowRight size={14} className={`transition-transform ${activeTagFilter === topic.tag ? 'opacity-100 text-primary' : 'text-black dark:text-white opacity-0 group-hover:opacity-100 group-hover:translate-x-1'}`} />
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="text-center py-4 text-neutral-400 text-xs italic font-serif">
+                                                    Henüz gündem oluşmadı.
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Campus Pulse (Desktop) - Newspaper Theme */}
+                                    <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                                        <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight dark:text-white text-center">
+                                            Kampüs Nabzı
+                                        </h3>
+                                        <div className="grid grid-cols-2 gap-3 text-center">
+                                            <div
+                                                className="p-3 bg-white dark:bg-neutral-900 rounded border-2 border-[var(--primary-color)]"
+                                                style={{
+                                                    borderColor: 'var(--primary-color, #C8102E)'
+                                                }}
+                                            >
+                                                <span
+                                                    className="block text-3xl font-black font-serif animate-pulse"
+                                                    style={{ color: 'var(--primary-color, #C8102E)' }}
+                                                >
+                                                    {activeUsers}
+                                                </span>
+                                                <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                                                    Aktif Öğrenci
+                                                </span>
+                                            </div>
+                                            <div className="p-3 bg-white dark:bg-neutral-900 rounded border-2 border-neutral-200 dark:border-neutral-700">
+                                                <span className="block text-3xl font-black font-serif text-black dark:text-white">
+                                                    {issueNumber}
+                                                </span>
+                                                <span className="text-[10px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
+                                                    Gündem Sayısı
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </>
-            )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Poll Voters Modal */}
             {showVotersModal && (
