@@ -247,7 +247,8 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
       router.refresh();
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error(`Profil güncellenirken bir hata oluştu: ${error.message || 'Bilinmeyen hata'}`);
+      // Show explicit error to user (e.g. "Column nickname does not exist")
+      toast.error(`Hata: ${error.message || error.details || 'Güncelleme başarısız'}`);
     } finally {
       setSaving(false);
     }

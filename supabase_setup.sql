@@ -1,0 +1,33 @@
+-- 1. Create the 'avatars' bucket if it doesn't exist
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+-- 2. Add 'nickname' column to 'profiles' table if it doesn't exist
+do $$
+begin
+    if not exists (select 1 from information_schema.columns where table_name = 'profiles' and column_name = 'nickname') then
+        alter table profiles add column nickname text;
+    end if;
+end $$;
+
+-- 3. Add 'is_archived' column to 'profiles' table (used in Polls)
+do $$
+begin
+    if not exists (select 1 from information_schema.columns where table_name = 'profiles' and column_name = 'is_archived') then
+        alter table profiles add column is_archived boolean default false;
+    end if;
+end $$;
+
+-- 4. Storage Policies (Allow public read, auth upload)
+create policy "Avatar images are publicly accessible."
+  on storage.objects for select
+  using ( bucket_id = 'avatars' );
+
+create policy "Anyone can upload an avatar."
+  on storage.objects for insert
+  with check ( bucket_id = 'avatars' );
+  
+create policy "Anyone can update their own avatar."
+  on storage.objects for update
+  using ( bucket_id = 'avatars' );
