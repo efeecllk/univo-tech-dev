@@ -811,6 +811,23 @@ export default function OfficialView() {
                                 <span className="text-xs text-neutral-500 block mt-2">{item.source} · {item.date}</span>
                             </div>
 
+                            {activeTab !== 'history' && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (activeTab === 'starred') {
+                                            handleStar(String(item.id), e);
+                                        } else {
+                                            handleMarkRead(String(item.id), e);
+                                        }
+                                    }}
+                                    className="absolute bottom-3 right-3 p-2 bg-white dark:bg-neutral-800 rounded-full shadow-md border border-neutral-200 dark:border-neutral-700 text-neutral-400 hover:text-red-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-all opacity-0 group-hover:opacity-100 z-10 scale-90 hover:scale-100"
+                                    title={activeTab === 'starred' ? "Listeden Kaldır" : "Gündemden Kaldır"}
+                                >
+                                    <Trash2 size={14} strokeWidth={2.5} />
+                                </button>
+                             )}
+
                             {activeTab === 'history' && (
                                 <button
                                     onClick={(e) => handleUndoRead(String(item.id), e)}
