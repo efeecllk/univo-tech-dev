@@ -102,8 +102,12 @@ export default function OfficialView() {
             if (savedStars) {
                 const ids = JSON.parse(savedStars);
                 const emailUids = ids
-                    .filter((id: string) => id.startsWith('email-'))
-                    .map((id: string) => parseInt(id.replace('email-', ''), 10));
+                    .map((id: string) => {
+                        // Try to extract number from any format (email-123, 123, etc)
+                        const match = id.match(/(\d+)/);
+                        return match ? parseInt(match[1], 10) : null;
+                    })
+                    .filter((n: number | null) => n !== null);
                 starredHeader = JSON.stringify(emailUids);
             }
 
