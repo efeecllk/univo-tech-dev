@@ -53,7 +53,7 @@ export default function OfficialArchivePage() {
       <div className="bg-white dark:bg-neutral-900 border-b-2 border-black dark:border-neutral-700">
         <div className="container mx-auto px-4 py-6 text-center">
             <div className="flex items-center justify-center gap-4 mb-4">
-                <Link href="/official" className="p-2 border border-neutral-300 dark:border-neutral-700 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors absolute left-4 md:static text-neutral-600 dark:text-neutral-400">
+                <Link href="/?view=official" className="p-2 border border-neutral-300 dark:border-neutral-700 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors absolute left-4 md:static text-neutral-600 dark:text-neutral-400">
                     <ArrowLeft size={20} />
                 </Link>
                 <h1 className="text-3xl font-black font-serif uppercase text-black dark:text-white">Resmi Belge Arşivi</h1>
