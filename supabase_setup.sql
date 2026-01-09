@@ -19,15 +19,25 @@ begin
     end if;
 end $$;
 
--- 4. Storage Policies (Allow public read, auth upload)
+-- 4. Storage Policies (Safe Drop & Recreate)
+
+-- Policy: Public Read Access
+drop policy if exists "Avatar images are publicly accessible." on storage.objects;
+drop policy if exists "Public Access" on storage.objects; -- Drop potential alternate name
 create policy "Avatar images are publicly accessible."
   on storage.objects for select
   using ( bucket_id = 'avatars' );
 
+-- Policy: Upload Access
+drop policy if exists "Anyone can upload an avatar." on storage.objects;
+drop policy if exists "Upload Access" on storage.objects;
 create policy "Anyone can upload an avatar."
   on storage.objects for insert
   with check ( bucket_id = 'avatars' );
   
+-- Policy: Update Access
+drop policy if exists "Anyone can update their own avatar." on storage.objects;
+drop policy if exists "Update Access" on storage.objects;
 create policy "Anyone can update their own avatar."
   on storage.objects for update
   using ( bucket_id = 'avatars' );
