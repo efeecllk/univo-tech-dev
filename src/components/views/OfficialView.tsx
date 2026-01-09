@@ -519,36 +519,37 @@ export default function OfficialView() {
     return (
         <div className="container mx-auto px-4 py-8 relative">
             {/* Newspaper Header - Static on mobile */}
-            <div className="relative border-b-4 border-black dark:border-neutral-600 pb-6 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-8 -mt-4 -mx-4 px-4">
-                <div className="flex flex-col items-center justify-center gap-6">
+            <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
+                <div className="flex flex-col items-center justify-center gap-4">
                     <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">Resmi Gündem</h2>
 
-                    {/* Global Mode Switch - Custom Morphing Button */}
+                    {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
                     <div className="flex items-center gap-3">
-                        <motion.button
-                            layout
+                        <div 
+                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer"
                             onClick={() => setIsGlobalMode(!isGlobalMode)}
-                            className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 shadow-md transform-gpu bg-white dark:bg-black"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
                             title={isGlobalMode ? "ODTÜ Moduna Geç" : "Global Moda Geç"}
                         >
-                            <AnimatePresence mode="wait">
-                                <motion.img
-                                    key={isGlobalMode ? "global" : "odtu"}
-                                    src={isGlobalMode ? "/earth_image.jpg" : "/odtu_logo.png"}
-                                    alt={isGlobalMode ? "Global" : "ODTÜ"}
-                                    className="w-full h-full object-cover"
-                                    initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
-                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                                    exit={{ opacity: 0, scale: 0.5, rotate: 180 }}
-                                    transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
-                                />
-                            </AnimatePresence>
-                        </motion.button>
+                            <div 
+                                className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
+                                style={{ transform: isGlobalMode ? 'rotateX(180deg)' : 'rotateX(0deg)' }}
+                            >
+                                {/* Front: ODTÜ */}
+                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md">
+                                     <img src="/odtu_logo.png" alt="ODTÜ" className="w-full h-full object-cover" />
+                                </div>
+                                {/* Back: Global */}
+                                <div 
+                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center"
+                                    style={{ transform: 'rotateX(180deg)' }}
+                                >
+                                    <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-3 mt-6 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
+                <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
                     <span>SAYI: {issueNumber}</span>
                     <Link
                         href="/official/archive"

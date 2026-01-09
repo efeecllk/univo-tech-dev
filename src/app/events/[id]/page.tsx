@@ -8,16 +8,37 @@ import AddToCalendarButton from '@/components/AddToCalendarButton';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
 import AnnouncementComments from '@/components/AnnouncementComments';
 
+import { supabase } from '@/lib/supabase';
+
 export default async function EventDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const event = mockEvents.find((e) => e.id === id);
+  
+  // 1. Try Fetching from Supabase (Real Data)
+  const { data: dbEvent } = await supabase
+    .from('events')
+    .select(`
+        *,
+        community:communities(id, name, logo_url, category)
+    `)
+    .eq('id', id)
+    .single();
+
+  // 2. Fallback to Mock Data
+  let event = dbEvent || mockEvents.find((e) => e.id === id);
 
   if (!event) {
     notFound();
+  }
+
+  // Normalize data structure if needed (DB vs Mock)
+  // Mock has 'category' on event. DB should too.
+  // DB might not have 'excerpt', so provide fallback.
+  if (dbEvent && !event.excerpt) {
+      event.excerpt = event.description ? event.description.substring(0, 100) + '...' : '';
   }
 
   const isPastEvent = new Date(event.date) < new Date();
