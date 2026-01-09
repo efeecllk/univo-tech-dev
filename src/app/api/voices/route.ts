@@ -84,10 +84,12 @@ export async function GET(request: Request) {
         return dept.replace(/\.base$/i, '').replace(/\s*BASE$/i, '').replace(/\s*DBE$/i, '').trim();
       };
 
+      const profile = Array.isArray(voice.profiles) ? voice.profiles[0] : voice.profiles;
+
       // Map profile data based on anonymity
       let user = voice.is_anonymous ? 
-        { full_name: 'Rumuzlu Öğrenci', nickname: voice.profiles?.nickname, department: '', avatar_url: null } : 
-        { ...voice.profiles };
+        { full_name: 'Rumuzlu Öğrenci', nickname: profile?.nickname, department: '', avatar_url: null } : 
+        { ...profile };
 
       if (user && user.full_name && !voice.is_anonymous) {
         user.full_name = toTitleCase(user.full_name);
@@ -98,7 +100,7 @@ export async function GET(request: Request) {
       }
 
       // Determine if user is verified (has student_id)
-      const isVerified = !voice.is_anonymous && voice.profiles?.student_id && voice.profiles.student_id.length > 0;
+      const isVerified = !voice.is_anonymous && profile?.student_id && profile.student_id.length > 0;
 
       return {
         id: voice.id,
