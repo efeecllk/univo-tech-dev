@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { Calendar, MapPin, Type, FileText, Upload, X } from 'lucide-react';
+import { Calendar, MapPin, Type, FileText, Upload, X, Minus, Plus } from 'lucide-react';
 
 export default function CreateEventPage() {
   const { user } = useAuth();
@@ -67,6 +67,13 @@ export default function CreateEventPage() {
   const removeImage = () => {
     setFormData({ ...formData, image_url: '' });
   };
+
+  const updateQuota = (delta: number) => {
+    const current = parseInt(formData.quota || '0', 10);
+    const next = Math.max(0, current + delta);
+    setFormData(prev => ({ ...prev, quota: next === 0 ? '' : next.toString() }));
+  };
+
 
   const handleSubmit = async (e: any) => {
       e.preventDefault();
@@ -193,8 +200,9 @@ export default function CreateEventPage() {
                 <input 
                     type="text" 
                     name="maps_url" 
-                    className="w-full px-4 py-2 border-2 border-neutral-100 text-sm focus:border-black focus:outline-none placeholder:italic"
-                    placeholder="Google Maps Linki (Opsiyonel) - Eğer 'Haritada Bul' butonu yanlış yer gösteriyorsa buraya doğrusunu yapıştırın."
+                    required
+                    className="w-full px-4 py-2 border-2 border-neutral-100 dark:border-neutral-800 text-sm focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none placeholder:italic bg-white dark:bg-neutral-900 text-black dark:text-white transition-colors"
+                    placeholder="Google Maps Linki (Zorunlu) - Haritada Bul'a tıklayıp doğrulayın."
                     onChange={handleChange}
                 />
             </div>
@@ -258,15 +266,32 @@ export default function CreateEventPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                   <label className="block text-sm font-bold uppercase mb-2">Kontenjan (Kişi)</label>
-                   <input 
-                        type="number" 
-                        name="quota" 
-                        min="0"
-                        className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="Sınırsız için boş bırakın"
-                        onChange={handleChange}
-                   />
+                   <label className="block text-sm font-bold uppercase mb-2">Kontenjan</label>
+                   <div className="flex items-center gap-2">
+                        <button 
+                            type="button"
+                            onClick={() => updateQuota(-10)}
+                            className="w-12 h-12 flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 hover:bg-[var(--primary-color)] hover:text-white rounded-lg transition-colors"
+                        >
+                            <Minus size={20} />
+                        </button>
+                        <input 
+                                type="number" 
+                                name="quota" 
+                                min="0"
+                                className="flex-1 px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors text-center font-bold text-lg"
+                                placeholder="Sınırsız"
+                                value={formData.quota}
+                                onChange={handleChange}
+                        />
+                        <button 
+                            type="button"
+                            onClick={() => updateQuota(10)}
+                            className="w-12 h-12 flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 hover:bg-[var(--primary-color)] hover:text-white rounded-lg transition-colors"
+                        >
+                            <Plus size={20} />
+                        </button>
+                   </div>
                 </div>
                 <div>
                    <label className="block text-sm font-bold uppercase mb-2">Harici Kayıt Linki</label>
@@ -274,7 +299,7 @@ export default function CreateEventPage() {
                         type="text" 
                         name="registration_link" 
                         className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="Örn: Google Forms..."
+                        placeholder="Luma vb."
                         onChange={handleChange}
                    />
                 </div>
@@ -287,7 +312,8 @@ export default function CreateEventPage() {
                     required 
                     rows={2}
                     className="w-full px-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors resize-none"
-                    placeholder="Listelenirken görünecek kısa açıklama..."
+                    placeholder="Listelenirken görünecek kısa açıklama (Maks. 180 karakter)..."
+                    maxLength={180}
                     onChange={handleChange}
                 />
             </div>
@@ -301,7 +327,8 @@ export default function CreateEventPage() {
                         required 
                         rows={6}
                         className="w-full pl-10 pr-4 py-3 border-2 border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black text-black dark:text-white focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none transition-colors"
-                        placeholder="Etkinliğin tüm detayları..."
+                        placeholder="Etkinliğin tüm detayları (Min. 100 karakter)..."
+                        minLength={100}
                         onChange={handleChange}
                     />
                 </div>

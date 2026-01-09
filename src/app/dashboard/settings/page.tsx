@@ -173,14 +173,7 @@ export default function SettingsPage() {
                 </form>
             </div>
 
-            {/* Demo Data Section */}
-            <div className="mt-8 bg-neutral-100 dark:bg-neutral-900 p-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700">
-                <h3 className="text-lg font-bold font-serif mb-2 dark:text-white">Demo Verileri</h3>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-                    Topluluğunuz boş görünüyorsa, aşağıdan örnek verileri tekrar yükleyebilirsiniz.
-                </p>
-                <DemoDataLoader communityId={community?.id} />
-            </div>
+
         </div>
     );
 }
@@ -372,37 +365,4 @@ async function seedEvents(communityId: string) {
     }
 }
 
-function DemoDataLoader({ communityId }: { communityId: string }) {
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
-    
-    const loadData = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (!communityId) {
-             toast.error("Hata: Topluluk ID bulunamadı.");
-             return;
-        }
-        setLoading(true);
-        try {
-            await seedEvents(communityId);
-            toast.success('Demo verileri sıfırlandı!');
-            router.refresh(); 
-        } catch (e: any) {
-            console.error("Load data error:", e);
-            toast.error("Hata oluştu: " + e.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
-    return (
-        <button 
-            type="button"
-            onClick={loadData} 
-            disabled={loading}
-            className="bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 px-4 py-2 font-bold uppercase text-xs hover:bg-neutral-300 dark:hover:bg-neutral-700 transition-colors"
-        >
-            {loading ? 'Yükleniyor...' : 'Demo Verilerini Yükle'}
-        </button>
-    );
-}
