@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import FriendButton from '../FriendButton';
 import VoiceStatsWidget from './VoiceStatsWidget';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Interfaces
 interface Voice {
@@ -430,12 +431,12 @@ export default function VoiceView() {
             return;
         }
         if (!activePoll) return;
-        
+
         // Prevent spam clicking while processing
         if (pollLoading) return;
 
         const pollId = activePoll.question.substring(0, 100).replace(/[^a-zA-Z0-9]/g, '_');
-        
+
         // Snapshot for rollback
         const previousResults = [...pollResults];
         const previousVote = userVote;
@@ -444,7 +445,7 @@ export default function VoiceView() {
             // Optimistic Update
             const newResults = [...pollResults];
             let action: 'vote' | 'retract' = 'vote';
-            
+
             // Check if we are clicking the SAME option we already voted for (Retraction)
             if (userVote === index) {
                 // Retract: Decrement count if > 0
@@ -460,7 +461,7 @@ export default function VoiceView() {
                 setUserVote(index);
                 action = 'vote';
             }
-            
+
             // Update UI immediately
             setPollResults(newResults);
 
@@ -471,23 +472,23 @@ export default function VoiceView() {
                     .delete()
                     .eq('user_id', user.id)
                     .eq('poll_id', pollId);
-                
+
                 if (error) throw error;
             } else {
                 const { error } = await supabase
                     .from('poll_votes')
                     .upsert({ user_id: user.id, poll_id: pollId, option_index: index }, { onConflict: 'user_id, poll_id' });
-                
+
                 if (error) throw error;
             }
-            
+
             // Success: No need to re-fetch immediately as we trust our optimistic update.
             // But we can do a background verification later if needed.
-            
+
         } catch (e) {
             console.error('Vote Error:', e);
             toast.error('Oylama sırasında bir hata oluştu.');
-            
+
             // Revert State on Error
             setPollResults(previousResults);
             setUserVote(previousVote);
@@ -558,21 +559,31 @@ export default function VoiceView() {
                     <h2 className="text-3xl md:text-6xl font-black font-serif uppercase tracking-tight mb-0 text-black dark:text-white flex items-center justify-center gap-4">
                         Kampüsün Sesi
                     </h2>
-                    
+
                     {/* Global Mode Switch - Moved Here */}
+                    {/* Global Mode Switch - Custom Morphing Button */}
                     <div className="flex items-center gap-3">
-                         <div
-                            className="flex items-center cursor-pointer select-none group bg-white dark:bg-black px-2 py-1 rounded-full border-2 border-black dark:border-neutral-600 shadow-sm"
+                        <motion.button
+                            layout
                             onClick={() => setIsGlobalMode(!isGlobalMode)}
+                            className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 shadow-md transform-gpu bg-white dark:bg-black"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             title={isGlobalMode ? "ODTÜ Moduna Geç" : "Global Moda Geç"}
                         >
-                            <span className={`text-xs font-black uppercase mr-2 ${!isGlobalMode ? 'text-primary' : 'text-neutral-400'}`}>ODTÜ</span>
-                            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors duration-300 relative shadow-inner ${isGlobalMode ? 'bg-blue-600' : 'bg-neutral-200 dark:bg-neutral-700'}`}>
-                                {!isGlobalMode && <div className="absolute inset-0 bg-[var(--primary-color,#C8102E)] rounded-full opacity-100" />}
-                                <div className={`w-3 h-3 bg-white rounded-full shadow-md transform transition-transform duration-300 relative z-10 ${isGlobalMode ? 'translate-x-4' : 'translate-x-0'}`} />
-                            </div>
-                            <span className={`text-xs font-black uppercase ml-2 ${isGlobalMode ? 'text-blue-600' : 'text-neutral-400'}`}>Global</span>
-                        </div>
+                            <AnimatePresence mode="wait">
+                                <motion.img
+                                    key={isGlobalMode ? "global" : "odtu"}
+                                    src={isGlobalMode ? "/earth_image.jpg" : "/odtu_logo.png"}
+                                    alt={isGlobalMode ? "Global" : "ODTÜ"}
+                                    className="w-full h-full object-cover"
+                                    initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
+                                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 0.5, rotate: 180 }}
+                                    transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
+                                />
+                            </AnimatePresence>
+                        </motion.button>
                     </div>
                 </div>
 
@@ -620,7 +631,7 @@ export default function VoiceView() {
                                     <MessageSquare size={24} />
                                     Öğrenci Kürsüsü
                                 </h3>
-                                
+
                                 <div className="flex items-center gap-4">
                                     {activeTagFilter && (
                                         <button
@@ -965,7 +976,7 @@ export default function VoiceView() {
                                                             key={idx}
                                                             onClick={(e) => {
                                                                 e.preventDefault();
-                                                                handlePollVote(idx); 
+                                                                handlePollVote(idx);
                                                             }}
                                                             className={`w-full text-left relative border-2 transition-all font-bold group overflow-hidden rounded-md ${isSelected
                                                                 ? 'border-black dark:border-neutral-300 bg-white dark:bg-neutral-800'
@@ -990,7 +1001,7 @@ export default function VoiceView() {
                                                 })}
                                             </div>
                                             {userVote !== null && (
-                                                <button 
+                                                <button
                                                     onClick={fetchVoters}
                                                     className="w-full text-center mt-3 text-xs text-neutral-500 dark:text-neutral-400 font-medium font-serif hover:text-primary hover:underline transition-colors block"
                                                 >
@@ -1010,9 +1021,9 @@ export default function VoiceView() {
                                     <div className="space-y-3">
                                         {allTags.length > 0 ? (
                                             allTags.slice(0, 5).map((topic, index) => (
-                                                <div 
-                                                    key={topic.tag} 
-                                                    onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)} 
+                                                <div
+                                                    key={topic.tag}
+                                                    onClick={() => setActiveTagFilter(topic.tag === activeTagFilter ? null : topic.tag)}
                                                     className={`flex items-center justify-between group cursor-pointer p-2 -mx-2 rounded-lg transition-colors border-b border-neutral-200 dark:border-neutral-800 last:border-0 ${activeTagFilter === topic.tag ? 'bg-white dark:bg-neutral-900 shadow-sm' : 'hover:bg-white dark:hover:bg-neutral-900'}`}
                                                 >
                                                     <div className="flex items-center gap-3">
@@ -1114,8 +1125,8 @@ export default function VoiceView() {
                                 <div className="flex flex-col gap-3">
                                     {voters.filter(v => v.option_index === selectedVoterOption).map(voter => (
                                         <Link key={voter.user_id} href={`/profile/${voter.user_id}`} className="flex items-center gap-3 p-3 bg-white dark:bg-[#0a0a0a] rounded border border-neutral-200 dark:border-neutral-800 shadow-sm hover:border-black dark:hover:border-neutral-500 transition-colors">
-                                            <div 
-                                                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase" 
+                                            <div
+                                                className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase"
                                                 style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                             >
                                                 {voter.display_name.charAt(0)}
