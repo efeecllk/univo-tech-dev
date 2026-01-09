@@ -1013,8 +1013,17 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                             onClick={() => router.push(`/events/${event.id}`)}
                                             className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-5 hover:border-primary dark:hover:border-primary hover:shadow-md transition-all cursor-pointer group"
                                         >
-                                            <span className="inline-block px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-[10px] uppercase rounded font-bold mb-3 tracking-wider">
-                                                {(event as any).community?.category || (event.category === 'EVENT' ? 'Etkinlik' : event.category) || 'Etkinlik'}
+                                            <span className="inline-block px-2 py-0.5 bg-[var(--primary-color)] text-white text-[10px] uppercase rounded font-bold mb-3 tracking-wider shadow-sm">
+                                                {(() => {
+                                                    const cat = (event.category || '').toLowerCase();
+                                                    if (cat === 'event') return 'Etkinlik';
+                                                    if (cat === 'workshop') return 'Atölye';
+                                                    if (cat === 'talk') return 'Konuşma';
+                                                    if (cat === 'announcement') return 'Toplantı';
+                                                    // Fallback check community category if event category is missing/generic
+                                                    const commCat = (event as any).community?.category;
+                                                    return commCat || 'Etkinlik';
+                                                })()}
                                             </span>
                                             <h3 className="font-bold text-lg mb-2 text-neutral-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">
                                                 {event.title}

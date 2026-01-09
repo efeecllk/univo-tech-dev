@@ -1,3 +1,4 @@
+'use client';
 
 import { useState, useEffect } from 'react';
 import { mockEvents } from '@/data/mockEvents';
@@ -7,16 +8,33 @@ import CategoryFilter from '../CategoryFilter';
 import EventList from '../EventList';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-// MOCK POPULAR EVENTS
-const POPULAR_EVENTS = [
-  { id: 'evt-1', title: 'Start-up Zirvesi', attendees: 250, date: '12 Mayıs' },
-  { id: 'evt-2', title: 'Müzik Festivali', attendees: 180, date: '15 Mayıs' },
-];
+import { supabase } from '@/lib/supabase';
 
 export default function CommunityView() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [popularEvents, setPopularEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchPopularEvents = async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabase
+        .from('events')
+        .select(`
+          id, 
+          title, 
+          date, 
+          location,
+          community:communities(name)
+        `)
+        .gte('date', today)
+        .order('date', { ascending: true })
+        .limit(2);
+      
+      if (data) setPopularEvents(data);
+    };
+    fetchPopularEvents();
+  }, []);
 
   const filteredEvents =
     selectedCategory === 'all'
@@ -33,7 +51,6 @@ export default function CommunityView() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Newspaper Header - Sticky on mobile */}
       {/* Newspaper Header - Static on mobile */}
       <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
         <h2 className="text-[1.35rem] md:text-6xl font-black font-serif uppercase tracking-tighter mb-2 text-black dark:text-white whitespace-nowrap">Topluluk Meydanı</h2>
@@ -55,25 +72,35 @@ export default function CommunityView() {
             />
 
             <div className="mt-8">
-              {/* Popular Events - Replaced TrendingWidget */}
+              {/* Popular Events - Real Data */}
               <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
                 <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 text-neutral-900 dark:text-white transition-colors">
                   <Calendar size={20} className="text-neutral-900 dark:text-white" />
                   Popüler
                 </h3>
                 <div className="space-y-4">
-                  {POPULAR_EVENTS.map(event => (
-                    <div key={event.id} onClick={() => router.push('/events/1')} className="group cursor-pointer">
-                      <div className="flex justify-between items-start mb-1">
-                        <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:underline decoration-2 underline-offset-2 transition-colors">{event.title}</h4>
-                        <span className="text-xs font-bold bg-black text-white dark:bg-white dark:text-black px-2 py-1 uppercase transition-colors">{event.date}</span>
+                  {popularEvents.length > 0 ? popularEvents.map(event => (
+                    <div key={event.id} onClick={() => router.push(`/events/${event.id}`)} className="group cursor-pointer">
+                      <div className="flex justify-between items-start mb-1 gap-2">
+                        <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:underline decoration-2 underline-offset-2 transition-colors line-clamp-2 leading-tight py-1">
+                          {event.title}
+                        </h4>
+                        <span className="shrink-0 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black px-2 py-1 uppercase transition-colors">
+                          {new Date(event.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                        </span>
                       </div>
                       <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{event.attendees} katılımcı</p>
-                        <ArrowRight size={16} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wider truncate max-w-[70%]">
+                          {event.community?.name || 'Topluluk'}
+                        </p>
+                        <ArrowRight size={14} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                     <div className="text-sm text-neutral-500 italic text-center py-4">
+                        Yaklaşan etkinlik yok.
+                     </div>
+                  )}
                 </div>
               </div>
             </div>
