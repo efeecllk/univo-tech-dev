@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X, Settings } from 'lucide-react';
+import { User, Calendar, MapPin, Quote, Heart, BookOpen, Edit, Globe, Lock, Linkedin, Github, Twitter, Instagram, Camera, Building2, Users, GraduationCap, BadgeCheck, X, Settings, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import EventFeedbackButton from '@/components/EventFeedbackButton';
@@ -534,6 +534,27 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     };
 
 
+    const handleRemoveAvatar = async () => {
+        if (!confirm('Profil fotoğrafınızı kaldırmak istediğinize emin misiniz?')) return;
+        
+        try {
+            setIsUploading(true);
+            const { error } = await supabase.from('profiles').update({ avatar_url: null }).eq('id', user!.id);
+            if (error) throw error;
+
+            setProfile((prev: any) => prev ? { ...prev, avatar_url: null } : null);
+            await refreshProfile();
+            toast.success('Profil fotoğrafı kaldırıldı.');
+            router.refresh();
+            setShowChangePhotoModal(false);
+        } catch (error: any) {
+            console.error('Remove avatar error:', error);
+            toast.error('Fotoğraf kaldırılamadı.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center">
@@ -595,19 +616,31 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             {showChangePhotoModal && (
                 <div className="fixed inset-0 z-[10001] bg-black/50 flex items-center justify-center p-4 animate-in fade-in zoom-in duration-200">
                     <div className="bg-white dark:bg-neutral-900 rounded-xl p-6 max-w-xs w-full shadow-xl border border-neutral-200 dark:border-neutral-800">
-                        <h3 className="text-lg font-bold text-center mb-4 text-neutral-900 dark:text-white">Profil fotoğrafını değiştirmek ister misiniz?</h3>
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => setShowChangePhotoModal(false)}
-                                className="flex-1 py-2.5 rounded-lg border border-neutral-300 dark:border-neutral-700 font-medium hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-                            >
-                                Hayır
-                            </button>
+                        <h3 className="text-lg font-bold text-center mb-4 text-neutral-900 dark:text-white">Profil Fotoğrafı</h3>
+                        <div className="flex flex-col gap-3">
                             <button
                                 onClick={triggerFileInput}
-                                className="flex-1 py-2.5 rounded-lg bg-[var(--primary-color,#C8102E)] text-white font-bold hover:opacity-90"
+                                className="w-full py-2.5 rounded-lg bg-[var(--primary-color,#C8102E)] text-white font-bold hover:opacity-90 flex items-center justify-center gap-2"
                             >
-                                Evet
+                                <Camera size={18} />
+                                Yeni Fotoğraf Seç
+                            </button>
+                            
+                            {profile.avatar_url && (
+                                <button
+                                    onClick={handleRemoveAvatar}
+                                    className="w-full py-2.5 rounded-lg border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 font-bold hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center justify-center gap-2"
+                                >
+                                    <Trash2 size={18} />
+                                    Fotoğrafı Kaldır
+                                </button>
+                            )}
+                            
+                            <button
+                                onClick={() => setShowChangePhotoModal(false)}
+                                className="w-full py-2.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white font-medium"
+                            >
+                                İptal
                             </button>
                         </div>
                     </div>
