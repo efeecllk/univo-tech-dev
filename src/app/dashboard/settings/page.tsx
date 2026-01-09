@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
-import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe } from 'lucide-react';
+import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe, Users } from 'lucide-react';
 
 export default function SettingsPage() {
     const { user, profile } = useAuth();
@@ -37,22 +37,17 @@ export default function SettingsPage() {
         setSaving(true);
         
         const formData = new FormData(e.currentTarget);
-        const updates = {
+        const updates: any = {
             name: formData.get('name') as string,
             category: formData.get('category') as string,
             description: formData.get('description') as string,
-            logo_url: community.logo_url, // Use state/prop, but actually form might not have it if we use custom UI. 
-            // Better: rely on community.logo_url state if we update it immediately on upload?
-            // Actually, handleUpdate reads from formData. If I use a hidden input for logo_url it works.
-            // But let's just use the 'community' state which I should update on upload.
-            // Wait, 'community' state is the source of truth? Yes.
-            // So:
             instagram_url: formData.get('instagram_url') as string,
             twitter_url: formData.get('twitter_url') as string,
             website_url: formData.get('website_url') as string,
         };
         // Explicitly set logo_url from state because file upload updates state directly
         if (community.logo_url) updates.logo_url = community.logo_url;
+        else updates.logo_url = null; // Ensure we can clear it
 
         try {
             const { error } = await supabase
@@ -97,6 +92,7 @@ export default function SettingsPage() {
     };
 
     const removeLogo = () => {
+        if (!window.confirm('Topluluk logosunu silmek istediğinize emin misiniz?')) return;
         setCommunity({ ...community, logo_url: '' });
     };
 
@@ -162,51 +158,44 @@ export default function SettingsPage() {
             
             <div className="bg-white dark:bg-neutral-900 p-6 border-2 border-black dark:border-neutral-700 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-colors">
                 <form className="space-y-6" onSubmit={handleUpdate}>
-                    {/* Logo Upload Section - Requested to be at top but user just said "Ayarlar kartının en üstünde olsun". 
-                        I will put it inside the form at the top. 
-                    */}
-                    <div>
-                        <label className="block font-bold text-sm mb-2 dark:text-neutral-200">Topluluk Logosu</label>
-                        {community.logo_url ? (
-                            <div className="relative w-32 h-32 rounded-full overflow-hidden group border-4 border-neutral-100 dark:border-neutral-800 mx-auto md:mx-0">
-                                <img src={community.logo_url} alt="Logo" className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button 
-                                        type="button" 
-                                        onClick={removeLogo}
-                                        className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
-                                    >
-                                        <X size={20} />
-                                    </button>
-                                </div>
+                    {/* Logo Upload Section - Centered */}
+                    <div className="flex flex-col items-center gap-6 justify-center pb-6 border-b border-neutral-100 dark:border-neutral-800">
+                        <div className="relative group">
+                            <div className="w-32 h-32 bg-neutral-100 dark:bg-neutral-800 rounded-full flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700 overflow-hidden">
+                                {community.logo_url ? (
+                                    <img src={community.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                                ) : (
+                                    <Users size={40} className="text-neutral-400" />
+                                )}
                             </div>
-                        ) : (
-                            <div className="flex items-center gap-4">
-                                <div className="w-32 h-32 rounded-full border-2 border-dashed border-neutral-300 dark:border-neutral-700 flex flex-col items-center justify-center gap-1 bg-neutral-50 dark:bg-neutral-800/50 text-neutral-400">
-                                    <Upload size={24} />
-                                    <span className="text-xs font-bold">Logo Yükle</span>
-                                </div>
-                                <div className="flex-1">
-                                    <input 
-                                        type="file" 
-                                        accept="image/*"
-                                        onChange={handleLogoUpload}
-                                        disabled={uploading}
-                                        className="hidden" 
-                                        id="logo-upload"
-                                    />
-                                    <label 
-                                        htmlFor="logo-upload" 
-                                        className={`inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-[var(--primary-color)] hover:text-white dark:text-neutral-300 transition-colors rounded-lg cursor-pointer font-bold text-sm ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
-                                    >
-                                        {uploading ? 'Yükleniyor...' : 'Fotoğraf Seç'}
-                                    </label>
-                                    <p className="text-xs text-neutral-500 mt-2">
-                                        JPG, PNG veya GIF. Maksimum 5MB.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
+                            
+                            {/* Upload Overlay */}
+                            <label className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer rounded-full text-white font-medium text-xs">
+                                <Upload size={20} className="mb-1" />
+                                Değiştir
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={handleLogoUpload}
+                                />
+                            </label>
+
+                            {community.logo_url && (
+                                <button
+                                    type="button"
+                                    onClick={removeLogo}
+                                    className="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full shadow-sm hover:bg-red-600 transition-colors z-10"
+                                    title="Logoyu Kaldır"
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
+                        <div className="text-center">
+                            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Topluluk Logosu</p>
+                            <p className="text-xs text-neutral-500 max-w-[200px] mx-auto">PNG, JPG veya GIF. Önerilen boyut: 400x400px.</p>
+                        </div>
                     </div>
 
                     <div>
@@ -285,8 +274,6 @@ export default function SettingsPage() {
                     </div>
                 </form>
             </div>
-
-
         </div>
     );
 }
@@ -477,5 +464,3 @@ async function seedEvents(communityId: string) {
          });
     }
 }
-
-

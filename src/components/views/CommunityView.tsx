@@ -25,13 +25,23 @@ export default function CommunityView() {
           title, 
           date, 
           location,
-          community:communities(name)
+          community:communities(name),
+          event_attendees(count)
         `)
         .gte('date', today)
-        .order('date', { ascending: true })
-        .limit(2);
+        .order('date', { ascending: true }) // Get nearest upcoming first to ensure they are relevant
+        .limit(10); // Fetch a batch to find popular ones
       
-      if (data) setPopularEvents(data);
+      if (data) {
+        // Sort by attendee count descending
+        const sorted = data.sort((a: any, b: any) => {
+            const countA = a.event_attendees?.[0]?.count || 0;
+            const countB = b.event_attendees?.[0]?.count || 0;
+            return countB - countA;
+        }).slice(0, 2);
+        
+        setPopularEvents(sorted);
+      }
     };
     fetchPopularEvents();
   }, []);
@@ -90,9 +100,14 @@ export default function CommunityView() {
                         </span>
                       </div>
                       <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wider truncate max-w-[70%]">
-                          {event.community?.name || 'Topluluk'}
-                        </p>
+                        <div className="flex flex-col">
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wider truncate max-w-[150px]">
+                              {event.community?.name || 'Topluluk'}
+                            </p>
+                            <p className="text-[10px] text-primary font-bold">
+                                {(event.event_attendees?.[0]?.count || 0)} Katılımcı
+                            </p>
+                        </div>
                         <ArrowRight size={14} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
                       </div>
                     </div>

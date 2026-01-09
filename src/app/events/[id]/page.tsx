@@ -81,6 +81,13 @@ export default async function EventDetailPage({
            </div>
         </header>
 
+        {/* Event Poster (Moved Up) */}
+        {event.image_url && (
+          <div className="mb-8 rounded-xl overflow-hidden shadow-lg border-2 border-neutral-200 dark:border-neutral-800">
+             <img src={event.image_url} alt={event.title} className="w-full h-auto object-cover max-h-[500px]" />
+          </div>
+        )}
+
        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-8">
