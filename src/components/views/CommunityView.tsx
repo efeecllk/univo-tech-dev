@@ -6,12 +6,14 @@ import NotificationCenter from '../NotificationCenter';
 import { EventCategory } from '@/types';
 import CategoryFilter from '../CategoryFilter';
 import EventList from '../EventList';
-import { Calendar, ArrowRight } from 'lucide-react';
+import { Calendar, ArrowRight, Globe, Lock } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
 export default function CommunityView() {
   const router = useRouter();
+  const [isGlobalMode, setIsGlobalMode] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [popularEvents, setPopularEvents] = useState<any[]>([]);
 
@@ -31,15 +33,15 @@ export default function CommunityView() {
         .gte('date', today)
         .order('date', { ascending: true }) // Get nearest upcoming first to ensure they are relevant
         .limit(10); // Fetch a batch to find popular ones
-      
+
       if (data) {
         // Sort by attendee count descending
         const sorted = data.sort((a: any, b: any) => {
-            const countA = a.event_attendees?.[0]?.count || 0;
-            const countB = b.event_attendees?.[0]?.count || 0;
-            return countB - countA;
+          const countA = a.event_attendees?.[0]?.count || 0;
+          const countB = b.event_attendees?.[0]?.count || 0;
+          return countB - countA;
         }).slice(0, 2);
-        
+
         setPopularEvents(sorted);
       }
     };
@@ -62,8 +64,36 @@ export default function CommunityView() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Newspaper Header - Static on mobile */}
+
       <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
-        <h2 className="text-[1.35rem] md:text-6xl font-black font-serif uppercase tracking-tighter mb-2 text-black dark:text-white whitespace-nowrap">Topluluk Meydanı</h2>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <h2 className="text-[1.35rem] md:text-6xl font-black font-serif uppercase tracking-tighter mb-2 text-black dark:text-white whitespace-nowrap">Topluluk Meydanı</h2>
+
+          {/* Global Mode Switch - Custom Morphing Button */}
+          <div className="flex items-center gap-3">
+            <motion.button
+              layout
+              onClick={() => setIsGlobalMode(!isGlobalMode)}
+              className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 shadow-md transform-gpu bg-white dark:bg-black"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              title={isGlobalMode ? "ODTÜ Moduna Geç" : "Global Moda Geç"}
+            >
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={isGlobalMode ? "global" : "odtu"}
+                  src={isGlobalMode ? "/earth_image.jpg" : "/odtu_logo.png"}
+                  alt={isGlobalMode ? "Global" : "ODTÜ"}
+                  className="w-full h-full object-cover"
+                  initial={{ opacity: 0, scale: 0.5, rotate: -180 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.5, rotate: 180 }}
+                  transition={{ duration: 0.4, type: "spring", bounce: 0.3 }}
+                />
+              </AnimatePresence>
+            </motion.button>
+          </div>
+        </div>
         <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400">
           <span>SAYI: {issueNumber}</span>
           <span>ÖĞRENCİ BÜLTENİ</span>
@@ -71,67 +101,112 @@ export default function CommunityView() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Left Sidebar / Navigation (Category Filter) */}
-        <div className="lg:col-span-1">
-          <div className="">
-            <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
-
-            <div className="mt-8">
-              {/* Popular Events - Real Data */}
-              <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
-                <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 text-neutral-900 dark:text-white transition-colors">
-                  <Calendar size={20} className="text-neutral-900 dark:text-white" />
-                  Popüler
-                </h3>
-                <div className="space-y-4">
-                  {popularEvents.length > 0 ? popularEvents.map(event => (
-                    <div key={event.id} onClick={() => router.push(`/events/${event.id}`)} className="group cursor-pointer">
-                      <div className="flex justify-between items-start mb-1 gap-2">
-                        <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:underline decoration-2 underline-offset-2 transition-colors line-clamp-2 leading-tight py-1">
-                          {event.title}
-                        </h4>
-                        <span className="shrink-0 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black px-2 py-1 uppercase transition-colors">
-                          {new Date(event.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
-                        <div className="flex flex-col">
-                            <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wider truncate max-w-[150px]">
-                              {event.community?.name || 'Topluluk'}
-                            </p>
-                            <p className="text-[10px] text-primary font-bold">
-                                {(event.event_attendees?.[0]?.count || 0)} Katılımcı
-                            </p>
-                        </div>
-                        <ArrowRight size={14} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
-                      </div>
-                    </div>
-                  )) : (
-                     <div className="text-sm text-neutral-500 italic text-center py-4">
-                        Yaklaşan etkinlik yok.
-                     </div>
-                  )}
-                </div>
+      <AnimatePresence mode="wait">
+        {isGlobalMode ? (
+          <motion.div
+            key="global"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="flex flex-col items-center justify-center py-20 min-h-[50vh] text-center"
+          >
+            <div className="relative w-64 h-64 mb-8 group perspective-1000">
+              <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+              <Globe className="w-full h-full text-blue-600 dark:text-blue-400 animate-[spin_60s_linear_infinite]" strokeWidth={0.5} />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-6xl">🌍</span>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Main Column */}
-        <div className="lg:col-span-3">
-          <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-6 flex items-center gap-2 font-serif dark:text-white transition-colors">
-            <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-sm uppercase">Güncel</span>
-            Etkinlikler & Kulüpler
-          </h3>
+            <h2 className="text-4xl md:text-5xl font-black font-serif text-neutral-900 dark:text-white mb-6">
+              Global Topluluk
+            </h2>
 
-          <EventList events={filteredEvents} />
-        </div>
-      </div>
+            <p className="text-lg md:text-xl text-neutral-600 dark:text-neutral-300 max-w-lg mx-auto mb-10 leading-relaxed font-serif">
+              Sınırlar kalkıyor! Dünyanın dört bir yanındaki öğrenci topluluklarıyla çok yakında burada buluşacaksın.
+            </p>
+
+            <div className="flex gap-4">
+              <span className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 font-bold border border-neutral-200 dark:border-neutral-700">
+                <Lock size={18} />
+                Erişime Kapalı
+              </span>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="odtu"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Left Sidebar / Navigation (Category Filter) */}
+              <div className="lg:col-span-1">
+                <div className="">
+                  <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-4 font-serif dark:text-white transition-colors">Kategoriler</h3>
+                  <CategoryFilter
+                    selectedCategory={selectedCategory}
+                    onCategoryChange={setSelectedCategory}
+                  />
+
+                  <div className="mt-8">
+                    {/* Popular Events - Real Data */}
+                    <div className="border-4 border-black dark:border-neutral-600 p-6 bg-neutral-50 dark:bg-[#0a0a0a] transition-colors rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]">
+                      <h3 className="text-lg font-black border-b-2 border-black dark:border-neutral-600 pb-2 mb-4 font-serif uppercase tracking-tight flex items-center gap-2 text-neutral-900 dark:text-white transition-colors">
+                        <Calendar size={20} className="text-neutral-900 dark:text-white" />
+                        Popüler
+                      </h3>
+                      <div className="space-y-4">
+                        {popularEvents.length > 0 ? popularEvents.map(event => (
+                          <div key={event.id} onClick={() => router.push(`/events/${event.id}`)} className="group cursor-pointer">
+                            <div className="flex justify-between items-start mb-1 gap-2">
+                              <h4 className="font-bold font-serif text-neutral-900 dark:text-neutral-100 group-hover:underline decoration-2 underline-offset-2 transition-colors line-clamp-2 leading-tight py-1">
+                                {event.title}
+                              </h4>
+                              <span className="shrink-0 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black px-2 py-1 uppercase transition-colors">
+                                {new Date(event.date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-end border-b border-neutral-100 dark:border-neutral-800 pb-2 mb-2 group-last:border-0 group-last:mb-0 group-last:pb-0">
+                              <div className="flex flex-col">
+                                <p className="text-xs text-neutral-500 dark:text-neutral-400 font-bold uppercase tracking-wider truncate max-w-[150px]">
+                                  {event.community?.name || 'Topluluk'}
+                                </p>
+                                <p className="text-[10px] text-primary font-bold">
+                                  {(event.event_attendees?.[0]?.count || 0)} Katılımcı
+                                </p>
+                              </div>
+                              <ArrowRight size={14} className="text-neutral-900 dark:text-white group-hover:translate-x-1 transition-all" />
+                            </div>
+                          </div>
+                        )) : (
+                          <div className="text-sm text-neutral-500 italic text-center py-4">
+                            Yaklaşan etkinlik yok.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Column */}
+              <div className="lg:col-span-3">
+                <h3 className="text-xl font-bold border-b-2 border-black dark:border-white pb-2 mb-6 flex items-center gap-2 font-serif dark:text-white transition-colors">
+                  <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-sm uppercase">Güncel</span>
+                  Etkinlikler & Kulüpler
+                </h3>
+
+                <EventList events={filteredEvents} />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
