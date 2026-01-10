@@ -135,20 +135,22 @@ export async function PUT(
     }
 
     // Update
-    const { error: updateError } = await supabase
+    const { data: updatedVoice, error: updateError } = await supabase
         .from('campus_voices')
         .update({ 
             content: content.substring(0, 280),
             tags: tags || []
-        }) // Enforce length limit and update tags
-        .eq('id', id);
+        })
+        .eq('id', id)
+        .select()
+        .single();
 
     if (updateError) {
         console.error('Update: Supabase error:', updateError);
         return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, voice: updatedVoice });
 
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

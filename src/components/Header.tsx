@@ -158,7 +158,7 @@ function HeaderContent() {
 
 
 
-      <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
+      <header className={`hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white !transition-none transform-none ${!isAtTop ? 'md:translate-y-0 -translate-y-full' : ''}`}>
         <div className="w-full px-4 md:container md:mx-auto">
           <div className="flex items-center justify-between h-16 max-w-full relative">
 
@@ -443,9 +443,11 @@ function HeaderContent() {
   );
 }
 
+import HeaderSkeleton from './skeletons/HeaderSkeleton';
+
 export default function Header() {
   return (
-    <Suspense fallback={<div className="h-16 bg-white dark:bg-[#0a0a0a] border-b border-black dark:border-white"></div>}>
+    <Suspense fallback={<HeaderSkeleton />}>
       <HeaderContent />
     </Suspense>
   );
