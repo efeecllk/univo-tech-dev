@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
@@ -56,9 +56,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [forceLoading, setForceLoading] = useState(true);
 
   // setViewLoading helper for components to register their load state
-  const setViewLoading = (loading: boolean) => {
+  const setViewLoading = useCallback((loading: boolean) => {
     setIsViewLoading(loading);
-  };
+  }, []);
 
   // Unified loading signal
   const isGlobalLoading = authLoading || isViewLoading || forceLoading;

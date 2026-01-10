@@ -1062,7 +1062,7 @@ export default function OfficialView() {
                                     <h4 className="text-lg font-black font-serif uppercase tracking-tight mb-4 flex items-center gap-2 border-b-2 border-black dark:border-neutral-600 pb-2 text-neutral-900 dark:text-white">
                                         Günün Menüsü
                                     </h4>
-                                    {false ? (
+                                    {showSkeleton ? (
                                         <div className="text-center text-sm text-neutral-500 py-4">Menü Yükleniyor...</div>
                                     ) : (
                                         <div className="space-y-6">
