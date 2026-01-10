@@ -9,10 +9,17 @@ import NotificationCenter from '../NotificationCenter';
 // Inline Skeleton for debugging/fix
 const SkeletonLoader = ({ className = '', width, height }: { className?: string, width?: string | number, height?: string | number }) => (
     <div
-      className={`relative overflow-hidden bg-neutral-200 dark:bg-neutral-800 rounded-md ${className}`}
+      className={`relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800/80 rounded-md ${className}`}
       style={{ width, height }}
     >
-      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent"></div>
+      <div 
+        className="absolute inset-0 animate-shimmer"
+        style={{
+            backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)',
+            backgroundSize: '200% 100%',
+            backgroundRepeat: 'no-repeat'
+        }}
+      ></div>
     </div>
 );
 
@@ -304,18 +311,46 @@ export default function OfficialView() {
     React.useEffect(() => {
         async function fetchData() {
             try {
-                // Parallel Fetch
+                // Check for Cache FIRST
+                const cachedMenu = localStorage.getItem('univo_cached_menu');
+                const cachedAnn = localStorage.getItem('univo_cached_announcements');
+                
+                if (cachedMenu) {
+                    setMenu(JSON.parse(cachedMenu));
+                    setLoadingMenu(false); // Show cached content immediately
+                }
+                if (cachedAnn) {
+                    const parsed = JSON.parse(cachedAnn);
+                    setAnnouncements(parsed.foodAnnouncements || []);
+                    setCampusNews(parsed.campusAnnouncements || []);
+                }
+
+                // Fetch Fresh Data in Background
                 const [menuRes, annRes] = await Promise.all([
                     fetch('/api/menu', { cache: 'no-store' }),
                     fetch('/api/announcements', { cache: 'no-store' })
                 ]);
 
-                const menuData = await menuRes.json();
-                if (menuData.menu) setMenu(menuData.menu);
-                if (menuData.announcements) setAnnouncements(menuData.announcements);
+                if (menuRes.ok) {
+                    const menuData = await menuRes.json();
+                    if (menuData.menu) {
+                        setMenu(menuData.menu);
+                        localStorage.setItem('univo_cached_menu', JSON.stringify(menuData.menu));
+                        if (menuData.announcements) setAnnouncements(menuData.announcements);
+                    }
+                }
 
-                const annData = await annRes.json();
-                if (annData.announcements) setCampusNews(annData.announcements);
+                if (annRes.ok) {
+                    const annData = await annRes.json();
+                    if (annData.announcements) {
+                        setCampusNews(annData.announcements);
+                        // Save both announcement types to one cache key for simplicity
+                        localStorage.setItem('univo_cached_announcements', JSON.stringify({
+                            campusAnnouncements: annData.announcements,
+                            foodAnnouncements: announcements // Preserve existing if any
+                        }));
+                    }
+                }
 
                 if (user) {
                     const { data: profile } = await supabase.from('profiles').select('department').eq('id', user.id).single();
