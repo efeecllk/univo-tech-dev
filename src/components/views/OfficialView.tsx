@@ -719,11 +719,11 @@ export default function OfficialView() {
                                         >
                                             Önemli Duyuru
                                         </div>
-                                        <h3 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white mt-2 break-words font-serif uppercase tracking-tight">
-                                            <Megaphone size={20} className="text-black dark:text-white" />
+                                        <h3 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white mt-2 break-words font-serif uppercase tracking-tight line-clamp-2">
+                                            <Megaphone size={20} className="text-black dark:text-white shrink-0" />
                                             {news[0].title}
                                         </h3>
-                                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed font-serif">
+                                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed font-serif line-clamp-3">
                                             {news[0].summary}
                                         </p>
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
@@ -902,7 +902,7 @@ export default function OfficialView() {
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="flex-1 pr-32">
+                                                                    <div className="flex-1 pr-12 sm:pr-32">
                                                                         <div className="flex items-center gap-2 mb-1">
                                                                             <div className={`transition-colors duration-300 flex items-center justify-center ${item.type === 'event' ? 'text-blue-600' :
                                                                                 item.type === 'email' ? 'text-amber-600' :
@@ -931,7 +931,7 @@ export default function OfficialView() {
                                                                             )}
                                                                         </div>
 
-                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
+                                                                        <h4 className={`text-base sm:text-lg font-bold font-serif mb-2 transition-colors break-words line-clamp-2 ${isExpanded ? (item.type === 'email' ? 'text-yellow-700 dark:text-yellow-500' : item.type === 'event' ? 'text-blue-700 dark:text-blue-500' : 'text-emerald-700 dark:text-emerald-500') : 'text-black dark:text-white'}`}>
                                                                             {item.title}
                                                                         </h4>
 
