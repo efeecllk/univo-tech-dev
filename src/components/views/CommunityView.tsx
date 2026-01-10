@@ -16,7 +16,7 @@ import SkeletonLoader from '../ui/SkeletonLoader';
 const CommunityViewSkeleton = () => {
   return (
     <div className="container mx-auto px-4 pt-8 pb-32 relative animate-in fade-in duration-500">
-      <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-4 -mt-4 -mx-4 px-4 relative">
+      <div className="border-b-4 border-neutral-200 dark:border-neutral-800 pb-4 mb-8 text-center md:static pt-4 -mt-4 -mx-4 px-4 relative min-h-[180px]">
         <div className="flex flex-col items-center justify-center gap-4">
           <SkeletonLoader width={400} height={60} className="mb-2" />
           <div className="flex items-center gap-3 mb-2">
@@ -173,7 +173,7 @@ export default function CommunityView() {
     <div className="container mx-auto px-4 pt-8 pb-32">
       {/* Newspaper Header - Static on mobile */}
 
-      <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4">
+      <div className="relative border-b-4 border-black dark:border-neutral-600 pb-4 mb-8 text-center transition-colors md:static bg-neutral-50 dark:bg-[#0a0a0a] pt-4 -mt-4 -mx-4 px-4 min-h-[180px]">
         <div className="flex flex-col items-center justify-center gap-4">
           <h2 className="text-4xl md:text-6xl font-black font-serif uppercase tracking-tight text-black dark:text-white leading-none">Topluluk Meydanı</h2>
 
