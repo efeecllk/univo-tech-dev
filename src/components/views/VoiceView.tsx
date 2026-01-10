@@ -174,10 +174,6 @@ export default function VoiceView() {
         fetchVoices();
     }, [activeTagFilter]);
 
-    if (isLoading) {
-        return <VoiceViewSkeleton />;
-    }
-
     const fetchVoices = async () => {
         setIsLoading(true);
         try {
@@ -216,6 +212,10 @@ export default function VoiceView() {
             setIsLoading(false);
         }
     };
+
+    if (isLoading) {
+        return <VoiceViewSkeleton />;
+    }
 
     const renderContentWithTags = (content: string) => {
         const parts = content.split(/(#[\wçğıöşüÇĞİÖŞÜ]+)/g);
