@@ -23,7 +23,7 @@ export default {
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
-        'shimmer': 'shimmer 1.5s infinite linear', // Classic speed for beam
+        'shimmer': 'shimmer 2s infinite linear',
       },
       keyframes: {
         fadeIn: {
@@ -31,8 +31,8 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         shimmer: {
-          '0%': { backgroundPosition: '-200% 0' }, // Start far left
-          '100%': { backgroundPosition: '200% 0' }, // End far right
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' },
         },
       },
     },

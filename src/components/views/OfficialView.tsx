@@ -6,22 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import NotificationCenter from '../NotificationCenter';
-// Inline Skeleton for debugging/fix
-const SkeletonLoader = ({ className = '', width, height }: { className?: string, width?: string | number, height?: string | number }) => (
-    <div
-      className={`relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800/80 rounded-md ${className}`}
-      style={{ width, height }}
-    >
-      <div 
-        className="absolute inset-0 animate-shimmer"
-        style={{
-            backgroundImage: 'linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.8) 50%, transparent 80%)',
-            backgroundSize: '50% 100%',
-            backgroundRepeat: 'no-repeat'
-        }}
-      ></div>
-    </div>
-);
+import SkeletonLoader from '../ui/SkeletonLoader';
 
 const OfficialViewSkeleton = () => {
   return (
