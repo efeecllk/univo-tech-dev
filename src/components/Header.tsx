@@ -23,7 +23,7 @@ const ALLOWED_DASHBOARD_USERS = [
 // Inline Skeleton for Header
 const SkeletonLoader = ({ className = '', width, height }: { className?: string, width?: string | number, height?: string | number }) => (
     <div
-      className={`relative overflow-hidden bg-neutral-200 dark:bg-neutral-800 rounded-md ${className}`}
+      className={`relative overflow-hidden bg-neutral-300 dark:bg-neutral-700 rounded-md ${className}`}
       style={{ width, height }}
     >
       <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent"></div>
@@ -46,6 +46,16 @@ function HeaderContent() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [localProfile, setLocalProfile] = useState<any>(null); // Renamed to avoid conflict with useAuth's profile
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Force Skeleton Delay to prevent flicker
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
+  useEffect(() => {
+    if (!loading) {
+        const timer = setTimeout(() => setShowSkeleton(false), 800); // 800ms delay
+        return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -184,7 +194,7 @@ function HeaderContent() {
             </div>
 
             {/* Center: Desktop Navigation - Only show on large screens to avoid overlap */}
-            {loading ? (
+            {loading || showSkeleton ? (
                  <div className="hidden lg:flex items-center justify-center absolute left-1/2 -translate-x-1/2 bg-neutral-100/50 dark:bg-neutral-800/50 backdrop-blur-sm px-4 py-3 rounded-full border border-neutral-100 dark:border-neutral-800">
                      <div className="flex items-center gap-4">
                         <SkeletonLoader width={80} height={16} />
@@ -227,7 +237,7 @@ function HeaderContent() {
 
             {/* Right: Tools (Search, Auth, DarkMode, Menu) */}
             <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
-               {loading ? (
+               {loading || showSkeleton ? (
                    <div className="hidden lg:flex items-center gap-3">
                        <SkeletonLoader width={32} height={32} className="rounded-full" />
                        <SkeletonLoader width={200} height={32} className="rounded-full" />
@@ -272,7 +282,7 @@ function HeaderContent() {
 
               {/* Mobile Header Actions (Search) */}
               <div className="flex lg:hidden items-center gap-2">
-                 {loading ? (
+                 {loading || showSkeleton ? (
                     <div className="flex items-center gap-2">
                         <SkeletonLoader width={32} height={32} className="rounded-full" />
                         <SkeletonLoader width={32} height={32} className="rounded-full" />
@@ -302,7 +312,7 @@ function HeaderContent() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[9999] bg-white/95 dark:bg-[#0a0a0a]/95 backdrop-blur-lg border-t border-black dark:border-white safe-area-bottom shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         <div className="flex items-center justify-center h-16 w-full px-2">
           <ul className="grid grid-cols-5 gap-0 w-full h-full max-w-md mx-auto">
-            {loading ? (
+            {loading || showSkeleton ? (
                 // 5 Skeleton Items for Bottom Nav
                 Array.from({ length: 5 }).map((_, i) => (
                     <li key={`skel-${i}`} className="flex justify-center items-center h-full">
