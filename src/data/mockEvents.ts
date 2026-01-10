@@ -255,5 +255,77 @@ Kayıt için kulüp Instagram hesabımızdan DM atabilirsiniz: @universefoto`,
     location: 'Açık Hava Amfisi',
     excerpt: 'Test amaçlı geçmiş etkinlik. Değerlendirme yapabilirsiniz.',
     description: 'Bu bir test etkinliğidir. Geçmiş tarihli olduğu için değerlendirme butonu aktif olmalıdır.',
+  },
+  {
+    id: 'mock-evt-trekking-001',
+    title: 'Eymir Gölü Doğa Yürüyüşü',
+    community: {
+      id: 'mock-comm-trekking',
+      name: 'Doğa Sporları Topluluğu',
+      category: 'Spor',
+    },
+    category: 'event',
+    date: '2026-02-14',
+    time: '08:00',
+    location: 'Eymir Gölü Girişi',
+    excerpt: 'Hafta sonu Eymir Gölü\'nde doğa ile iç içe keyifli bir yürüyüş etkinliği. Kahvaltı molası dahil.',
+    description: `Doğa Sporları Topluluğu olarak düzenlediğimiz Eymir Gölü yürüyüşüne davetlisiniz!
+    
+    Program:
+    - 08:00 Kampüsten hareket (Rektörlük önü)
+    - 08:30 Eymir Gölü varış
+    - 09:00 - 11:00 Yürüyüş parkuru
+    - 11:30 Kahvaltı ve Çay molası
+    - 13:00 Dönüş
+    
+    Rahat ayakkabılar giymeyi ve suyunuzu yanınıza almayı unutmayın. Ulaşım servislerle sağlanacaktır.`,
+    image: '/images/trekking.jpg'
+  },
+  {
+    id: 'mock-evt-blockchain-001',
+    title: 'Blockchain 101: Web3 Dünyasına Giriş',
+    community: {
+      id: 'mock-comm-blockchain',
+      name: 'Blockchain Topluluğu',
+      category: 'Teknoloji',
+    },
+    category: 'workshop',
+    date: '2026-02-18',
+    time: '17:30',
+    location: 'Kültür Kongre Merkezi - Salon C',
+    excerpt: 'Blokzincir teknolojisinin temelleri, kripto paralar ve Web3 ekosistemi hakkında kapsamlı bir giriş semineri.',
+    description: `Geleceğin teknolojisi Blockchain'i merak mı ediyorsunuz?
+    
+    Bu seminerde ele alınacak başlıklar:
+    - Blockchain çalışma mantığı (Distributed Ledger)
+    - Bitcoin ve Ethereum farkları
+    - Akıllı Kontratlar (Smart Contracts)
+    - NFT'ler ve Metaverse kavramları
+    - DAO (Merkeziyetsiz Otonom Organizasyonlar)
+    
+    Hiçbir ön bilgi gerekmez. Teknoloji meraklısı herkesi bekliyoruz!`,
+    image: '/images/blockchain.jpg'
+  },
+  {
+    id: 'mock-evt-cats-001',
+    title: 'Kampüs Patilerini Besleme Günü',
+    community: {
+      id: 'mock-comm-animals',
+      name: 'Hayvan Dostları Topluluğu',
+      category: 'Sosyal Sorumluluk',
+    },
+    category: 'event',
+    date: '2026-02-20',
+    time: '12:30',
+    location: 'Kütüphane Arkası',
+    excerpt: 'Kampüsümüzün sevimli sakinleri kedilerimizi ve köpeklerimizi hep birlikte besliyoruz. Mama desteği sağlayabilirsiniz.',
+    description: `Havalar soğurken kampüs dostlarımızı unutmuyoruz!
+    
+    Hayvan Dostları Topluluğu olarak organize ettiğimiz besleme etkinliğinde kampüsün farklı noktalarındaki mama kaplarını dolduracağız ve hasta/bakıma muhtaç olanları kontrol edeceğiz.
+    
+    Destek olmak isterseniz yanınızda kedi/köpek maması getirebilir veya etkinlik alanındaki kumbaraya bağışta bulunabilirsiniz.
+    
+    Tüm hayvanseverleri bekliyoruz! 🐾`,
+    image: '/images/cats.jpg'
   }
 ];

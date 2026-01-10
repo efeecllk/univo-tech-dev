@@ -133,7 +133,20 @@ export default function CommunityView() {
             .gte('date', today)
             .order('date', { ascending: true });
         
-        if (data) setEvents(data);
+        if (data) {
+             // Combine real data with mock events for presentation
+             const combinedEvents = [...data, ...mockEvents];
+             
+             // Remove duplicates if any ID conflicts (though mock IDs are distinct)
+             const uniqueEvents = Array.from(new Map(combinedEvents.map(item => [item.id, item])).values());
+             
+             // Sort by date just in case
+             uniqueEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+             
+             setEvents(uniqueEvents);
+        } else {
+             setEvents(mockEvents);
+        }
         setLoading(false);
     };
     fetchAllEvents();
