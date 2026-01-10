@@ -6,7 +6,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import NotificationCenter from '../NotificationCenter';
-import OfficialViewSkeleton from '../skeletons/OfficialViewSkeleton';
+import dynamic from 'next/dynamic';
+
+const OfficialViewSkeleton = dynamic(() => import('../skeletons/OfficialViewSkeleton'), { ssr: false });
 
 export default function OfficialView() {
     const { user } = useAuth();

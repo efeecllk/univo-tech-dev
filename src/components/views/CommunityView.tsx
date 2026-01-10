@@ -10,7 +10,9 @@ import { Calendar, ArrowRight, Globe, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import CommunityViewSkeleton from '../skeletons/CommunityViewSkeleton';
+import dynamic from 'next/dynamic';
+
+const CommunityViewSkeleton = dynamic(() => import('../skeletons/CommunityViewSkeleton'), { ssr: false });
 
 export default function CommunityView() {
   const router = useRouter();
