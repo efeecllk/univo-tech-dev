@@ -23,10 +23,10 @@ const ALLOWED_DASHBOARD_USERS = [
 // Inline Skeleton for Header
 const SkeletonLoader = ({ className = '', width, height }: { className?: string, width?: string | number, height?: string | number }) => (
     <div
-      className={`relative overflow-hidden bg-neutral-300 dark:bg-neutral-700 rounded-md ${className}`}
+      className={`relative overflow-hidden bg-neutral-200/80 dark:bg-neutral-800/80 rounded-md ${className}`}
       style={{ width, height }}
     >
-      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/50 dark:via-white/10 to-transparent"></div>
+      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 dark:via-white/10 to-transparent"></div>
     </div>
 );
 
@@ -238,10 +238,15 @@ function HeaderContent() {
             {/* Right: Tools (Search, Auth, DarkMode, Menu) */}
             <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
                {loading || showSkeleton ? (
-                   <div className="hidden lg:flex items-center gap-3">
-                       <SkeletonLoader width={32} height={32} className="rounded-full" />
-                       <SkeletonLoader width={200} height={32} className="rounded-full" />
-                       <SkeletonLoader width={90} height={32} className="rounded-md" />
+                   <div className="hidden lg:flex items-center gap-2">
+                       {/* Search Skeleton (Circle) */}
+                       <SkeletonLoader width={40} height={40} className="rounded-full" />
+                       
+                       {/* Notification Skeleton (Circle) */}
+                       <SkeletonLoader width={40} height={40} className="rounded-full" />
+                       
+                       {/* Auth Skeleton (Pill) - Matches AuthButton size approximately */}
+                       <SkeletonLoader width={100} height={40} className="rounded-full" />
                    </div>
                ) : (
                    <>
@@ -284,8 +289,9 @@ function HeaderContent() {
               <div className="flex lg:hidden items-center gap-2">
                  {loading || showSkeleton ? (
                     <div className="flex items-center gap-2">
-                        <SkeletonLoader width={32} height={32} className="rounded-full" />
-                        <SkeletonLoader width={32} height={32} className="rounded-full" />
+                        {/* Mobile Search/Notif Skeletons */}
+                        <SkeletonLoader width={40} height={40} className="rounded-full" />
+                        <SkeletonLoader width={40} height={40} className="rounded-full" />
                     </div>
                  ) : (
                     <>
