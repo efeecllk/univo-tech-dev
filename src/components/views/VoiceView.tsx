@@ -856,10 +856,20 @@ export default function VoiceView() {
 
                                                             <div className="flex gap-4 items-start">
                                                                 <div
-                                                                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-primary'}`}
-                                                                    style={!voice.is_anonymous ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
+                                                                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white'}`}
+                                                                    style={(!voice.is_anonymous && !voice.user.avatar_url && !(voice.user_id === user?.id && user?.user_metadata?.avatar_url)) ? { backgroundColor: 'var(--primary-color, #C8102E)' } : undefined}
                                                                 >
-                                                                    {voice.is_anonymous ? <Ghost size={20} /> : voice.user.full_name?.charAt(0)}
+                                                                    {voice.is_anonymous ? (
+                                                                        <Ghost size={20} />
+                                                                    ) : (voice.user.avatar_url || (voice.user_id === user?.id && user?.user_metadata?.avatar_url)) ? (
+                                                                        <img 
+                                                                            src={voice.user.avatar_url || user?.user_metadata?.avatar_url} 
+                                                                            alt={voice.user.full_name} 
+                                                                            className="w-full h-full rounded-full object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        voice.user.full_name?.charAt(0)
+                                                                    )}
                                                                 </div>
 
                                                                 <div className="flex-1">
@@ -1255,16 +1265,7 @@ export default function VoiceView() {
                                                     <div
                                                         className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs"
                                                         style={{ 
-                                                            backgroundColor: [
-                                                                '#C8102E', // Metu Red
-                                                                '#059669', // Emerald 600
-                                                                '#2563EB', // Blue 600
-                                                                '#D97706', // Amber 600
-                                                                '#7C3AED', // Violet 600
-                                                                '#DB2777', // Pink 600
-                                                                '#4B5563', // Gray 600
-                                                                '#F97316'  // Orange 500
-                                                            ][(voter.display_name.length) % 8]
+                                                            backgroundColor: `hsla(350, 85%, ${40 + ((voter.display_name.length) % 5) * 10}%, 1)`
                                                         }}
                                                     >
                                                         {voter.display_name.charAt(0)}

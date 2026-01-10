@@ -57,68 +57,61 @@ export default function AnnouncementComments({ announcementId }: { announcementI
             </h3>
 
             {/* Comment List */}
-            {!user ? (
+            {loading ? (
+                 <div className="text-center py-8">
+                     <span className="text-neutral-500 text-sm">Yükleniyor...</span>
+                 </div>
+            ) : !user ? (
                  <div className="bg-neutral-50 border border-dashed border-neutral-300 rounded p-6 text-center mb-6">
                      <p className="text-neutral-600 mb-2">Yorumları görmek ve paylaşmak için giriş yapmalısınız.</p>
                      <a href="/login" className="text-sm font-bold text-[var(--primary-color)] hover:underline uppercase">Giriş Yap</a>
                  </div>
             ) : (
-            <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                {loading ? (
-                    <div className="text-neutral-500 text-sm">Yükleniyor...</div>
-                ) : comments.length > 0 ? (
-                    comments.map((comment) => (
-                        <div key={comment.id} className="flex gap-3 items-start group">
-                            {comment.profiles?.avatar_url ? (
-                                <img 
-                                    src={comment.profiles.avatar_url} 
-                                    alt="avatar" 
-                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 object-cover"
-                                />
-                            ) : (
-                                <div 
-                                    className="w-8 h-8 rounded-full border border-neutral-200 mt-1 text-white flex items-center justify-center font-bold text-xs shrink-0"
-                                    style={{ 
-                                        backgroundColor: [
-                                            '#C8102E', // Metu Red
-                                            '#059669', // Emerald 600
-                                            '#2563EB', // Blue 600
-                                            '#D97706', // Amber 600
-                                            '#7C3AED', // Violet 600
-                                            '#DB2777', // Pink 600
-                                            '#4B5563', // Gray 600
-                                            '#F97316'  // Orange 500
-                                        ][(comment.profiles?.full_name?.length || 0) % 8]
-                                    }}
-                                >
-                                    {(comment.profiles?.full_name || 'U').charAt(0)}
-                                </div>
-                            )}
-                            <div className="flex-1">
-                                <div className="bg-neutral-50 p-3 rounded-lg rounded-tl-none border border-neutral-100 group-hover:border-neutral-300 transition-colors">
-                                    <div className="flex justify-between items-start mb-1">
-                                        <span className="font-bold text-sm text-neutral-900">{comment.profiles?.full_name}</span>
-                                        <span className="text-[10px] text-neutral-400">
-                                            {new Date(comment.created_at).toLocaleDateString('tr-TR')}
-                                        </span>
+                <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    {comments.length > 0 ? (
+                        comments.map((comment) => (
+                            <div key={comment.id} className="flex gap-3 items-start group">
+                                {(comment.profiles?.avatar_url || (comment.user_id === user?.id && user?.user_metadata?.avatar_url)) ? (
+                                    <img 
+                                        src={comment.profiles?.avatar_url || (comment.user_id === user?.id ? user?.user_metadata?.avatar_url : null)} 
+                                        alt="avatar" 
+                                        className="w-8 h-8 rounded-full border border-neutral-200 mt-1 object-cover"
+                                    />
+                                ) : (
+                                    <div 
+                                        className="w-8 h-8 rounded-full border border-neutral-200 mt-1 text-white flex items-center justify-center font-bold text-xs shrink-0"
+                                        style={{ 
+                                            backgroundColor: `hsla(350, 85%, ${40 + ((comment.profiles?.full_name?.length || 0) % 5) * 10}%, 1)`
+                                        }}
+                                    >
+                                        {(comment.profiles?.full_name || 'U').charAt(0)}
                                     </div>
-                                    <p className="text-neutral-700 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
-                                </div>
-                                {comment.profiles?.department && (
-                                    <span className="text-[10px] text-neutral-400 ml-1 mt-1 block uppercase font-bold tracking-wider">
-                                        {comment.profiles.department}
-                                    </span>
                                 )}
+                                <div className="flex-1">
+                                    <div className="bg-neutral-50 p-3 rounded-lg rounded-tl-none border border-neutral-100 group-hover:border-neutral-300 transition-colors">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <span className="font-bold text-sm text-neutral-900">{comment.profiles?.full_name}</span>
+                                            <span className="text-[10px] text-neutral-400">
+                                                {new Date(comment.created_at).toLocaleDateString('tr-TR')}
+                                            </span>
+                                        </div>
+                                        <p className="text-neutral-700 text-sm leading-relaxed whitespace-pre-wrap">{comment.content}</p>
+                                    </div>
+                                    {comment.profiles?.department && (
+                                        <span className="text-[10px] text-neutral-400 ml-1 mt-1 block uppercase font-bold tracking-wider">
+                                            {comment.profiles.department}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8 bg-neutral-50 rounded border border-dashed border-neutral-300">
+                            <p className="text-neutral-500 text-sm font-medium">Henüz bir görüş paylaşılmamış.</p>
+                            <p className="text-xs text-neutral-400 mt-1">İlk yorumu sen yap!</p>
                         </div>
-                    ))
-                ) : (
-                    <div className="text-center py-8 bg-neutral-50 rounded border border-dashed border-neutral-300">
-                        <p className="text-neutral-500 text-sm font-medium">Henüz bir görüş paylaşılmamış.</p>
-                        <p className="text-xs text-neutral-400">İlk yorumu sen yap!</p>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
             )}
 
             {/* Comment Form */}
