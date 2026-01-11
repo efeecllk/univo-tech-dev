@@ -1218,7 +1218,7 @@ export default function VoiceView() {
                                                                                                     {/* Avatar Column */}
                                                                                                     <div className="flex flex-col items-center shrink-0">
                                                                                                         <div 
-                                                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden border border-neutral-200 dark:border-neutral-700 z-10 shrink-0"
+                                                                                                            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white overflow-hidden border border-neutral-200 dark:border-neutral-700 z-20 shrink-0 bg-white dark:bg-[#0a0a0a]"
                                                                                                             style={!comment.user_avatar ? { 
                                                                                                                 backgroundColor: 'var(--primary-color)'
                                                                                                             } : undefined}
@@ -1340,7 +1340,7 @@ export default function VoiceView() {
                                                                                                                         
                                                                                                                         {/* Mask to hide excess thread line for the last nested child */}
                                                                                                                         {idx === comment.children.length - 1 && (
-                                                                                                                            <div className="absolute top-4 -left-[calc(1.85rem+1px)] w-4 h-[9999px] bg-white dark:bg-[#0a0a0a] z-[1]" />
+                                                                                                                            <div className="absolute top-[17px] -left-[calc(1.85rem+1px)] w-4 h-[9999px] bg-white dark:bg-[#0a0a0a] z-[5]" />
                                                                                                                         )}
 
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
@@ -1363,7 +1363,7 @@ export default function VoiceView() {
                                                                                                     
                                                                                                     {/* Mask to hide excess thread line for the last item */}
                                                                                                     {idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) && (
-                                                                                                        <div className="absolute top-4 -left-[2.35rem] w-4 h-[9999px] bg-white dark:bg-[#0a0a0a] z-[1]" />
+                                                                                                        <div className="absolute top-[17px] -left-[2.35rem] w-4 h-[9999px] bg-white dark:bg-[#0a0a0a] z-[5]" />
                                                                                                     )}
                                                                                                     
                                                                                                     <CommentItem comment={root} />
@@ -1619,7 +1619,7 @@ export default function VoiceView() {
                                                     <div
                                                         className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white uppercase text-xs"
                                                         style={{ 
-                                                            backgroundColor: `hsla(350, 85%, ${40 + ((voter.display_name.length) % 5) * 10}%, 1)`
+                                                            backgroundColor: 'var(--primary-color, #C8102E)'
                                                         }}
                                                     >
                                                         {voter.display_name.charAt(0)}
