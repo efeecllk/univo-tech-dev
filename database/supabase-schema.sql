@@ -349,3 +349,57 @@ CREATE POLICY "System/Admins can insert notifications"
   -- We will rely on Service Role or specific triggers. For now, let's allow "anyone" to notify "anyone" BUT standard approach is RLS relies on user.
   -- Better: Allow authenticated users to insert notifications (e.g. "User X liked your post").
 
+- -   C r e a t e   a n n o u n c e m e n t _ c o m m e n t s   t a b l e   i f   i t   d o e s n ' t   e x i s t  
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   (  
+     i d   U U I D   D E F A U L T   u u i d _ g e n e r a t e _ v 4 ( )   P R I M A R Y   K E Y ,  
+     a n n o u n c e m e n t _ i d   U U I D   R E F E R E N C E S   p u b l i c . e v e n t s ( i d )   O N   D E L E T E   C A S C A D E   N O T   N U L L ,  
+     u s e r _ i d   U U I D   R E F E R E N C E S   p u b l i c . p r o f i l e s ( i d )   O N   D E L E T E   C A S C A D E   N O T   N U L L ,  
+     c o n t e n t   T E X T   N O T   N U L L ,  
+     p a r e n t _ i d   U U I D   R E F E R E N C E S   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s ( i d )   O N   D E L E T E   C A S C A D E ,   - -   I n c l u d e d   d i r e c t l y   h e r e  
+     c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   N O W ( )  
+ ) ;  
+  
+ - -   E n a b l e   R L S  
+ A L T E R   T A B L E   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   E N A B L E   R O W   L E V E L   S E C U R I T Y ;  
+  
+ - -   P o l i c i e s  
+ C R E A T E   P O L I C Y   " C o m m e n t s   a r e   v i e w a b l e   b y   e v e r y o n e "  
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   F O R   S E L E C T  
+     U S I N G   ( t r u e ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   i n s e r t   c o m m e n t s "  
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   F O R   I N S E R T  
+     W I T H   C H E C K   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   d e l e t e   o w n   c o m m e n t s "  
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   F O R   D E L E T E  
+     U S I N G   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   u p d a t e   o w n   c o m m e n t s "  
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s   F O R   U P D A T E  
+     U S I N G   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+ - -   C r e a t e   a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   t a b l e  
+ C R E A T E   T A B L E   I F   N O T   E X I S T S   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   (  
+     i d   U U I D   D E F A U L T   u u i d _ g e n e r a t e _ v 4 ( )   P R I M A R Y   K E Y ,  
+     c o m m e n t _ i d   U U I D   R E F E R E N C E S   p u b l i c . a n n o u n c e m e n t _ c o m m e n t s ( i d )   O N   D E L E T E   C A S C A D E   N O T   N U L L ,  
+     u s e r _ i d   U U I D   R E F E R E N C E S   p u b l i c . p r o f i l e s ( i d )   O N   D E L E T E   C A S C A D E   N O T   N U L L ,  
+     r e a c t i o n _ t y p e   T E X T   N O T   N U L L   C H E C K   ( r e a c t i o n _ t y p e   I N   ( ' l i k e ' ,   ' d i s l i k e ' ) ) ,  
+     c r e a t e d _ a t   T I M E S T A M P   W I T H   T I M E   Z O N E   D E F A U L T   N O W ( ) ,  
+     U N I Q U E ( c o m m e n t _ i d ,   u s e r _ i d )  
+ ) ;  
+  
+ - -   R L S  
+ A L T E R   T A B L E   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   E N A B L E   R O W   L E V E L   S E C U R I T Y ;  
+  
+ C R E A T E   P O L I C Y   " R e a c t i o n s   v i e w a b l e   b y   e v e r y o n e "    
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   F O R   S E L E C T   U S I N G   ( t r u e ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   i n s e r t   r e a c t i o n "    
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   F O R   I N S E R T   W I T H   C H E C K   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   u p d a t e   r e a c t i o n "    
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   F O R   U P D A T E   U S I N G   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+  
+ C R E A T E   P O L I C Y   " U s e r s   c a n   d e l e t e   r e a c t i o n "    
+     O N   p u b l i c . a n n o u n c e m e n t _ c o m m e n t _ r e a c t i o n s   F O R   D E L E T E   U S I N G   ( a u t h . u i d ( )   =   u s e r _ i d ) ;  
+ 
