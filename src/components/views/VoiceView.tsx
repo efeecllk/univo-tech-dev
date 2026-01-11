@@ -1006,10 +1006,7 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Vertical Thread Line from Post Owner - connects to root comments */}
-                                                                    {(expandedVoices[voice.id] && voice.comments.length > 0) && (
-                                                                        <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 transition-colors relative z-0" />
-                                                                    )}
+
                                                                 </div>
 
                                                                 <div className="flex-1">
@@ -1331,17 +1328,14 @@ export default function VoiceView() {
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
                                                                                                                     <div key={child.id} className="relative">
-                                                                                                                        {/* Curve Connector - Revised Position for Overlap Fix 
-                                                                                                                            Parent Center line is at -1.75rem relative to this container. 
-                                                                                                                            (Gap 0.75rem + AvatarHalf 1rem = 1.75rem)
-                                                                                                                            We use border-l-2 and border-b-2.
-                                                                                                                        */}
-                                                                                                                        <div className="absolute top-0 -left-[calc(1.75rem+1px)] w-8 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                                        {/* Rail - Vertical Line from Parent */}
+                                                                                                                        <div 
+                                                                                                                            className="absolute top-0 -left-[1.75rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
+                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '18px' : '100%' }}
+                                                                                                                        />
                                                                                                                         
-                                                                                                                        {/* Mask to hide excess thread line for the last nested child */}
-                                                                                                                        {idx === comment.children.length - 1 && (
-                                                                                                                            <div className="absolute top-[15px] bottom-0 -left-[calc(1.85rem+1px)] w-4 bg-white dark:bg-[#0a0a0a] z-[5]" />
-                                                                                                                        )}
+                                                                                                                        {/* Curve Connector - Connects Rail to Avatar */}
+                                                                                                                        <div className="absolute top-0 -left-[1.75rem] w-[1.75rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
 
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
                                                                                                                     </div>
@@ -1358,13 +1352,14 @@ export default function VoiceView() {
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
                                                                                                 <div key={root.id} className="relative mt-4 first:mt-4">
-                                                                                                    {/* Curve Connector for Root Comments - Connects to Post Owner Line */}
-                                                                                                    <div className="absolute top-0 -left-[2.25rem] w-10 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
-                                                                                                    
-                                                                                                    {/* Mask to hide excess thread line for the last item */}
-                                                                                                    {idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) && (
-                                                                                                        <div className="absolute top-[15px] bottom-0 -left-[2.35rem] w-4 bg-white dark:bg-[#0a0a0a] z-[5]" />
-                                                                                                    )}
+                                                                                                    {/* Rail - Vertical Line from Post Owner */}
+                                                                                                    <div 
+                                                                                                        className="absolute top-0 -left-[2.25rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
+                                                                                                        style={{ height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? '18px' : '100%' }}
+                                                                                                    />
+
+                                                                                                    {/* Curve Connector - Connects Rail to Avatar */}
+                                                                                                    <div className="absolute top-0 -left-[2.25rem] w-[2.25rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                     
                                                                                                     <CommentItem comment={root} />
                                                                                                 </div>
