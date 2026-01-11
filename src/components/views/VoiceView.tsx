@@ -211,14 +211,20 @@ const BranchConnector = ({
         const calculate = () => {
             if (!containerRef.current || !avatarRef.current) return;
             
-            const containerRect = containerRef.current.getBoundingClientRect();
+            // Use the offsetParent (local context) for coordinate calculation
+            // This ensures geometry is correct regardless of nesting depth
+            const offsetParent = avatarRef.current.offsetParent as HTMLElement;
+            if (!offsetParent) return;
+
+            const parentRect = offsetParent.getBoundingClientRect();
             const avatarRect = avatarRef.current.getBoundingClientRect();
             
-            const avatarCenterY = avatarRect.top + avatarRect.height / 2 - containerRect.top;
-            const avatarCenterX = avatarRect.left + avatarRect.width / 2 - containerRect.left;
+            // Calculate coordinates relative to the local context
+            const avatarCenterY = avatarRect.top + avatarRect.height / 2 - parentRect.top;
+            const avatarCenterX = avatarRect.left + avatarRect.width / 2 - parentRect.left;
             
-            const railX = offsetX;
-            const branchWidth = avatarCenterX - (containerRect.left + railX);
+            // Calculate width from the rail (at offsetX) to the avatar center
+            const branchWidth = avatarCenterX - offsetX;
             
             setGeometry({
                 y: avatarCenterY - 16,
