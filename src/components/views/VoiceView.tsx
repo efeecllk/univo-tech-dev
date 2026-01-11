@@ -1330,16 +1330,16 @@ export default function VoiceView() {
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
                                                                                                                     <div key={child.id} className="relative pb-4 last:pb-0">
-                                                                                                                        {/* Rail - Vertical Line, z-10 to overlap curve border */}
+                                                                                                                        {/* Rail - Vertical Line, extends down */}
                                                                                                                         <div 
-                                                                                                                            className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-10"
-                                                                                                                            style={{ left: '-1.75rem', height: idx === comment.children.length - 1 ? '2px' : '100%' }}
+                                                                                                                            className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors"
+                                                                                                                            style={{ left: '-1.75rem', height: idx === comment.children.length - 1 ? '14px' : '100%' }}
                                                                                                                         />
                                                                                                                         
-                                                                                                                        {/* Curve Connector - under rail */}
+                                                                                                                        {/* Curve Connector - horizontal only */}
                                                                                                                         <div 
-                                                                                                                            className="absolute w-[1.75rem] h-[16px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0"
-                                                                                                                            style={{ top: '0px', left: '-1.75rem' }}
+                                                                                                                            className="absolute border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl"
+                                                                                                                            style={{ top: '0px', left: 'calc(-1.75rem + 2px)', width: 'calc(1.75rem - 2px)', height: '16px' }}
                                                                                                                         />
 
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
@@ -1357,16 +1357,16 @@ export default function VoiceView() {
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
                                                                                                 <div key={root.id} className="relative pb-4 first:pt-4">
-                                                                                                    {/* Rail - Vertical Line extends to curve start (top-4 + 2px overlap) */}
+                                                                                                    {/* Rail - Vertical Line, extends into curve area */}
                                                                                                     <div 
-                                                                                                        className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-10"
-                                                                                                        style={{ left: '-2.25rem', height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? 'calc(1rem + 2px)' : '100%' }}
+                                                                                                        className="absolute top-0 w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors"
+                                                                                                        style={{ left: '-2.25rem', height: idx === (Math.min(roots.length, visibleCommentsCount[voice.id] || 10) - 1) ? 'calc(1rem + 14px)' : '100%' }}
                                                                                                     />
 
-                                                                                                    {/* Curve Connector - only horizontal with rounded corner, placed under rail */}
+                                                                                                    {/* Curve Connector - horizontal only, rail provides vertical */}
                                                                                                     <div 
-                                                                                                        className="absolute w-[2.25rem] h-[16px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0"
-                                                                                                        style={{ top: '1rem', left: '-2.25rem' }}
+                                                                                                        className="absolute border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl"
+                                                                                                        style={{ top: '1rem', left: 'calc(-2.25rem + 2px)', width: 'calc(2.25rem - 2px)', height: '16px' }}
                                                                                                     />
                                                                                                     
                                                                                                     <CommentItem comment={root} />
