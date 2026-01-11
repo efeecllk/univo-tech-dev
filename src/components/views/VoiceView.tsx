@@ -1187,7 +1187,7 @@ export default function VoiceView() {
                                                                             ) : (
                                                                             <>
                                                                             {expandedVoices[voice.id] && (
-                                                                                <div className="space-y-0 mb-4 pl-[3.5rem]">
+                                                                                <div className="space-y-0 mb-4 pl-0">
                                                                                     {(() => {
                                                                                     // 1. Prepare comments with user reaction state
                                                                                     const preparedComments = voice.comments.map(c => ({
