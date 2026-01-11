@@ -1006,9 +1006,9 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Post Owner Connector - Fixed h-48 to bridge avatar to first comment curve */}
+                                                                    {/* Post Owner Connector - h-56 bridges to first comment */}
                                                                     {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="w-[2px] h-48 bg-neutral-200 dark:bg-neutral-800 z-0" />
+                                                                        <div className="w-[2px] h-56 bg-neutral-200 dark:bg-neutral-800 z-0" />
                                                                     )}
 
                                                                 </div>
@@ -1231,9 +1231,9 @@ export default function VoiceView() {
                                                                                                             )}
                                                                                                         </div>
                                                                                                         
-                                                                                                        {/* Parent-child bridge - h-16 to reach children container */}
+                                                                                                        {/* Parent-child bridge - h-20 to reach children container */}
                                                                                                         {hasChildren && (
-                                                                                                            <div className="w-[2px] h-16 bg-neutral-200 dark:bg-neutral-800 transition-colors" />
+                                                                                                            <div className="w-[2px] h-20 bg-neutral-200 dark:bg-neutral-800 transition-colors" />
                                                                                                         )}
                                                                                                     </div>
 
@@ -1330,10 +1330,10 @@ export default function VoiceView() {
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
                                                                                                                     <div key={child.id} className="relative pb-4 last:pb-0">
-                                                                                                                        {/* Rail - Vertical Line from Parent (14px for last to not overshoot curve) */}
+                                                                                                                        {/* Rail - Vertical Line from Parent (12px for last to stop before curve corner) */}
                                                                                                                         <div 
                                                                                                                             className="absolute top-0 -left-[1.75rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
-                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '14px' : '100%' }}
+                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '12px' : '100%' }}
                                                                                                                         />
                                                                                                                         
                                                                                                                         {/* Curve Connector - Connects Rail to Avatar (16px = 32px avatar / 2) */}
