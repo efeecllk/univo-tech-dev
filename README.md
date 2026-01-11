@@ -27,14 +27,14 @@
 ---
 
 ## 🚀 Release Notes: v1.0.1 → v1.0.2
-**📅 January 11, 2026 (Evening)**
+**📅 January 11, 2026**
 
 This update focuses on deep stability, social features, and pixel-perfect UI refinements.
 
 ### ✨ Highlights
 - **🔍 Manual Encoding Audit (100% Clean):**
     - A line-by-line manual audit was performed across all critical files (`VoiceView.tsx`, `CommentSystem.tsx`, `VoiceStatsWidget.tsx`).
-    - All lingering "Minecraft language" artifacts (encoding errors) have been purged.
+    - All lingering artifacts (encoding errors) have been purged.
 - **👥 Social & Profile Integration:**
     - 3-dot menus in posts and comments now feature **"Add Friend"** and **"View Profile"** buttons for non-owners.
     - Standardized Social UI: The profile visit button now matches the aesthetic of our friendship action buttons.
@@ -54,7 +54,7 @@ This update focuses on deep stability, social features, and pixel-perfect UI ref
 
 
 ## 🚀 Release Notes: v1.0.0 → v1.0.1
-**📅 January 11, 2026**
+**📅 January 10, 2026**
 
 With today's update, **Univo** has become much more stable, faster, and user-friendly. Here's what's new in **v1.0.1**:
 
@@ -81,7 +81,7 @@ With today's update, **Univo** has become much more stable, faster, and user-fri
 ---
 
 ## 🎉 Initial Release: v1.0.0 (MVP)
-**📅 January 10, 2026**
+**📅 January 9, 2026**
 
 The birth of Univo. The first stable release digitizing the campus experience.
 
