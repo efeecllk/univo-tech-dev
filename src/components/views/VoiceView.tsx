@@ -1210,7 +1210,7 @@ export default function VoiceView() {
                                                                                         const hasChildren = comment.children && comment.children.length > 0;
                                                                                         
                                                                                         return (
-                                                                                            <div className={`flex flex-col ${depth > 0 ? 'mt-4' : 'mt-4 first:mt-0'} relative`}>
+                                                                                            <div className={`flex flex-col relative`}>
                                                                                                 <div className="flex gap-3 relative group/comment">
                                                                                                     {/* Avatar Column */}
                                                                                                     <div className="flex flex-col items-center shrink-0">
@@ -1327,7 +1327,7 @@ export default function VoiceView() {
                                                                                                         {hasChildren && (
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any, idx: number) => (
-                                                                                                                    <div key={child.id} className="relative">
+                                                                                                                    <div key={child.id} className="relative pb-4 last:pb-0">
                                                                                                                         {/* Rail - Vertical Line from Parent */}
                                                                                                                         <div 
                                                                                                                             className="absolute top-0 -left-[1.75rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
@@ -1351,7 +1351,7 @@ export default function VoiceView() {
                                                                                     return (
                                                                                         <>
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map((root, idx) => (
-                                                                                                <div key={root.id} className="relative mt-4 first:mt-4">
+                                                                                                <div key={root.id} className="relative pb-4 first:pt-4">
                                                                                                     {/* Rail - Vertical Line from Post Owner */}
                                                                                                     <div 
                                                                                                         className="absolute top-0 -left-[2.25rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
