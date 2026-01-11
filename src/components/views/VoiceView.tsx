@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import NotificationCenter from '../NotificationCenter';
-import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageSquare, Send, Tag, Award, Ghost, TrendingUp, ArrowRight, ArrowBigUp, ArrowBigDown, MoreVertical, Edit2, Trash2, X, Share2, UserPlus, Users, User, BadgeCheck, Globe, Lock, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -234,27 +234,46 @@ function VoiceItem({
                                 <MoreVertical size={16} />
                             </button>
                             {activeMenu === voice.id && (
-                                <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
-                                    <button
-                                        onClick={() => {
-                                            startEdit(voice);
-                                            setActiveMenu(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
-                                    >
-                                        <Edit2 size={14} /> Düzenle
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            if (window.confirm('Bu paylaşımı silmek istediğinize emin misiniz?')) {
-                                                handleDelete(voice.id);
-                                            }
-                                            setActiveMenu(null);
-                                        }}
-                                        className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
-                                    >
-                                        <Trash2 size={14} /> Sil
-                                    </button>
+                                <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
+                                    {user?.id === voice.user_id ? (
+                                        <>
+                                            <button
+                                                onClick={() => {
+                                                    startEdit(voice);
+                                                    setActiveMenu(null);
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
+                                            >
+                                                <Edit2 size={14} /> Düzenle
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('Bu paylaşımı silmek istediğinize emin misiniz?')) {
+                                                        handleDelete(voice.id);
+                                                    }
+                                                    setActiveMenu(null);
+                                                }}
+                                                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                            >
+                                                <Trash2 size={14} /> Sil
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Link 
+                                                href={`/profile/${voice.user_id}`}
+                                                className="w-full text-left px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
+                                            >
+                                                <User size={14} /> Profili Gör
+                                            </Link>
+                                            {!voice.is_anonymous && (
+                                                <FriendButton 
+                                                    targetUserId={voice.user_id} 
+                                                    variant="menu-item"
+                                                />
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             )}
                         </div>

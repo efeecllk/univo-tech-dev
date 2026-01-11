@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, MessageSquare, Send, X, Globe, Lock, ChevronDown, ChevronUp, Tag, Filter, User, Calendar, Award, Ghost } from 'lucide-react';
 import { toast } from 'sonner';
+import FriendButton from '../FriendButton';
 
 // ThreadConnector: Vertical line connecting parent to last child
 export const ThreadConnector = ({ 
@@ -241,9 +242,8 @@ export const CommentItem = ({
                                     {showMenu && (
                                         <>
                                             <div className="fixed inset-0 z-[90]" onClick={() => setShowMenu(false)} />
-                                            <div className="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
-                                                {/* Owner-only actions */}
-                                                {user.id === comment.user_id && (
+                                            <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded shadow-lg overflow-hidden z-[100] animate-in slide-in-from-top-2 fade-in duration-200">
+                                                {user.id === comment.user_id ? (
                                                     <>
                                                         <button
                                                             onClick={() => {
@@ -267,18 +267,20 @@ export const CommentItem = ({
                                                             <Trash2 size={12} /> SİL
                                                         </button>
                                                     </>
+                                                ) : (
+                                                    <>
+                                                        <Link 
+                                                            href={`/profile/${comment.user_id}`}
+                                                            className="w-full text-left px-4 py-2 text-xs font-bold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2"
+                                                        >
+                                                            <User size={12} /> PROFİLİ GÖR
+                                                        </Link>
+                                                        <FriendButton 
+                                                            targetUserId={comment.user_id} 
+                                                            variant="menu-item"
+                                                        />
+                                                    </>
                                                 )}
-                                                {/* Actions for all users */}
-                                                <button
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}#comment-${comment.id}`);
-                                                        toast.success('Yorum linki kopyalandı!');
-                                                        setShowMenu(false);
-                                                    }}
-                                                    className="w-full text-left px-4 py-2 text-xs font-bold text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center gap-2"
-                                                >
-                                                    <Share2 size={12} /> PAYLAŞ
-                                                </button>
                                             </div>
                                         </>
                                     )}
