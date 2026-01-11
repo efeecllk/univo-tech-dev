@@ -121,22 +121,22 @@ export default function VoiceView() {
     const fetchVoices = async () => {
         try {
             const { data, error } = await supabase
-                .from('voices')
+                .from('campus_voices')
                 .select(`
                     *,
                     user:profiles(full_name, nickname, avatar_url, department, class_year),
-                    comments(
+                    comments:voice_comments(
                         id,
                         content,
                         created_at,
                         user:profiles(full_name, avatar_url),
                         user_id,
                         parent_id,
-                        reactions:comment_reactions(user_id, reaction_type)
+                        reactions:voice_comment_reactions(user_id, reaction_type)
                     ),
                     reactions:voice_reactions(user_id, reaction_type, created_at)
                 `)
-                .eq('is_archived', false) // Only active
+                .eq('moderation_status', 'approved') // Only active
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -195,10 +195,10 @@ export default function VoiceView() {
 
         const channel = supabase
             .channel('public:voices')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'voices' }, fetchVoices)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'comments' }, fetchVoices)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'campus_voices' }, fetchVoices)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'voice_comments' }, fetchVoices)
             .on('postgres_changes', { event: '*', schema: 'public', table: 'voice_reactions' }, fetchVoices)
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'comment_reactions' }, fetchVoices)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'voice_comment_reactions' }, fetchVoices)
             .subscribe();
 
         return () => {
@@ -244,12 +244,13 @@ export default function VoiceView() {
             const tags = newStatus.match(/#[\wğüşıöçĞÜŞİÖÇ]+/g) || [];
 
             const { error } = await supabase
-                .from('voices')
+                .from('campus_voices')
                 .insert([{
                     user_id: user.id,
                     content: newStatus,
                     is_anonymous: isAnonymous,
-                    tags: tags // Store tags directly
+                    tags: tags, // Store tags directly
+                    moderation_status: 'approved'
                 }]);
 
             if (error) throw error;
@@ -322,17 +323,17 @@ export default function VoiceView() {
             // For MVP, just insert/delete
             
             const { data: existing } = await supabase
-                .from('comment_reactions')
+                .from('voice_comment_reactions')
                 .select('*')
                 .eq('comment_id', commentId)
                 .eq('user_id', user.id)
                 .single();
 
             if (existing && existing.reaction_type === type) {
-                await supabase.from('comment_reactions').delete().eq('id', existing.id);
+                await supabase.from('voice_comment_reactions').delete().eq('id', existing.id);
             } else {
-                if (existing) await supabase.from('comment_reactions').delete().eq('id', existing.id);
-                await supabase.from('comment_reactions').insert({
+                if (existing) await supabase.from('voice_comment_reactions').delete().eq('id', existing.id);
+                await supabase.from('voice_comment_reactions').insert({
                     comment_id: commentId,
                     user_id: user.id,
                     reaction_type: type
@@ -353,7 +354,7 @@ export default function VoiceView() {
         setIsCommenting(true);
         try {
             const { error } = await supabase
-                .from('comments')
+                .from('voice_comments')
                 .insert([{
                     voice_id: voiceId,
                     user_id: user.id,
@@ -418,8 +419,8 @@ export default function VoiceView() {
     const handleDelete = async (voiceId: string) => {
         try {
             const { error } = await supabase
-                .from('voices')
-                .update({ is_archived: true })
+                .from('campus_voices')
+                .delete()
                 .eq('id', voiceId);
 
             if (error) throw error;
@@ -442,7 +443,7 @@ export default function VoiceView() {
 
         try {
             const { error } = await supabase
-                .from('voices')
+                .from('campus_voices')
                 .update({ content: editContent })
                 .eq('id', editingId);
 
@@ -459,7 +460,7 @@ export default function VoiceView() {
     const handleCommentDelete = async (commentId: string) => {
         try {
             const { error } = await supabase
-                .from('comments')
+                .from('voice_comments')
                 .delete() // Or update is_archived if comments have it? Assuming delete for now based on simplicity
                 .eq('id', commentId);
 
@@ -475,7 +476,7 @@ export default function VoiceView() {
     const handleCommentUpdate = async (commentId: string, newContent: string) => {
         try {
             const { error } = await supabase
-                .from('comments')
+                .from('voice_comments')
                 .update({ content: newContent })
                 .eq('id', commentId);
 
