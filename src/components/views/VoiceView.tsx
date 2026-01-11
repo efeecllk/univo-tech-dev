@@ -1183,20 +1183,19 @@ export default function VoiceView() {
                                                                                                             )}
                                                                                                         </div>
                                                                                                         
-                                                                                                        {/* Vertical Thread Line - Only visible if children exist AND are open */}
+                                                                                                        {/* Vertical Thread Line - Only visible if children exist AND are open 
+                                                                                                            Removed hover effect as requested.
+                                                                                                        */}
                                                                                                         {hasChildren && isOpen && (
-                                                                                                            <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 -mb-4 mt-2 group-hover/comment:bg-neutral-300 dark:group-hover/comment:bg-neutral-700 transition-colors" />
+                                                                                                            <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 -mb-4 mt-2 transition-colors" />
                                                                                                         )}
                                                                                                     </div>
 
                                                                                                     {/* Content Column */}
                                                                                                     <div className="flex-1 min-w-0">
-                                                                                                        {/* Comment Card */}
-                                                                                                        <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow relative">
+                                                                                                        {/* Comment Card - Updated styling to match VoiceCard (rounded-xl, padding) */}
+                                                                                                        <div className="bg-white dark:bg-[#0a0a0a] border border-neutral-200 dark:border-neutral-800 rounded-xl p-4 shadow-sm relative">
                                                                                                             
-                                                                                                            {/* Mobile/Tight visual connector */}
-                                                                                                            <div className="absolute top-4 -left-[7px] w-2 h-2 bg-white dark:bg-[#0a0a0a] border-l border-b border-neutral-200 dark:border-neutral-800 transform rotate-45" />
-
                                                                                                             <div className="flex justify-between items-baseline mb-1">
                                                                                                                 <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
                                                                                                                     {comment.user}
@@ -1206,6 +1205,7 @@ export default function VoiceView() {
                                                                                                             <p className="text-sm text-neutral-800 dark:text-neutral-200 whitespace-pre-wrap leading-relaxed">{comment.content}</p>
                                                                                                             
                                                                                                             <div className="flex items-center gap-4 mt-3 pt-2 border-t border-neutral-100 dark:border-neutral-800/50">
+                                                                                                                {/* Reactions */}
                                                                                                                 <div className="flex items-center gap-0.5 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1 py-0.5 border border-neutral-100 dark:border-neutral-800">
                                                                                                                     <button
                                                                                                                         onClick={(e) => handleCommentReaction(e, voice.id, comment.id, 'like')}
@@ -1234,18 +1234,45 @@ export default function VoiceView() {
                                                                                                                     Yanıtla
                                                                                                                 </button>
                                                                                                             </div>
+                                                                                                            
+                                                                                                            {/* YouTube Style Expand Button - Moved Below Action Bar */}
+                                                                                                            {hasChildren && (
+                                                                                                                <div className="pt-2"> {/* Added spacing */}
+                                                                                                                    <button 
+                                                                                                                        onClick={() => setIsOpen(!isOpen)}
+                                                                                                                        className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-2 py-1.5 rounded-md transition-colors w-full sm:w-auto justify-start"
+                                                                                                                    >
+                                                                                                                        {isOpen ? (
+                                                                                                                            <>
+                                                                                                                                <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                                                                                                                    <ChevronUp size={14} />
+                                                                                                                                </div>
+                                                                                                                                Yanıtları gizle
+                                                                                                                            </>
+                                                                                                                        ) : (
+                                                                                                                            <>
+                                                                                                                                <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                                                                                                                    <ChevronDown size={14} />
+                                                                                                                                </div>
+                                                                                                                                {comment.children.length} yanıtı göster
+                                                                                                                            </>
+                                                                                                                        )}
+                                                                                                                    </button>
+                                                                                                                </div>
+                                                                                                            )}
                                                                                                         </div>
                                                                                                         
                                                                                                         {/* Reply Form */}
                                                                                                         {isReplying && (
                                                                                                             <div className="mt-3 ml-2 relative">
-                                                                                                                <div className="absolute top-0 -left-6 w-4 h-8 border-l-2 border-b-2 border-neutral-200 dark:border-neutral-800 rounded-bl-xl" />
+                                                                                                                <div className="absolute top-0 -left-[1.75rem] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                                 <form onSubmit={(e) => {
                                                                                                                     e.preventDefault();
                                                                                                                     handleCommentSubmit(e, voice.id, comment.id, replyContent);
                                                                                                                     setReplyContent(''); 
                                                                                                                     setReplyingTo(null);
-                                                                                                                }} className="flex gap-2 animate-in fade-in slide-in-from-top-1">
+                                                                                                                    if (!isOpen) setIsOpen(true); // Auto-expand on reply
+                                                                                                                }} className="flex gap-2 animate-in fade-in slide-in-from-top-1 relative z-10">
                                                                                                                     <input
                                                                                                                         autoFocus
                                                                                                                         value={replyContent}
@@ -1264,35 +1291,17 @@ export default function VoiceView() {
                                                                                                             </div>
                                                                                                         )}
 
-                                                                                                        {/* YouTube Style Expand Button */}
-                                                                                                        {hasChildren && (
-                                                                                                            <div className="mt-2">
-                                                                                                                <button 
-                                                                                                                    onClick={() => setIsOpen(!isOpen)}
-                                                                                                                    className="flex items-center gap-2 text-xs font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-full transition-colors"
-                                                                                                                >
-                                                                                                                    {isOpen ? (
-                                                                                                                        <>
-                                                                                                                            <ChevronUp size={14} />
-                                                                                                                            Yanıtları gizle
-                                                                                                                        </>
-                                                                                                                    ) : (
-                                                                                                                        <>
-                                                                                                                            <ChevronDown size={14} />
-                                                                                                                            {comment.children.length} yanıt
-                                                                                                                        </>
-                                                                                                                    )}
-                                                                                                                </button>
-                                                                                                            </div>
-                                                                                                        )}
-
                                                                                                         {/* Recursion - Children Render */}
                                                                                                         {hasChildren && isOpen && (
                                                                                                             <div className="mt-4">
                                                                                                                 {comment.children.map((child: any) => (
                                                                                                                     <div key={child.id} className="relative">
-                                                                                                                        {/* Curve Connector */}
-                                                                                                                        <div className="absolute top-0 -left-[2.15rem] w-6 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                                        {/* Curve Connector - Revised Position for Overlap Fix 
+                                                                                                                            Parent Center line is at -1.75rem relative to this container. 
+                                                                                                                            (Gap 0.75rem + AvatarHalf 1rem = 1.75rem)
+                                                                                                                            We use border-l-2 and border-b-2.
+                                                                                                                        */}
+                                                                                                                        <div className="absolute top-0 -left-[1.75rem] w-8 h-8 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                                         
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
                                                                                                                     </div>
