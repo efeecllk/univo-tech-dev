@@ -1342,7 +1342,7 @@ export default function VoiceView() {
                                                                                             {roots.slice(0, visibleCommentsCount[voice.id] || 10).map(root => (
                                                                                                 <div key={root.id} className="relative mt-4 first:mt-4">
                                                                                                     {/* Curve Connector for Root Comments - Connects to Post Owner Line */}
-                                                                                                    <div className="absolute top-0 -left-[calc(2.15rem+1px)] w-10 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                    <div className="absolute top-0 -left-[2.25rem] w-10 h-4 border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
                                                                                                     <CommentItem comment={root} />
                                                                                                 </div>
                                                                                             ))}
