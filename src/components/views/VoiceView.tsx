@@ -1006,9 +1006,9 @@ export default function VoiceView() {
                                                                             voice.user.full_name?.charAt(0)
                                                                         )}
                                                                     </div>
-                                                                    {/* Post Owner Connector - Fixed height, connects to first comment curve */}
+                                                                    {/* Post Owner Connector - Fixed h-32 to bridge avatar to first comment curve */}
                                                                     {voice.comments.length > 0 && expandedVoices[voice.id] && (
-                                                                        <div className="w-[2px] h-16 bg-neutral-200 dark:bg-neutral-800 z-0" />
+                                                                        <div className="w-[2px] h-32 bg-neutral-200 dark:bg-neutral-800 z-0" />
                                                                     )}
 
                                                                 </div>
@@ -1231,9 +1231,9 @@ export default function VoiceView() {
                                                                                                             )}
                                                                                                         </div>
                                                                                                         
-                                                                                                        {/* Vertical Thread Line - grows to reach children container */}
+                                                                                                        {/* Vertical Thread Line - grows to reach children, -mb-4 compensates for pb-4 on wrapper */}
                                                                                                         {hasChildren && (
-                                                                                                            <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 transition-colors" />
+                                                                                                            <div className="w-[2px] grow bg-neutral-200 dark:bg-neutral-800 transition-colors -mb-4" />
                                                                                                         )}
                                                                                                     </div>
 
