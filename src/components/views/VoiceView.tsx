@@ -1231,7 +1231,10 @@ export default function VoiceView() {
                                                                                                             )}
                                                                                                         </div>
                                                                                                         
-                                                                                                        {/* Vertical Thread Line - Only if children exist (now handled by child rails) */}
+                                                                                                        {/* Vertical Thread Line - Bridges gap to children (h-8 covers mt-4 + first child top) */}
+                                                                                                        {hasChildren && (
+                                                                                                            <div className="w-[2px] h-8 bg-neutral-200 dark:bg-neutral-800 transition-colors" />
+                                                                                                        )}
                                                                                                     </div>
 
                                                                                                     {/* Content Column */}
@@ -1330,11 +1333,11 @@ export default function VoiceView() {
                                                                                                                         {/* Rail - Vertical Line from Parent */}
                                                                                                                         <div 
                                                                                                                             className="absolute top-0 -left-[1.75rem] w-[2px] bg-neutral-200 dark:bg-neutral-800 transition-colors z-0"
-                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '17px' : '100%' }}
+                                                                                                                            style={{ height: idx === comment.children.length - 1 ? '16px' : '100%' }}
                                                                                                                         />
                                                                                                                         
-                                                                                                                        {/* Curve Connector - Connects Rail to Avatar */}
-                                                                                                                        <div className="absolute top-0 -left-[1.75rem] w-[1.75rem] h-[18px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
+                                                                                                                        {/* Curve Connector - Connects Rail to Avatar (16px = 32px avatar / 2) */}
+                                                                                                                        <div className="absolute top-0 -left-[1.75rem] w-[1.75rem] h-[16px] border-l-[2px] border-b-[2px] border-neutral-200 dark:border-neutral-800 rounded-bl-xl z-0" />
 
                                                                                                                         <CommentItem comment={child} depth={depth + 1} />
                                                                                                                     </div>
