@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, Filter, User, Calendar, Award, Ghost, Tag, MessageSquare } from 'lucide-react';
+import { ArrowBigUp, ArrowBigDown, Edit2, Trash2, MoreVertical, Share2, Filter, User, Calendar, Award, Ghost, Tag, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import CommentThread from './CommentSystem';
@@ -96,85 +96,59 @@ export default function VoiceItem({
 
     return (
         <article 
-            className="group relative flex flex-col sm:flex-row gap-4 p-6 bg-white dark:bg-neutral-900 border-2 border-black dark:border-neutral-600 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.2)] transition-all mb-6 rounded-xl"
+            className={`bg-white dark:bg-[#0a0a0a] border-b border-neutral-200 dark:border-neutral-800 pb-6 last:border-0 px-2 relative transition-colors ${voice.is_editors_choice ? 'bg-yellow-50/50 dark:bg-yellow-900/10 -mx-2 px-4 py-4 rounded-lg border-none ring-1 ring-yellow-200 dark:ring-yellow-700/50' : ''}`}
             ref={el => { containerRefs.current[voice.id] = el as HTMLDivElement | null; }}
         >
-            {/* Vote Column */}
-            <div className="flex sm:flex-col items-center gap-1 sm:gap-2 bg-neutral-50 dark:bg-neutral-800/50 p-2 rounded-full sm:rounded-2xl border border-neutral-100 dark:border-neutral-800 h-fit self-start">
-                <button
-                    onClick={() => handleReaction(voice.id, 'like')}
-                    className={`p-1.5 rounded-xl transition-all ${myReaction === 'like' ? 'bg-white dark:bg-black text-green-600 shadow-sm' : 'text-neutral-400 hover:text-green-600 hover:bg-white dark:hover:bg-neutral-800'}`}
-                >
-                    <ArrowBigUp size={24} className={myReaction === 'like' ? 'fill-current' : ''} />
-                </button>
-                <span className={`font-black text-sm tabular-nums ${score > 0 ? 'text-green-600' : score < 0 ? 'text-red-600' : 'text-neutral-400'}`}>
-                    {score}
-                </span>
-                <button
-                    onClick={() => handleReaction(voice.id, 'dislike')}
-                    className={`p-1.5 rounded-xl transition-all ${myReaction === 'dislike' ? 'bg-white dark:bg-black text-red-600 shadow-sm' : 'text-neutral-400 hover:text-red-600 hover:bg-white dark:hover:bg-neutral-800'}`}
-                >
-                    <ArrowBigDown size={24} className={`rotate-180 ${myReaction === 'dislike' ? 'fill-current' : ''}`} />
-                </button>
-            </div>
+            {voice.is_editors_choice && (
+                <div className="absolute -top-3 right-4 bg-yellow-400 dark:bg-yellow-600 text-yellow-900 dark:text-yellow-100 text-xs font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1 uppercase tracking-wider">
+                    <Award size={12} className="text-yellow-900 dark:text-yellow-100" />
+                    Editörün Seçimi
+                </div>
+            )}
 
-            {/* Content Column */}
-            <div className="flex-1 min-w-0">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2 mb-1">
+            <div className="flex gap-4 items-stretch">
+                {/* Avatar Column */}
+                <div className="flex flex-col items-center shrink-0 relative">
+                    <div 
+                        ref={el => { postOwnerAvatarRefs.current[voice.id] = el; }}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center font-bold font-serif shrink-0 border border-neutral-200 dark:border-neutral-800 relative z-20 ${voice.is_anonymous ? 'bg-neutral-800 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-300' : 'text-white bg-white dark:bg-[#0a0a0a]'}`}
+                        style={(!voice.is_anonymous && !voice.user?.avatar_url) ? { backgroundColor: 'var(--primary-color)' } : undefined}
+                    >
                         {voice.is_anonymous ? (
-                            <div className="w-8 h-8 rounded-full bg-neutral-900 dark:bg-white flex items-center justify-center shrink-0">
-                                <Ghost size={14} className="text-white dark:text-black" />
-                            </div>
+                            <Ghost size={20} />
+                        ) : (voice.user?.avatar_url) ? (
+                            <img src={voice.user.avatar_url} alt={voice.user.full_name} className="w-full h-full rounded-full object-cover" />
                         ) : (
-                            <Link href={`/profile/${voice.user_id}`} className="block shrink-0">
-                                <div 
-                                    ref={el => { postOwnerAvatarRefs.current[voice.id] = el; }} // Capture ref for post owner
-                                    className="w-8 h-8 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-white"
-                                    style={!voice.user?.avatar_url ? { 
-                                        backgroundColor: 'var(--primary-color)'
-                                    } : undefined}
-                                >
-                                    {voice.user?.avatar_url ? (
-                                        <img src={voice.user.avatar_url} alt={voice.user.full_name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white">
-                                            {voice.user?.full_name?.charAt(0) || '?'}
-                                        </div>
-                                    )}
-                                </div>
+                            voice.user?.full_name?.charAt(0) || '?'
+                        )}
+                    </div>
+                    {/* Post Owner Connector - h-56 bridges to first comment */}
+                    {voice.comments?.length > 0 && expandedVoices[voice.id] && (
+                        <div className="w-[2px] h-56 bg-neutral-200 dark:bg-neutral-800 z-0" />
+                    )}
+                </div>
+
+                {/* Content Column */}
+                <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        {voice.is_anonymous ? (
+                            <span className="font-bold text-neutral-600 dark:text-neutral-400 italic flex items-center gap-1">
+                                {voice.user?.nickname || 'Anonim'}
+                            </span>
+                        ) : (
+                            <Link href={`/profile/${voice.user_id}`} className="font-bold text-neutral-900 dark:text-white hover:underline">
+                                {voice.user?.full_name || 'Kullanıcı'}
                             </Link>
                         )}
-                        
-                        <div className="flex flex-col leading-tight">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                {voice.is_anonymous ? (
-                                    <span className="font-bold font-serif text-sm">Anonim</span>
-                                ) : (
-                                    <Link href={`/profile/${voice.user_id}`} className="font-bold font-serif text-sm hover:underline dark:text-white">
-                                        {voice.user?.full_name || 'Kullanıcı'}
-                                    </Link>
-                                )}
-                                {voice.is_editors_choice && (
-                                    <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold flex items-center gap-1 border border-yellow-200 dark:border-yellow-800">
-                                        <Award size={10} />
-                                        Editörün Seçimi
-                                    </span>
-                                )}
-                            </div>
-                            <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif">
-                                {formatRelativeTime(voice.created_at)}
-                                {!voice.is_anonymous && voice.user?.department && ` • ${voice.user.department}`}
+                        {(voice.user?.department || voice.user?.class_year) && (
+                            <span className="text-xs text-neutral-500 dark:text-neutral-400 uppercase tracking-widest border-l border-neutral-300 dark:border-neutral-700 pl-2 ml-1 truncate max-w-[120px] sm:max-w-none">
+                                {[voice.user.department, voice.user.class_year].filter(Boolean).join(' • ')}
                             </span>
-                        </div>
-                    </div>
-
-                    {user && user.id === voice.user_id && (
-                        <div className="relative">
-                            <button
+                        )}
+                        <div className="ml-auto relative">
+                             <button
                                 onClick={() => setActiveMenu(activeMenu === voice.id ? null : voice.id)}
-                                className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded text-neutral-400"
+                                className="p-1 text-neutral-400 hover:text-black dark:hover:text-white transition-colors rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800"
                             >
                                 <MoreVertical size={16} />
                             </button>
@@ -203,108 +177,153 @@ export default function VoiceItem({
                                 </div>
                             )}
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                {/* Content Body */}
-                <div className="pl-0 sm:pl-10">
-                    {editingId === voice.id ? (
-                        <form onSubmit={handleUpdate}>
-                            <textarea
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
-                                className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded text-sm bg-white dark:bg-neutral-800 dark:text-white mb-2 font-serif focus:ring-2 focus:ring-black dark:focus:ring-white focus:outline-none"
-                                rows={3}
-                                autoFocus
-                            />
-                            <div className="flex justify-end gap-2">
+                    {/* Content Body */}
+                    <div className="mb-4">
+                        {editingId === voice.id ? (
+                            <form onSubmit={handleUpdate}>
+                                <textarea
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    className="w-full p-2 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white font-serif rounded-sm focus:border-neutral-400 dark:focus:border-neutral-500 transition-colors"
+                                    rows={3}
+                                    autoFocus
+                                />
+                                <div className="flex justify-end gap-2 mt-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setEditingId(null)}
+                                        className="text-xs font-bold uppercase text-neutral-500 hover:text-black dark:hover:text-white"
+                                    >
+                                        İPTAL
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={!editContent.trim()}
+                                        className="text-xs font-bold uppercase bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-sm"
+                                    >
+                                        KAYDET
+                                    </button>
+                                </div>
+                            </form>
+                        ) : (
+                            <div className="mb-4 group/content relative">
+                                <p className="text-neutral-900 dark:text-neutral-200 leading-relaxed text-lg font-serif">
+                                    {renderContentWithTags(voice.content)}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer Actions (Votes + Comments + Share) */}
+                    <div className="flex items-center justify-between pt-3 mt-2 border-t border-neutral-100 dark:border-neutral-900 flex-wrap gap-y-2 relative">
+                        <div className="flex items-center gap-6">
+                            {/* Votes */}
+                            <div className="flex items-center gap-1 bg-neutral-50 dark:bg-neutral-900 rounded-full px-1.5 py-1 border border-neutral-100 dark:border-neutral-800">
                                 <button
-                                    type="button"
-                                    onClick={() => setEditingId(null)}
-                                    className="px-3 py-1 text-xs font-bold text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded"
+                                    onClick={() => handleReaction(voice.id, 'like')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${myReaction === 'like' ? 'text-green-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-green-600'}`}
                                 >
-                                    İPTAL
+                                    <ArrowBigUp size={20} className={myReaction === 'like' ? 'fill-current' : ''} />
                                 </button>
+                                <span className={`text-sm font-bold min-w-[1.5rem] text-center ${score > 0 ? 'text-green-600' : score < 0 ? 'text-red-600' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                                    {score}
+                                </span>
                                 <button
-                                    type="submit"
-                                    disabled={!editContent.trim()}
-                                    className="px-3 py-1 text-xs font-bold bg-black dark:bg-white text-white dark:text-black rounded disabled:opacity-50"
+                                    onClick={() => handleReaction(voice.id, 'dislike')}
+                                    className={`p-1.5 rounded-full transition-all flex items-center justify-center w-8 h-8 hover:bg-white dark:hover:bg-black hover:shadow-sm ${myReaction === 'dislike' ? 'text-red-600' : 'text-neutral-400 dark:text-neutral-500 hover:text-red-600'}`}
                                 >
-                                    KAYDET
+                                    <ArrowBigDown size={20} className={myReaction === 'dislike' ? 'fill-current' : ''} />
                                 </button>
                             </div>
-                        </form>
-                    ) : (
-                        renderContentWithTags(voice.content)
+
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id); }}
+                                className={`flex items-center gap-2 group transition-colors uppercase text-xs font-bold px-3 py-1.5 rounded-full ${activeCommentBox === voice.id ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
+                            >
+                                YANITLA
+                            </button>
+                            
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
+                                    toast.success('Link kopyalandı!');
+                                }}
+                                className="flex items-center gap-2 group text-neutral-400 dark:text-neutral-500 hover:text-green-500 transition-colors"
+                            >
+                                <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20">
+                                    <Share2 size={18} />
+                                </div>
+                            </button>
+                        </div>
+
+                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium ml-auto">
+                            {formatRelativeTime(voice.created_at)}
+                        </span>
+                    </div>
+
+                    {/* Show Comments Toggle */}
+                    {voice.comments?.length > 0 && (
+                        <div className="mt-2">
+                            <button 
+                                onClick={(e) => { e.stopPropagation(); toggleVoiceComments(voice.id); }}
+                                className={`flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full transition-colors w-full sm:w-auto justify-start uppercase ${expandedVoices[voice.id] ? 'bg-neutral-100 dark:bg-neutral-800 text-black dark:text-white' : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-black dark:hover:text-white'}`}
+                            >
+                                {expandedVoices[voice.id] ? (
+                                    <>
+                                        <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                            <ChevronUp size={14} />
+                                        </div>
+                                        YORUMLARI GİZLE
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center justify-center w-4 h-4 mr-1">
+                                            <ChevronDown size={14} />
+                                        </div>
+                                        {voice.comments.length} YORUMU GÖSTER
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     )}
 
-                    {/* Footer Actions */}
-                    <div className="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t border-neutral-100 dark:border-neutral-800/50">
-                        <button 
-                            onClick={() => {
-                                if (!user) return toast.error('Yorum yapmak için giriş yapmalısınız.');
-                                setActiveCommentBox(activeCommentBox === voice.id ? null : voice.id);
-                            }}
-                            className={`flex items-center gap-1 text-xs font-bold uppercase transition-colors ${activeCommentBox === voice.id ? 'text-black dark:text-white' : 'text-neutral-500 hover:text-black dark:hover:text-white'}`}
-                        >
-                            <MessageSquare size={14} />
-                            Yorum Yap {voice.comments?.length > 0 && `(${voice.comments.length})`}
-                        </button>
-
-                        <button 
-                            onClick={() => toggleVoiceComments(voice.id)}
-                            className="flex items-center gap-1 text-xs font-bold text-neutral-500 hover:text-black dark:hover:text-white uppercase transition-colors"
-                        >
-                            {expandedVoices[voice.id] ? 'Yorumları Gizle' : 'Yorumları Gör'}
-                        </button>
-                        
-                        <button
-                            onClick={() => {
-                                navigator.clipboard.writeText(`${window.location.origin}/voice/${voice.id}`);
-                                toast.success('Link kopyalandı!');
-                            }}
-                            className="flex items-center gap-1 text-xs font-bold text-neutral-500 hover:text-black dark:hover:text-white uppercase transition-colors ml-auto"
-                        >
-                            <Share2 size={14} />
-                            Paylaş
-                        </button>
-                    </div>
 
                     {/* New Comment Input */}
                     {activeCommentBox === voice.id && (
-                        <form 
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleCommentSubmit(e, voice.id, null, newComment);
-                                setNewComment(''); // Clear local/global newComment (Wait, this clears global?)
-                            }} 
-                            className="mt-4 flex gap-2 animate-in fade-in slide-in-from-top-1"
-                        >
-                            <input
-                                type="text"
-                                autoFocus
-                                value={newComment} // WARNING: This is using global newComment? voiceView passed 'newComment'.
-                                // If multiple items are active, they share this state!
-                                // VoiceView.tsx: 'activeCommentBox' determines which ONE is active.
-                                // So sharing 'newComment' state is "okay" as long as only one box open.
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Düşünceni ekle..."
-                                className="flex-1 px-4 py-2 bg-neutral-50 dark:bg-neutral-800 border-b-2 border-neutral-200 dark:border-neutral-700 focus:border-black dark:focus:border-white focus:outline-none text-sm font-serif dark:text-white transition-colors"
-                            />
-                            <button 
-                                type="submit"
-                                disabled={isCommenting || !newComment.trim()}
-                                className="px-4 py-2 bg-black dark:bg-white text-white dark:text-black text-xs font-bold uppercase hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors"
+                        <div className="pl-0 pb-4 animate-in fade-in slide-in-from-top-1">
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleCommentSubmit(e, voice.id, null, newComment);
+                                    setNewComment('');
+                                }} 
+                                className="flex gap-2 bg-neutral-50 dark:bg-neutral-900/50 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800"
                             >
-                                {isCommenting ? '...' : 'Gönder'}
-                            </button>
-                        </form>
+                                <input
+                                    type="text"
+                                    autoFocus
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    placeholder="Yorumunu yaz..."
+                                    className="flex-1 px-3 py-2 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-sm focus:outline-none focus:border-black dark:focus:border-white font-serif dark:text-white transition-colors rounded-md"
+                                />
+                                <button 
+                                    type="submit"
+                                    disabled={isCommenting || !newComment.trim()}
+                                    className="p-2 bg-black dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 transition-colors rounded-md"
+                                >
+                                    {isCommenting ? '...' : <div className="flex items-center"><span className="text-xs font-bold mr-1">GÖNDER</span></div>}
+                                </button>
+                            </form>
+                        </div>
                     )}
 
                     {/* Comments Thread */}
                     {(activeCommentBox === voice.id || (voice.comments.length > 0 && expandedVoices[voice.id])) && (
                         <div className="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-900 w-full animate-in slide-in-from-top-2">
-                            {!user && activeCommentBox === voice.id ? (
+                             {!user && activeCommentBox === voice.id ? (
                                 <div className="bg-neutral-50 dark:bg-neutral-900 border border-dashed border-neutral-300 dark:border-neutral-700 rounded p-4 text-center">
                                     <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-2">Yorumları görmek için giriş yapmalısınız.</p>
                                     <Link href="/login" className="text-sm font-bold hover:underline uppercase" style={{ color: 'var(--primary-color)' }}>Giriş Yap</Link>
