@@ -1,0 +1,55 @@
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { Shield, Users, Settings, LogOut } from 'lucide-react';
+
+export default async function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('univo_admin_session');
+
+    if (!sessionCookie) {
+        redirect('/login');
+    }
+
+    return (
+        <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 flex">
+            {/* Sidebar */}
+            <aside className="w-64 bg-white dark:bg-black border-r border-neutral-200 dark:border-neutral-800 hidden md:flex flex-col">
+                <div className="p-6 border-b border-neutral-100 dark:border-neutral-800 flex items-center gap-3">
+                    <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-black">
+                        <Shield size={18} />
+                    </div>
+                    <span className="font-bold text-lg">Admin Panel</span>
+                </div>
+
+                <nav className="flex-1 p-4 space-y-1">
+                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white">
+                        <Users size={18} />
+                        <span>Kullanıcılar</span>
+                    </Link>
+                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                        <Settings size={18} />
+                        <span>Ayarlar (Yakında)</span>
+                    </Link>
+                </nav>
+
+                <div className="p-4 border-t border-neutral-100 dark:border-neutral-800">
+                    {/* Logout handled by client side logic usually, but here just a link to home */}
+                    <Link href="/" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <LogOut size={18} />
+                        <span>Çıkış Yap</span>
+                    </Link>
+                </div>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 overflow-y-auto h-screen">
+                {children}
+            </main>
+        </div>
+    );
+}

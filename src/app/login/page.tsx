@@ -3,78 +3,77 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { Eye, EyeOff, GraduationCap, AlertCircle, CheckCircle, ArrowRight, ChevronLeft } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap, AlertCircle, CheckCircle, ArrowRight, ChevronLeft, Shield, Lock, X } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 
 // University configurations (expandable)
 const UNIVERSITIES = [
-  {
-    id: 'metu',
-    name: 'ODTÜ',
-    fullName: 'Orta Doğu Teknik Üniversitesi',
-    color: '#C8102E',
-    logo: '/odtu_logo.png',
-    enabled: true,
-    moodleUrl: 'odtuclass2025f.metu.edu.tr'
-  },
-  {
-    id: 'itu',
-    name: 'İTÜ',
-    fullName: 'İstanbul Teknik Üniversitesi',
-    color: '#1D428A',
-    logo: '/universities/itu_cleaned.png',
-    enabled: false,
-    moodleUrl: ''
-  },
-  {
-    id: 'bilkent',
-    name: 'Bilkent',
-    fullName: 'Bilkent Üniversitesi',
-    color: '#002D72',
-    logo: '/universities/bilkent_cleaned.png',
-    enabled: false,
-    moodleUrl: ''
-  },
-  {
-    id: 'hacettepe',
-    name: 'Hacettepe',
-    fullName: 'Hacettepe Üniversitesi',
-    color: '#D4212C',
-    logo: '/universities/hacettepe_cleaned.png',
-    enabled: false,
-    moodleUrl: ''
-  },
-  {
-    id: 'bogazici',
-    name: 'Boğaziçi',
-    fullName: 'Boğaziçi Üniversitesi',
-    color: '#003366',
-    logo: '/universities/bogazici_cleaned.png',
-    enabled: false,
-    moodleUrl: ''
-  },
-  {
-    id: 'ankara',
-    name: 'AÜ',
-    fullName: 'Ankara Üniversitesi',
-    color: '#00458e',
-    logo: '/universities/ankara_cleaned.png',
-    enabled: false,
-    moodleUrl: ''
-  }
+    {
+        id: 'metu',
+        name: 'ODTÜ',
+        fullName: 'Orta Doğu Teknik Üniversitesi',
+        color: '#C8102E',
+        logo: '/odtu_logo.png',
+        enabled: true,
+        moodleUrl: 'odtuclass2025f.metu.edu.tr'
+    },
+    {
+        id: 'itu',
+        name: 'İTÜ',
+        fullName: 'İstanbul Teknik Üniversitesi',
+        color: '#1D428A',
+        logo: '/universities/itu_cleaned.png',
+        enabled: false,
+        moodleUrl: ''
+    },
+    {
+        id: 'bilkent',
+        name: 'Bilkent',
+        fullName: 'Bilkent Üniversitesi',
+        color: '#002D72',
+        logo: '/universities/bilkent_cleaned.png',
+        enabled: false,
+        moodleUrl: ''
+    },
+    {
+        id: 'hacettepe',
+        name: 'Hacettepe',
+        fullName: 'Hacettepe Üniversitesi',
+        color: '#D4212C',
+        logo: '/universities/hacettepe_cleaned.png',
+        enabled: false,
+        moodleUrl: ''
+    },
+    {
+        id: 'bogazici',
+        name: 'Boğaziçi',
+        fullName: 'Boğaziçi Üniversitesi',
+        color: '#003366',
+        logo: '/universities/bogazici_cleaned.png',
+        enabled: false,
+        moodleUrl: ''
+    },
+    {
+        id: 'ankara',
+        name: 'AÜ',
+        fullName: 'Ankara Üniversitesi',
+        color: '#00458e',
+        logo: '/universities/ankara_cleaned.png',
+        enabled: false,
+        moodleUrl: ''
+    }
 ];
 
 export default function LoginPage() {
     const router = useRouter();
     const { signInWithMetu } = useAuth();
     const { resolvedTheme } = useTheme();
-    
     // Step: 'select' or 'login'
     const [step, setStep] = useState<'select' | 'login'>('select');
     const [selectedUni, setSelectedUni] = useState<typeof UNIVERSITIES[0] | null>(null);
-    
+
     // Login form state
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -82,6 +81,15 @@ export default function LoginPage() {
     const [acceptedTerms, setAcceptedTerms] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Admin Login State
+    const [showAdminLogin, setShowAdminLogin] = useState(false);
+    const [adminStep, setAdminStep] = useState<'shared' | 'personal'>('shared');
+    const [adminEmail, setAdminEmail] = useState('');
+    const [adminSharedPassword, setAdminSharedPassword] = useState('');
+    const [adminName, setAdminName] = useState('');
+    const [adminPersonalPassword, setAdminPersonalPassword] = useState('');
+    const [adminError, setAdminError] = useState<string | null>(null);
 
     const handleSelectUniversity = (uni: typeof UNIVERSITIES[0]) => {
         if (!uni.enabled) {
@@ -105,7 +113,7 @@ export default function LoginPage() {
         }
 
         setIsLoading(true);
-        
+
         // Timer for slow connection message
         const timer = setTimeout(() => {
             setIsTakingLong(true);
@@ -158,19 +166,166 @@ export default function LoginPage() {
         }
     };
 
+    const handleAdminLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setAdminError(null);
+        setIsLoading(true);
+
+        try {
+            const payload = adminStep === 'shared'
+                ? { step: 'verify-shared', email: adminEmail, password: adminSharedPassword }
+                : { step: 'verify-personal', name: adminName, password: adminPersonalPassword };
+
+            const res = await fetch('/api/admin/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.error || 'Giriş başarısız.');
+            }
+
+            if (adminStep === 'shared') {
+                setAdminStep('personal');
+                toast.success('Kimlik doğrulaması başarılı. Lütfen admin girişinizi yapın.');
+            } else {
+                toast.success(data.message || 'Admin girişi başarılı.');
+                window.location.href = '/admin'; // Force reload to pick up cookie
+            }
+        } catch (err: any) {
+            setAdminError(err.message || 'Bir hata oluştu.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // University Selection Step
     // University Selection Step
     if (step === 'select') {
         return (
-            <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4">
+            <div className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4 relative">
+                {/* Admin Button */}
+                <button
+                    onClick={() => setShowAdminLogin(true)}
+                    className="absolute top-4 right-4 p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                    title="Admin Girişi"
+                >
+                    <Shield size={20} />
+                </button>
+
+                {/* Admin Login Modal */}
+                {showAdminLogin && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+                        <div className="bg-white dark:bg-neutral-900 w-full max-w-md border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden relative animate-in zoom-in-95">
+                            <button
+                                onClick={() => { setShowAdminLogin(false); setAdminStep('shared'); setAdminError(null); }}
+                                className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="p-8">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 rounded-full bg-neutral-900 dark:bg-white flex items-center justify-center text-white dark:text-neutral-900">
+                                        <Lock size={20} />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Admin Paneli</h2>
+                                        <p className="text-xs text-neutral-500">Yetkili personel girişi</p>
+                                    </div>
+                                </div>
+
+                                <form onSubmit={handleAdminLogin} className="space-y-4">
+                                    {adminError && (
+                                        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-3 text-sm rounded-lg border border-red-200 dark:border-red-800">
+                                            {adminError}
+                                        </div>
+                                    )}
+
+                                    {adminStep === 'shared' ? (
+                                        <>
+                                            <div>
+                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">E-posta</label>
+                                                <input
+                                                    type="email"
+                                                    required
+                                                    value={adminEmail}
+                                                    onChange={e => setAdminEmail(e.target.value)}
+                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                                    placeholder="Yetkili e-postası"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Güvenlik Şifresi</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={adminSharedPassword}
+                                                    onChange={e => setAdminSharedPassword(e.target.value)}
+                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                                    placeholder="••••••••"
+                                                />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 p-3 text-sm rounded-lg mb-4 flex items-center gap-2">
+                                                <CheckCircle size={16} />
+                                                <span>Güvenlik doğrulaması başarılı.</span>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Admin İsmi</label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={adminName}
+                                                    onChange={e => setAdminName(e.target.value)}
+                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                                    placeholder="İsminiz"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Kişisel Şifre</label>
+                                                <input
+                                                    type="password"
+                                                    required
+                                                    value={adminPersonalPassword}
+                                                    onChange={e => setAdminPersonalPassword(e.target.value)}
+                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                                    placeholder="Şifreniz (İlk girişte oluşturulur)"
+                                                />
+                                                <p className="text-[10px] text-neutral-400 mt-1">
+                                                    * İsminiz ilk defa giriliyorsa bu şifre kaydedilecektir. Daha sonrakilerde doğrulama için kullanılacaktır.
+                                                </p>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    <button
+                                        type="submit"
+                                        disabled={isLoading}
+                                        className="w-full py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        {isLoading ? 'İşleniyor...' : (adminStep === 'shared' ? 'Doğrula' : 'Giriş Yap')}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 <div className="bg-white dark:bg-neutral-900 w-full max-w-md border-2 border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden">
-                    
+
                     {/* Header */}
                     <div className="p-8 text-center border-b border-neutral-100 dark:border-neutral-800">
                         <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden bg-white dark:bg-neutral-800 shadow-sm border border-neutral-100 dark:border-neutral-800 p-1.5">
-                            <img 
-                                src={resolvedTheme === 'dark' ? '/univo-white-clean.png' : '/univo-black-clean.png'} 
-                                alt="Univo" 
-                                className="w-full h-full object-contain" 
+                            <img
+                                src={resolvedTheme === 'dark' ? '/univo-white-clean.png' : '/univo-black-clean.png'}
+                                alt="Univo"
+                                className="w-full h-full object-contain"
                             />
                         </div>
                         <h2 className="text-2xl font-bold font-serif text-neutral-900 dark:text-white">Univo'ya Giriş</h2>
@@ -187,13 +342,12 @@ export default function LoginPage() {
                                 onClick={() => handleSelectUniversity(uni)}
                                 disabled={!uni.enabled}
                                 style={{ '--hover-color': uni.color } as React.CSSProperties}
-                                className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 group ${
-                                    uni.enabled 
-                                        ? 'border-neutral-200 dark:border-neutral-700 hover:border-[var(--hover-color)] hover:shadow-md cursor-pointer'
-                                        : 'border-neutral-100 dark:border-neutral-800 opacity-50 cursor-not-allowed'
-                                }`}
+                                className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 group ${uni.enabled
+                                    ? 'border-neutral-200 dark:border-neutral-700 hover:border-[var(--hover-color)] hover:shadow-md cursor-pointer'
+                                    : 'border-neutral-100 dark:border-neutral-800 opacity-50 cursor-not-allowed'
+                                    }`}
                             >
-                                <div 
+                                <div
                                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
                                     style={{ backgroundColor: uni.color }}
                                 >
@@ -201,7 +355,7 @@ export default function LoginPage() {
                                         {uni.logo ? (
                                             <img src={uni.logo} alt={uni.name} className="w-full h-full object-contain" />
                                         ) : (
-                                            <div 
+                                            <div
                                                 className="w-full h-full flex items-center justify-center text-white font-bold text-lg"
                                                 style={{ backgroundColor: uni.color }}
                                             >
@@ -223,9 +377,9 @@ export default function LoginPage() {
                         ))}
                     </div>
                 </div>
-                
+
                 <p className="text-xs text-neutral-400 dark:text-neutral-600 text-center mt-8 pb-4">
-                &copy; {new Date().getFullYear()} Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
+                    &copy; {new Date().getFullYear()} Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
                 </p>
             </div>
         );
@@ -233,24 +387,24 @@ export default function LoginPage() {
 
     // Login Form Step
     return (
-        <div 
+        <div
             className="min-h-screen bg-neutral-50 dark:bg-[#0a0a0a] flex flex-col items-center justify-center p-4"
             style={{ '--primary-color': selectedUni?.color || '#C8102E' } as React.CSSProperties}
         >
             <div className="bg-white dark:bg-neutral-900 w-full max-w-md border-2 border-neutral-200 dark:border-neutral-800 shadow-xl rounded-2xl overflow-hidden">
-                
+
                 {/* Header with Back Button */}
                 <div className="p-6 border-b border-neutral-100 dark:border-neutral-800">
-                    <button 
+                    <button
                         onClick={() => { setStep('select'); setError(null); }}
                         className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 mb-4 transition-colors"
                     >
                         <ChevronLeft size={18} />
                         <span>Üniversite Seçimine Dön</span>
                     </button>
-                    
+
                     <div className="flex items-center gap-4">
-                        <div 
+                        <div
                             className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
                             style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
                         >
@@ -258,7 +412,7 @@ export default function LoginPage() {
                                 {selectedUni?.logo ? (
                                     <img src={selectedUni.logo} alt={selectedUni.name} className="w-full h-full object-contain" />
                                 ) : (
-                                    <div 
+                                    <div
                                         className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
                                         style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
                                     >
@@ -290,7 +444,7 @@ export default function LoginPage() {
                             <div>
                                 <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">Kullanıcı Adı (NetID)</label>
                                 <div className="relative">
-                                    <input 
+                                    <input
                                         type="text"
                                         required
                                         placeholder="e123456"
@@ -306,7 +460,7 @@ export default function LoginPage() {
                             <div>
                                 <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">Şifre</label>
                                 <div className="relative">
-                                    <input 
+                                    <input
                                         type={showPassword ? "text" : "password"}
                                         required
                                         placeholder="••••••••"
@@ -328,24 +482,24 @@ export default function LoginPage() {
 
                         {/* Terms */}
                         <label className="flex items-start gap-3 p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors select-none group mt-2">
-                            <div 
+                            <div
                                 className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${acceptedTerms ? 'border-transparent' : 'border-neutral-300 dark:border-neutral-600 group-hover:border-neutral-400'}`}
                                 style={acceptedTerms ? { backgroundColor: selectedUni?.color || 'var(--primary-color)' } : undefined}
                             >
                                 {acceptedTerms && <CheckCircle size={14} className="text-white" />}
                             </div>
-                            <input 
-                                type="checkbox" 
-                                className="sr-only" 
-                                checked={acceptedTerms} 
-                                onChange={e => setAcceptedTerms(e.target.checked)} 
+                            <input
+                                type="checkbox"
+                                className="sr-only"
+                                checked={acceptedTerms}
+                                onChange={e => setAcceptedTerms(e.target.checked)}
                             />
                             <span className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
                                 Şifremin <strong>Univo'da asla kaydedilmediğini</strong>, sadece üniversite sistemlerinde anlık doğrulama için kullanıldığını anlıyorum.
                             </span>
                         </label>
 
-                        <button 
+                        <button
                             type="submit"
                             disabled={isLoading}
                             className="w-full py-4 sm:py-3.5 text-white font-bold text-sm uppercase tracking-wide rounded-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none shadow-sm flex items-center justify-center gap-2 mt-4 relative z-50 touch-manipulation"
@@ -363,7 +517,7 @@ export default function LoginPage() {
                                 </>
                             )}
                         </button>
-                        
+
                         {isLoading && isTakingLong && (
                             <div className="text-center mt-3 animate-in fade-in slide-in-from-top-1">
                                 <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium bg-neutral-100 dark:bg-neutral-800 py-2 px-3 rounded-lg inline-block mx-auto border border-neutral-200 dark:border-neutral-700">
@@ -374,7 +528,7 @@ export default function LoginPage() {
                     </form>
                 </div>
             </div>
-            
+
             <p className="text-xs text-neutral-400 dark:text-neutral-600 text-center mt-8 pb-8">
                 &copy; {new Date().getFullYear()} Univo. ODTÜ'lü öğrenciler tarafından geliştirilmiştir.
             </p>
