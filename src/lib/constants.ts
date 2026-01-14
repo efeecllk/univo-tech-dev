@@ -43,6 +43,12 @@ export const METU_DEPARTMENTS = [
 export const ADMIN_EMAIL = "dogan.kerem@metu.edu.tr";
 export const ADMIN_NAME = "Kerem Doğan";
 
+export const SUPER_ADMIN_NAMES = [
+  "Kerem Doğan",
+  "Berke Şen",
+  "Salih Kızıler"
+];
+
 export const METU_CLASSES = [
   "Hazırlık",
   "1. Sınıf",

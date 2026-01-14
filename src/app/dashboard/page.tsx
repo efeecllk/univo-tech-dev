@@ -5,9 +5,10 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { Users, Calendar, Star, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
+import { SUPER_ADMIN_NAMES } from '@/lib/constants';
 
 export default function DashboardOverview() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   // State for stats
   const [stats, setStats] = useState({
@@ -28,8 +29,17 @@ export default function DashboardOverview() {
   }, [user]);
 
   async function fetchStats() {
+      const isSuperAdmin = profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name);
+
       // 1. Get Community ID
-      const { data: communities } = await supabase.from('communities').select('id').eq('admin_id', user?.id).limit(1);
+      let { data: communities } = await supabase.from('communities').select('id').eq('admin_id', user?.id).limit(1);
+      
+      // Fallback for Super Admins
+      if ((!communities || communities.length === 0) && isSuperAdmin) {
+          const { data: defaultComm } = await supabase.from('communities').select('id').ilike('name', '%Univo%').limit(1);
+          communities = defaultComm;
+      }
+
       const community = communities?.[0];
       
       if (!community) {

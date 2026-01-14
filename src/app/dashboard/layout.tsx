@@ -6,9 +6,10 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Calendar, BarChart2, Settings, LogOut, PlusCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
+import { SUPER_ADMIN_NAMES } from '@/lib/constants';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, profile, signOut, loading: authLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [community, setCommunity] = useState<any>(null);
@@ -23,19 +24,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     async function checkAdminStatus() {
+        const isSuperAdmin = profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name);
+        
+        // 1. Check if user owns a community
         const { data, error } = await supabase
             .from('communities')
             .select('*')
             .eq('admin_id', user?.id)
-            .limit(1); // Get first one, ignore others
+            .limit(1); 
         
         if (data && data.length > 0) {
             setCommunity(data[0]);
+        } else if (isSuperAdmin) {
+            // 2. If Super Admin but no owned community, fallback to "Univo" community
+            const { data: defaultComm } = await supabase
+                .from('communities')
+                .select('*')
+                .ilike('name', '%Univo%')
+                .limit(1);
+            
+            if (defaultComm && defaultComm.length > 0) {
+                setCommunity(defaultComm[0]);
+            }
         }
         setLoading(false);
     }
     checkAdminStatus();
-  }, [user, authLoading]);
+  }, [user, authLoading, profile]);
 
   if (loading || authLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-[#0a0a0a]">

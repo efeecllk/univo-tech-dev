@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { ADMIN_EMAIL, ADMIN_NAME } from '@/lib/constants';
+import { ADMIN_EMAIL, ADMIN_NAME, SUPER_ADMIN_NAMES } from '@/lib/constants';
 import { Rocket, ChevronDown, Check, X, Upload, Instagram, Twitter, Globe, Users, Trash2 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -19,7 +19,7 @@ export default function SettingsPage() {
     const [showLogoModal, setShowLogoModal] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const isAdmin = user?.email === ADMIN_EMAIL || profile?.full_name === ADMIN_NAME;
+    const isAdmin = user?.email === ADMIN_EMAIL || (profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name));
 
     const fetchCommunity = async () => {
         if (!user) return;

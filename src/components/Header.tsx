@@ -14,11 +14,7 @@ const NotificationCenter = dynamic(() => import('./NotificationCenter'), { ssr: 
 const AuthButton = dynamic(() => import('./AuthButton'), { ssr: false });
 
 
-const ALLOWED_DASHBOARD_USERS = [
-  'Kerem Doğan',
-  'Berke Şen',
-  'Salih KIZILER'
-];
+import { SUPER_ADMIN_NAMES } from '@/lib/constants';
 
 // Shared Component Import
 import SkeletonLoader from './ui/SkeletonLoader';
@@ -118,7 +114,7 @@ function HeaderContent() {
     checkAdmin();
   }, [user]);
 
-  const canAccessDashboard = isCommunityAdmin || (profile?.full_name && ALLOWED_DASHBOARD_USERS.includes(profile.full_name));
+  const canAccessDashboard = isCommunityAdmin || (profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name));
 
   const navItems = [
     {
@@ -232,7 +228,7 @@ function HeaderContent() {
                {showSkeleton ? (
                    <div className="hidden lg:flex items-center gap-2">
                        {/* Dashboard Skeleton (Square) - Restored per user request */}
-                       <SkeletonLoader width={40} height={40} className="rounded-full" />
+                       {canAccessDashboard && <SkeletonLoader width={40} height={40} className="rounded-full" />}
 
                        {/* Search Skeleton (Circle) */}
                        <SkeletonLoader width={40} height={40} className="rounded-full" />
@@ -446,8 +442,13 @@ function HeaderContent() {
 import HeaderSkeleton from './skeletons/HeaderSkeleton';
 
 export default function Header() {
+  const { profile, authLoading } = useAuth();
+  
+  // Predict if the user is a super admin based on names
+  const isAdminPredict = !authLoading && profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name);
+
   return (
-    <Suspense fallback={<HeaderSkeleton />}>
+    <Suspense fallback={<HeaderSkeleton isAdmin={!!isAdminPredict} />}>
       <HeaderContent />
     </Suspense>
   );

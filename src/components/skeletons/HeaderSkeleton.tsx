@@ -3,7 +3,7 @@ import Link from 'next/link';
 import SkeletonLoader from '../ui/SkeletonLoader';
 import Image from 'next/image';
 
-export default function HeaderSkeleton() {
+export default function HeaderSkeleton({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
       <header className="hidden lg:block sticky top-0 z-[9999] bg-white dark:bg-neutral-900 border-b border-black dark:border-white !transition-none transform-none">
         <div className="w-full px-4 md:container md:mx-auto">
@@ -38,7 +38,7 @@ export default function HeaderSkeleton() {
             {/* Right: Tools Skeleton */}
             <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
                 <div className="hidden lg:flex items-center gap-2">
-                    <SkeletonLoader width={40} height={40} className="rounded-full" />
+                    {isAdmin && <SkeletonLoader width={40} height={40} className="rounded-full" />}
                     <SkeletonLoader width={40} height={40} className="rounded-full" />
                     <SkeletonLoader width={40} height={40} className="rounded-full" />
                     <SkeletonLoader width={100} height={40} className="rounded-full" />
