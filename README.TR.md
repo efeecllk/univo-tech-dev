@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Sürüm-v1.0.2_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Sürüm-v1.1.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -23,6 +23,36 @@
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Sürüm Notları: v1.0.2 → v1.1.0
+**📅 16 Ocak 2026**
+
+Bu büyük güncelleme, topluluğun raporlama ve yasaklama sistemleri aracılığıyla güvende kalmasını sağlayan **Moderasyon Paketi**'nin yanı sıra önemli yönetici aracı iyileştirmelerini de içeriyor.
+
+### ✨ Öne Çıkan Değişiklikler
+- **🚩 İçerik Şikayet Sistemi:**
+    - Kullanıcılar artık uygunsuz gönderi veya yorumları şikayet edebilir.
+    - Yöneticilerin şikayetleri incelemesi ve çözmesi için özel bir **"Şikayetler"** paneli eklendi.
+- **🚫 Kullanıcı Yasaklama Altyapısı:**
+    - Kategorize edilmiş (Spam, Taciz, vb.) kapsamlı yasaklama sistemi.
+    - Özel yasaklama nedenleri ve kısıtlanmış kullanıcılar için özel **Yasaklanma Ekranı**.
+- **🛠️ Admin Paneli Evrimi:**
+    - **Dinamik Sidebar:** Navigasyon linkleri artık odak vurgulaması ile aktif sayfayı doğru şekilde yansıtıyor.
+    - **Merkezi Tasarım:** Sidebar başlıkları artık mükemmel hizalanmış, zarif serif tipografisi kullanıyor.
+    - **Tema Uyumu:** Ayarlardaki "Yönetim Paneli" ikonu artık tamamen tema duyarlı (koyu/açık).
+- **⚡ UX & Performans:**
+    - **Sıfır Flash Skeletons:** Giriş ve admin sayfalarındaki "flicker" (iskelet yükleyici yanıp sönmesi) ortadan kaldırıldı.
+    - **Auth Sync:** Sorunsuz giriş geçişleri sağlamak için yönetici çerezi (cookie) akışları senkronize edildi.
+
+### 🛠️ Teknik İyileştirmeler (Changelog)
+> **v1.1.0**
+> * `feat(mod)`: `ReportContext`, `ReportModal` ve yönetici şikayet çözüm akışı uygulandı.
+> * `feat(auth)`: `univo_admin_session` çerez promosyonu ve oturum senkronizasyonu eklendi.
+> * `feat(admin)`: Dinamik yol takibi için `AdminSidebar` istemci bileşeni oluşturuldu.
+> * `fix(ui)`: İstenmeyen Suspense geri dönüşlerini önlemek için `pathname` kontrolleri üst seviye `Header`'a taşındı.
+> * `refactor`: `AdminLayout` ve `DashboardLayout` genelinde kenar çubuğu başlığı düzenleri birleştirildi.
 
 ---
 

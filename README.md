@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Status-v1.0.2_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Status-v1.1.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -20,9 +20,39 @@
 </p>
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Release Notes: v1.0.2 → v1.1.0
+**📅 January 16, 2026**
+
+This major update introduces the **Moderation Suite**, allowing the community to stay safe via reporting and banning systems, alongside significant admin tool refinements.
+
+### ✨ Highlights
+- **🚩 Content Reporting System:**
+    - Users can now report inappropriate posts or comments.
+    - Added a dedicated **"Reports"** dashboard for admins to review and resolve flags.
+- **🚫 User Ban Infrastructure:**
+    - Comprehensive banning system with categories (Spam, Harassment, etc.).
+    - Custom ban reasons and a dedicated **Ban Screen** for restricted users.
+- **🛠️ Admin Panel Evolution:**
+    - **Dynamic Sidebar:** Navigation links now correctly reflect the active page with focus highlighting.
+    - **Centric Design:** Sidebar headers now use elegant serif typography with perfect centering.
+    - **Theme Harmony:** The "Admin Panel" icon in settings is now fully theme-aware (dark/light).
+- **⚡ UX & Performance:**
+    - **Zero Flash Skeletons:** Eliminated the skeleton loader "flicker" on login and admin pages.
+    - **Auth Sync:** Aligned administrative cookie flows to ensure seamless login transitions.
+
+### 🛠️ Technical Changelog
+> **v1.1.0**
+> * `feat(mod)`: Implemented `ReportContext`, `ReportModal`, and administrative report resolution flow.
+> * `feat(auth)`: Added `univo_admin_session` cookie promotion and session synchronization.
+> * `feat(admin)`: Created `AdminSidebar` client component for dynamic path tracking.
+> * `fix(ui)`: Moved `pathname` checks to top-level `Header` to prevent intrusive Suspense fallbacks.
+> * `refactor`: Unified sidebar header layouts across `AdminLayout` and `DashboardLayout`.
 
 ---
 
