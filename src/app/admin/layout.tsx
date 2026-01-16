@@ -20,8 +20,8 @@ export default async function AdminLayout({
         <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 flex">
             {/* Sidebar */}
             <aside className="w-64 bg-white dark:bg-black border-r border-neutral-200 dark:border-neutral-800 hidden md:flex flex-col">
-                <div className="px-4 py-5 border-b border-neutral-100 dark:border-neutral-800">
-                    <h1 className="text-xs font-bold font-serif text-black dark:text-white uppercase tracking-tight text-center">
+                <div className="px-4 py-5 border-b border-neutral-100 dark:border-neutral-800 flex flex-col items-center justify-center text-center">
+                    <h1 className="text-xs font-bold font-serif text-black dark:text-white uppercase tracking-tight">
                         YÖNETİM PANELİ
                     </h1>
                 </div>
