@@ -203,8 +203,8 @@ export default function SettingsPage() {
                                     onClick={() => router.push('/admin')}
                                     className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                                 >
-                                    <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl shadow-sm" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
-                                        <LayoutDashboard size={24} className="text-white" />
+                                    <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl bg-neutral-900 dark:bg-white shadow-sm">
+                                        <Shield size={24} className="text-white dark:text-neutral-900" />
                                     </div>
                                     <div className="flex-1">
                                         <div className="font-bold text-lg text-neutral-900 dark:text-white">Yönetim Paneli</div>
@@ -394,8 +394,8 @@ export default function SettingsPage() {
                                 className="p-4 flex items-center justify-between cursor-pointer active:bg-neutral-50 dark:active:bg-neutral-800"
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
-                                        <LayoutDashboard size={20} className="text-white" />
+                                    <div className="p-2 rounded-lg bg-neutral-900 dark:bg-white">
+                                        <Shield size={20} className="text-white dark:text-neutral-900" />
                                     </div>
                                     <div>
                                         <div className="font-medium text-neutral-900 dark:text-white">Yönetim Paneli</div>

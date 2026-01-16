@@ -182,11 +182,11 @@ export default function AdminPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         {user.is_banned ? (
-                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 text-xs font-medium">
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs font-medium">
                                                 <Ban size={12} /> Yasaklı
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
                                                 <CheckCircle size={12} /> Aktif
                                             </span>
                                         )}
