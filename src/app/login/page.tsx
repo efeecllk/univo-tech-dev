@@ -84,11 +84,8 @@ export default function LoginPage() {
 
     // Admin Login State
     const [showAdminLogin, setShowAdminLogin] = useState(false);
-    const [adminStep, setAdminStep] = useState<'shared' | 'personal'>('shared');
     const [adminEmail, setAdminEmail] = useState('');
     const [adminSharedPassword, setAdminSharedPassword] = useState('');
-    const [adminName, setAdminName] = useState('');
-    const [adminPersonalPassword, setAdminPersonalPassword] = useState('');
     const [adminError, setAdminError] = useState<string | null>(null);
     const [showAdminPassword, setShowAdminPassword] = useState(false);
 
@@ -173,14 +170,14 @@ export default function LoginPage() {
         setIsLoading(true);
 
         try {
-            const payload = adminStep === 'shared'
-                ? { step: 'verify-shared', email: adminEmail, password: adminSharedPassword }
-                : { step: 'verify-personal', name: adminName, password: adminPersonalPassword };
-
             const res = await fetch('/api/admin/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ 
+                    step: 'verify-shared', 
+                    email: adminEmail, 
+                    password: adminSharedPassword 
+                })
             });
 
             const data = await res.json();
@@ -189,18 +186,13 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Giriş başarısız.');
             }
 
-            if (adminStep === 'shared') {
-                setAdminStep('personal');
-                toast.success('Kimlik doğrulaması başarılı. Lütfen admin girişinizi yapın.');
-            } else {
-                toast.success('Admin doğrulaması başarılı! Şimdi ODTÜ hesabınızla giriş yapın.');
-                setShowAdminLogin(false);
-                // Select ODTÜ and go to login step
-                const metuUni = UNIVERSITIES.find(u => u.id === 'metu');
-                if (metuUni) {
-                    setSelectedUni(metuUni);
-                    setStep('login');
-                }
+            // Success - redirect to ODTÜ login
+            toast.success('Admin doğrulaması başarılı! Şimdi ODTÜ hesabınızla giriş yapın.');
+            setShowAdminLogin(false);
+            const metuUni = UNIVERSITIES.find(u => u.id === 'metu');
+            if (metuUni) {
+                setSelectedUni(metuUni);
+                setStep('login');
             }
         } catch (err: any) {
             setAdminError(err.message || 'Bir hata oluştu.');
@@ -228,7 +220,7 @@ export default function LoginPage() {
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
                         <div className="bg-white dark:bg-neutral-900 w-full max-w-md border border-neutral-200 dark:border-neutral-800 shadow-2xl rounded-2xl overflow-hidden relative animate-in zoom-in-95">
                             <button
-                                onClick={() => { setShowAdminLogin(false); setAdminStep('shared'); setAdminError(null); }}
+                                onClick={() => { setShowAdminLogin(false); setAdminError(null); }}
                                 className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                             >
                                 <X size={20} />
@@ -240,8 +232,8 @@ export default function LoginPage() {
                                         <Lock size={20} />
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Admin Paneli</h2>
-                                        <p className="text-xs text-neutral-500">Yetkili personel girişi</p>
+                                        <h2 className="text-xl font-bold text-neutral-900 dark:text-white">Admin Girişi</h2>
+                                        <p className="text-xs text-neutral-500">Yetkili personel doğrulaması</p>
                                     </div>
                                 </div>
 
@@ -252,90 +244,49 @@ export default function LoginPage() {
                                         </div>
                                     )}
 
-                                    {adminStep === 'shared' ? (
-                                        <>
-                                            <div>
-                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">E-posta</label>
-                                                <input
-                                                    type="email"
-                                                    required
-                                                    value={adminEmail}
-                                                    onChange={e => setAdminEmail(e.target.value)}
-                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
-                                                    placeholder="Yetkili e-postası"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Güvenlik Şifresi</label>
-                                                <div className="relative">
-                                                    <input
-                                                        type={showAdminPassword ? "text" : "password"}
-                                                        required
-                                                        value={adminSharedPassword}
-                                                        onChange={e => setAdminSharedPassword(e.target.value)}
-                                                        className="w-full p-3 pr-12 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
-                                                        placeholder="••••••••"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowAdminPassword(!showAdminPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1"
-                                                    >
-                                                        {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 p-3 text-sm rounded-lg mb-4 flex items-center gap-2">
-                                                <CheckCircle size={16} />
-                                                <span>Güvenlik doğrulaması başarılı.</span>
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Admin İsmi</label>
-                                                <input
-                                                    type="text"
-                                                    required
-                                                    value={adminName}
-                                                    onChange={e => setAdminName(e.target.value)}
-                                                    className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
-                                                    placeholder="İsminiz"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Kişisel Şifre</label>
-                                                <div className="relative">
-                                                    <input
-                                                        type={showAdminPassword ? "text" : "password"}
-                                                        required
-                                                        value={adminPersonalPassword}
-                                                        onChange={e => setAdminPersonalPassword(e.target.value)}
-                                                        className="w-full p-3 pr-12 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
-                                                        placeholder="Şifreniz (İlk girişte oluşturulur)"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowAdminPassword(!showAdminPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1"
-                                                    >
-                                                        {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                    </button>
-                                                </div>
-                                                <p className="text-[10px] text-neutral-400 mt-1">
-                                                    * İsminiz ilk defa giriliyorsa bu şifre kaydedilecektir. Daha sonrakilerde doğrulama için kullanılacaktır.
-                                                </p>
-                                            </div>
-                                        </>
-                                    )}
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">E-posta</label>
+                                        <input
+                                            type="email"
+                                            required
+                                            value={adminEmail}
+                                            onChange={e => setAdminEmail(e.target.value)}
+                                            className="w-full p-3 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                            placeholder="Yetkili e-postası"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase text-neutral-500 mb-1.5">Şifre</label>
+                                        <div className="relative">
+                                            <input
+                                                type={showAdminPassword ? "text" : "password"}
+                                                required
+                                                value={adminSharedPassword}
+                                                onChange={e => setAdminSharedPassword(e.target.value)}
+                                                className="w-full p-3 pr-12 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white focus:outline-none dark:text-white"
+                                                placeholder="••••••••"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowAdminPassword(!showAdminPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors p-1"
+                                            >
+                                                {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
+                                    </div>
 
                                     <button
                                         type="submit"
                                         disabled={isLoading}
                                         className="w-full py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 font-bold rounded-lg hover:opacity-90 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                                     >
-                                        {isLoading ? 'İşleniyor...' : (adminStep === 'shared' ? 'Doğrula' : 'Giriş Yap')}
+                                        {isLoading ? 'Doğrulanıyor...' : 'Devam Et'}
                                     </button>
+                                    
+                                    <p className="text-[10px] text-neutral-400 text-center">
+                                        Doğrulama sonrası üniversite hesabınızla giriş yapacaksınız.
+                                    </p>
                                 </form>
                             </div>
                         </div>
