@@ -356,7 +356,7 @@ function VoiceItem({
                             </button>
                         </div>
 
-                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-medium ml-auto">
+                         <span className="text-xs text-neutral-400 dark:text-neutral-500 font-serif ml-auto">
                             {formatRelativeTime(voice.created_at)}
                         </span>
                     </div>
@@ -396,6 +396,7 @@ function VoiceItem({
                                     e.preventDefault();
                                     handleCommentSubmit(e, voice.id, null, newComment);
                                     setNewComment('');
+                                    setActiveCommentBox(null);
                                 }} 
                                 className="flex gap-2 bg-neutral-50 dark:bg-neutral-900/50 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800"
                             >

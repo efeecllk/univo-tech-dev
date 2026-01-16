@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
-import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, Check, User, Users, Heart, BarChart2, Laptop, Palette, Lock } from 'lucide-react';
+import { ArrowLeft, Moon, Sun, Shield, Bell, LogOut, Check, User, Users, Heart, BarChart2, Laptop, Palette, Lock, LayoutDashboard } from 'lucide-react';
+import { SUPER_ADMIN_NAMES } from '@/lib/constants';
 import { useTheme, ColorTheme } from '@/contexts/ThemeContext';
 import { toTitleCase, cn } from '@/lib/utils';
 
@@ -153,7 +154,8 @@ export default function SettingsPage() {
                             <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">Hesap Bilgileri</h2>
                             <p className="text-sm text-neutral-500 mb-6">Kişisel bilgilerinizi ve hesap detaylarınızı buradan yönetin.</p>
                             
-                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4">
+                            {/* Email Card */}
+                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 mb-4">
                                 <div 
                                     className="h-12 w-12 rounded-full flex items-center justify-center text-xl font-bold font-serif text-white shadow-sm"
                                     style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
@@ -165,6 +167,44 @@ export default function SettingsPage() {
                                     <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400 font-mono">{user?.email}</div>
                                 </div>
                             </div>
+
+                            {/* User Role Card */}
+                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 mb-4">
+                                <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl bg-neutral-200 dark:bg-neutral-700 shadow-sm">
+                                    <User size={24} className="text-neutral-600 dark:text-neutral-300" />
+                                </div>
+                                <div>
+                                    <div className="font-bold text-lg text-neutral-900 dark:text-white">Hesap Türü</div>
+                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                                        {user?.user_metadata?.full_name && SUPER_ADMIN_NAMES.includes(user.user_metadata.full_name) ? (
+                                            <span className="text-[var(--primary-color)] font-bold">Yönetici</span>
+                                        ) : (
+                                            <span>Kullanıcı</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Admin Panel Link - Only for admins */}
+                            {user?.user_metadata?.full_name && SUPER_ADMIN_NAMES.includes(user.user_metadata.full_name) && (
+                                <div 
+                                    onClick={() => router.push('/dashboard')}
+                                    className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700 flex items-center gap-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                                >
+                                    <div className="h-12 w-12 rounded-full flex items-center justify-center text-xl shadow-sm" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
+                                        <LayoutDashboard size={24} className="text-white" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-bold text-lg text-neutral-900 dark:text-white">Yönetim Paneli</div>
+                                        <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+                                            Topluluk ve içerik yönetimi
+                                        </div>
+                                    </div>
+                                    <div className="text-neutral-400">
+                                        <ArrowLeft size={20} className="rotate-180" />
+                                    </div>
+                                </div>
+                            )}
                         </section>
                     </div>
                 )}
@@ -305,6 +345,7 @@ export default function SettingsPage() {
                 <section>
                     <h2 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3 ml-1">Hesap</h2>
                     <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
+                        {/* Email */}
                         <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
@@ -316,6 +357,42 @@ export default function SettingsPage() {
                                 </div>
                             </div>
                         </div>
+                        {/* User Role */}
+                        <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">
+                                    <Shield size={20} className="text-neutral-600 dark:text-neutral-400" />
+                                </div>
+                                <div>
+                                    <div className="font-medium text-neutral-900 dark:text-white">Hesap Türü</div>
+                                    <div className="text-sm text-neutral-500">
+                                        {user?.user_metadata?.full_name && SUPER_ADMIN_NAMES.includes(user.user_metadata.full_name) ? (
+                                            <span className="text-[var(--primary-color)] font-bold">Yönetici</span>
+                                        ) : (
+                                            <span>Kullanıcı</span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Admin Panel Link */}
+                        {user?.user_metadata?.full_name && SUPER_ADMIN_NAMES.includes(user.user_metadata.full_name) && (
+                            <div 
+                                onClick={() => router.push('/dashboard')}
+                                className="p-4 flex items-center justify-between cursor-pointer active:bg-neutral-50 dark:active:bg-neutral-800"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}>
+                                        <LayoutDashboard size={20} className="text-white" />
+                                    </div>
+                                    <div>
+                                        <div className="font-medium text-neutral-900 dark:text-white">Yönetim Paneli</div>
+                                        <div className="text-sm text-neutral-500">Topluluk ve içerik yönetimi</div>
+                                    </div>
+                                </div>
+                                <ArrowLeft size={20} className="text-neutral-400 rotate-180" />
+                            </div>
+                        )}
                     </div>
                 </section>
 
