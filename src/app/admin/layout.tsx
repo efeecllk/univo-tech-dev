@@ -27,20 +27,20 @@ export default async function AdminLayout({
                     <span className="font-bold text-lg">Admin Panel</span>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
-                    <Link href="/admin" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-900 dark:text-white transition-colors">
+                <nav className="flex-1 p-4 space-y-2">
+                    <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm transition-all duration-200">
                         <Users size={18} />
                         <span>Kullanıcılar</span>
                     </Link>
-                    <Link href="/admin/logs" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors">
+                    <Link href="/admin/logs" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-all duration-200">
                         <Activity size={18} />
                         <span>Admin Hareketleri</span>
                     </Link>
-                    <Link href="/admin/banned" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white transition-colors">
+                    <Link href="/admin/banned" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-all duration-200">
                         <Ban size={18} />
                         <span>Yasaklılar</span>
                     </Link>
-                    <Link href="/admin/settings" className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors">
+                    <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white transition-all duration-200">
                         <Settings size={18} />
                         <span>Ayarlar</span>
                     </Link>
@@ -48,7 +48,7 @@ export default async function AdminLayout({
 
                 <div className="p-4 border-t border-neutral-100 dark:border-neutral-800">
                     {/* Logout handled by client side logic usually, but here just a link to home */}
-                    <Link href="/" className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <Link href="/" className="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200">
                         <LogOut size={18} />
                         <span>Çıkış Yap</span>
                     </Link>

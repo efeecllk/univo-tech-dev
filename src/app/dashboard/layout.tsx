@@ -98,14 +98,14 @@ function NavLink({ href, icon, label, active }: { href: string; icon: React.Reac
     return (
         <Link 
             href={href} 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-bold uppercase tracking-wide group ${
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium ${
                 active 
-                ? 'bg-[var(--primary-color)] text-white shadow-md' 
-                : 'text-neutral-600 dark:text-neutral-400 hover:text-white hover:bg-[var(--primary-color)]'
+                ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm' 
+                : 'text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white'
             }`}
         >
-            <span className={active ? 'text-white' : 'group-hover:text-white'}>{icon}</span>
-            <span className={active ? 'text-white' : 'group-hover:text-white'}>{label}</span>
+            <span>{icon}</span>
+            <span>{label}</span>
         </Link>
     );
 }
