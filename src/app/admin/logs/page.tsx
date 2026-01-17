@@ -84,7 +84,24 @@ export default function AdminLogsPage() {
         setSearchQuery('');
     };
 
-    if (isLoading) return <div className="p-8 text-neutral-500">Yükleniyor...</div>;
+    if (isLoading) {
+        return (
+            <div className="p-8 max-w-7xl mx-auto space-y-8">
+                <div className="space-y-4">
+                    <div className="h-10 w-64 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse"></div>
+                    <div className="h-4 w-96 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg animate-pulse"></div>
+                </div>
+                
+                <div className="flex gap-3">
+                    <div className="h-12 flex-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
+                    <div className="h-12 w-32 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl animate-pulse"></div>
+                </div>
+
+                <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-800 h-[600px] animate-pulse shadow-sm"></div>
+            </div>
+        );
+    }
+
 
     return (
         <div className="p-8 max-w-7xl mx-auto">

@@ -72,11 +72,15 @@ export default function AdminSettingsPage() {
 
     if (isLoading) {
         return (
-            <div className="p-8 max-w-4xl mx-auto space-y-8 animate-pulse">
-                <div className="h-10 w-48 bg-neutral-200 dark:bg-neutral-800 rounded-lg"></div>
+            <div className="p-8 max-w-4xl mx-auto space-y-8">
+                <div className="space-y-4">
+                    <div className="h-10 w-64 bg-neutral-200 dark:bg-neutral-800 rounded-xl animate-pulse"></div>
+                    <div className="h-4 w-96 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg animate-pulse"></div>
+                </div>
+
                 <div className="space-y-6">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-32 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl"></div>
+                        <div key={i} className="h-32 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 animate-pulse"></div>
                     ))}
                 </div>
             </div>
