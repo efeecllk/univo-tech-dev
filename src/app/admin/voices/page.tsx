@@ -110,7 +110,7 @@ export default function AdminVoicesPage() {
                     </div>
                     
                     {/* Filter Tabs */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {[
                             { id: 'all', label: 'Tümü' },
                             { id: 'anonymous', label: 'Anonimler' },
@@ -121,11 +121,25 @@ export default function AdminVoicesPage() {
                                 onClick={() => setFilter(btn.id as any)}
                                 className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
                                     filter === btn.id 
-                                    ? 'bg-black text-white dark:bg-white dark:text-black' 
+                                    ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                     : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800'
                                 }`}
                             >
                                 {btn.label}
+                            </button>
+                        ))}
+                        
+                        {/* Divider */}
+                        <div className="w-px h-6 bg-neutral-200 dark:bg-neutral-700 mx-1 hidden md:block" />
+                        
+                        {/* Example Tag Filters */}
+                        {['İtiraf', 'Soru', 'Gündem', 'Duyuru'].map((tag) => (
+                            <button
+                                key={tag}
+                                onClick={() => setSearch(tag)}
+                                className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-neutral-100 text-neutral-400 hover:bg-black hover:text-white transition-all dark:bg-neutral-900 dark:hover:bg-white dark:hover:text-black"
+                            >
+                                #{tag}
                             </button>
                         ))}
                     </div>
