@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Search, Ban, CheckCircle, MoreHorizontal, X, AlertTriangle } from 'lucide-react';
+import { Search, Ban, CheckCircle, MoreHorizontal, X, AlertTriangle, Users } from 'lucide-react';
 import Link from 'next/link';
 import { BAN_CATEGORIES } from '@/lib/constants';
 
@@ -149,9 +149,24 @@ export default function AdminPage() {
 
     return (
         <div className="p-8 max-w-7xl mx-auto">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Genel Bakış</h1>
-                <p className="text-neutral-500">Sistem durumu ve kullanıcı yönetimi</p>
+            <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-neutral-900 dark:text-white flex items-center gap-3">
+                        <Users className="text-primary" size={32} />
+                        Kullanıcı Yönetimi
+                    </h1>
+                    <p className="text-neutral-500">Platformdaki tüm kullanıcıları ve sistem durumunu denetle</p>
+                </div>
+                <div className="relative">
+                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+                    <input
+                        type="text"
+                        placeholder="İsim, e-posta veya ID ile ara..."
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="pl-10 pr-4 py-2.5 w-full md:w-80 border border-neutral-200 dark:border-neutral-700 rounded-xl bg-white dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
+                    />
+                </div>
             </header>
 
             {/* Stats Cards */}
@@ -165,18 +180,8 @@ export default function AdminPage() {
 
             {/* Users Table */}
             <div className="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm overflow-hidden">
-                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between gap-4">
-                    <h2 className="font-bold text-lg">Kullanıcılar</h2>
-                    <div className="relative">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-                        <input
-                            type="text"
-                            placeholder="Ara..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            className="pl-9 pr-4 py-2 text-sm border border-neutral-200 dark:border-neutral-700 rounded-lg bg-neutral-50 dark:bg-neutral-900 focus:outline-none focus:ring-2 focus:ring-black"
-                        />
-                    </div>
+                <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
+                    <h2 className="font-bold text-lg">Kullanıcı Listesi</h2>
                 </div>
 
                 <div className="overflow-x-auto">
