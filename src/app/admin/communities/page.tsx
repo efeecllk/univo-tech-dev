@@ -97,7 +97,7 @@ export default function AdminCommunitiesPage() {
         <div className="p-8 max-w-7xl mx-auto">
             <header className="mb-8">
                 <h1 className="text-3xl font-bold text-neutral-900 dark:text-white flex items-center gap-3">
-                    <Users className="text-primary" size={32} />
+                    <Building2 className="text-primary" size={32} />
                     Topluluk Yönetimi
                 </h1>
                 <p className="text-neutral-500 mt-1">Platformdaki tüm öğrenci topluluklarını denetle</p>
