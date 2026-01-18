@@ -623,9 +623,7 @@ export default function VoiceView() {
     const [cursorPos, setCursorPos] = useState<number>(0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-import { transcodeVideo } from '@/lib/videoUtils';
 
-// ... (existing imports, but I can't put import mid-file, so I will add state here and import separately or assume import is added)
 
     // Media Upload State (Image & Video)
     const [mediaFile, setMediaFile] = useState<File | null>(null);
