@@ -3,6 +3,7 @@
 import React from 'react';
 import { MessageSquare, Tag, Send, Camera, X } from 'lucide-react';
 import Link from 'next/link';
+import VideoPlayer from '@/components/ui/VideoPlayer';
 
 interface CreateVoiceFormProps {
     user: any;
@@ -89,7 +90,9 @@ export default function CreateVoiceForm({
                 {imagePreview && (
                     <div className="relative w-full max-h-64 mb-3 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800">
                         {mediaType === 'video' ? (
-                            <video src={imagePreview} controls className="w-full h-full object-contain max-h-64" />
+                            <div className="h-full w-full bg-black">
+                                <VideoPlayer src={imagePreview} className="w-full h-full object-contain" />
+                            </div>
                         ) : (
                             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
                         )}

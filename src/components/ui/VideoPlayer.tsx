@@ -140,6 +140,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
                 src={src}
                 className="w-full h-full object-contain"
                 poster={poster}
+                playsInline
             />
 
             {/* Play/Pause Overlay Icon (Centered) */}

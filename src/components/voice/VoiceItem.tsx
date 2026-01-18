@@ -240,7 +240,9 @@ export default function VoiceItem({
                                         <div className="relative rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800 h-48 sm:h-64">
                                             {/* Simple detection for preview */}
                                             {imagePreview.startsWith('data:video') ? (
-                                                <video src={imagePreview} controls className="w-full h-full object-contain" />
+                                                <div className="h-full w-full bg-black">
+                                                    <VideoPlayer src={imagePreview} className="w-full h-full object-contain" />
+                                                </div>
                                             ) : (
                                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
                                             )}
