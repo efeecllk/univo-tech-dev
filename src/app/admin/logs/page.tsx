@@ -24,6 +24,19 @@ const ACTION_LABELS: Record<string, string> = {
     'REPORT_DISMISS': 'Şikayet Reddetme',
 };
 
+const formatName = (name: string) => {
+    if (!name) return '';
+    return name
+        .toLocaleLowerCase('tr-TR')
+        .split(/\s+/)
+        .map(word => {
+            if (!word) return '';
+            return word.charAt(0).toLocaleUpperCase('tr-TR') + word.slice(1);
+        })
+        .join(' ')
+        .trim();
+};
+
 export default function AdminLogsPage() {
     const [logs, setLogs] = useState<AuditLog[]>([]);
     const [allAdmins, setAllAdmins] = useState<{id: string, full_name: string}[]>([]);
@@ -192,7 +205,7 @@ export default function AdminLogsPage() {
                             >
                                 <option value="">Tümü</option>
                                 {allAdmins.map(admin => (
-                                    <option key={admin.id} value={admin.full_name}>{admin.full_name}</option>
+                                    <option key={admin.id} value={admin.full_name}>{formatName(admin.full_name)}</option>
                                 ))}
                             </select>
                         </div>
@@ -207,7 +220,7 @@ export default function AdminLogsPage() {
                             >
                                 <option value="">Tümü</option>
                                 {uniqueTargetUsers.map(user => (
-                                    <option key={user} value={user}>{user}</option>
+                                    <option key={user} value={user}>{formatName(user)}</option>
                                 ))}
                             </select>
                         </div>
@@ -237,13 +250,13 @@ export default function AdminLogsPage() {
                         )}
                         {adminFilter && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs rounded-full">
-                                <Shield size={12} /> {adminFilter}
+                                <Shield size={12} /> {formatName(adminFilter)}
                                 <button onClick={() => setAdminFilter('')} className="hover:text-purple-900 dark:hover:text-purple-200"><X size={12} /></button>
                             </span>
                         )}
                         {targetUserFilter && (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full">
-                                <User size={12} /> {targetUserFilter}
+                                <User size={12} /> {formatName(targetUserFilter)}
                                 <button onClick={() => setTargetUserFilter('')} className="hover:text-green-900 dark:hover:text-green-200"><X size={12} /></button>
                             </span>
                         )}
@@ -286,7 +299,7 @@ export default function AdminLogsPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className="bg-black text-white dark:bg-white dark:text-black px-2 py-1 rounded text-xs font-bold">
-                                            {log.admin_name}
+                                            {formatName(log.admin_name)}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
@@ -302,7 +315,7 @@ export default function AdminLogsPage() {
                                     <td className="px-6 py-4">
                                         {log.target_user_name ? (
                                             <span className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                                {log.target_user_name}
+                                                {formatName(log.target_user_name)}
                                             </span>
                                         ) : (
                                             <span className="text-neutral-400">-</span>
