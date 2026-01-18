@@ -208,6 +208,7 @@ export default function VideoPlayer({ src, className = "", poster, shouldPlay = 
                 className="w-full h-full object-contain"
                 poster={poster}
                 playsInline
+                muted={isMuted}
             />
 
             {/* Error Message */}
