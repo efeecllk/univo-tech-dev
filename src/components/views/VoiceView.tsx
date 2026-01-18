@@ -686,9 +686,16 @@ export default function VoiceView() {
             if (imageFile) {
                 try {
                     uploadedImageUrl = await uploadImage();
+                    if (!uploadedImageUrl) {
+                        toast.error('Fotoğraf yüklenemedi. Lütfen tekrar deneyin veya fotoğrafı kaldırın.');
+                        setIsPosting(false);
+                        return;
+                    }
                 } catch (err) {
                     console.error('Image upload failed:', err);
-                    toast.error('Fotoğraf yüklenemedi, sadece metin paylaşılıyor...');
+                    toast.error('Fotoğraf yüklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+                    setIsPosting(false);
+                    return;
                 }
             }
 
