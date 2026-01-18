@@ -86,13 +86,17 @@ export default function CreateEventPage() {
       }
 
       try {
+          // Prepare payload
+          const payload = {
+              ...formData,
+              community_id: communityId,
+              quota: formData.quota === '' ? null : parseInt(formData.quota, 10),
+          };
+
           // 1. Create Event
           const { data, error } = await supabase
             .from('events')
-            .insert({
-                ...formData,
-                community_id: communityId
-            })
+            .insert(payload)
             .select()
             .single();
 
@@ -119,9 +123,9 @@ export default function CreateEventPage() {
           }
 
           router.push('/dashboard');
-      } catch (err) {
+      } catch (err: any) {
           console.error(err);
-          alert("Etkinlik oluşturulurken hata oluştu.");
+          alert("Etkinlik oluşturulurken hata oluştu: " + (err.message || "Bilinmeyen hata"));
       } finally {
           setLoading(false);
       }
@@ -200,9 +204,8 @@ export default function CreateEventPage() {
                 <input 
                     type="text" 
                     name="maps_url" 
-                    required
                     className="w-full px-4 py-2 border-2 border-neutral-100 dark:border-neutral-800 text-sm focus:border-[var(--primary-color)] hover:border-[var(--primary-color)] focus:outline-none placeholder:italic bg-white dark:bg-black text-black dark:text-white transition-colors"
-                    placeholder="Google Maps Linki (Zorunlu) - Haritada Bul'a tıklayıp doğrulayın."
+                    placeholder="Google Maps Linki (Opsiyonel) - Haritada Bul'a tıklayıp doğrulayın."
                     onChange={handleChange}
                 />
             </div>
