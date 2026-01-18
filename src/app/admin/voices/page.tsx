@@ -209,8 +209,7 @@ export default function AdminVoicesPage() {
                                 {[
                                     { id: 'all', label: 'Tümü' },
                                     { id: 'anonymous', label: 'Anonimler' },
-                                    { id: 'public', label: 'Herkese Açık' },
-                                    { id: 'with_images', label: 'Fotoğraflılar' }
+                                    { id: 'public', label: 'Herkese Açık' }
                                 ].map((btn) => (
                                     <button
                                         key={btn.id}
@@ -225,6 +224,47 @@ export default function AdminVoicesPage() {
                                     </button>
                                 ))}
                             </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
+                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        filter === 'with_images'
+                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                    }`}
+                                >
+                                    📷 Fotoğraflılar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Kullanıcı</label>
+                            <select
+                                value={selectedUserId || ''}
+                                onChange={(e) => setSelectedUserId(e.target.value || null)}
+                                className="w-full px-4 py-2.5 text-sm font-bold rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-600"
+                            >
+                                <option value="">Tüm Kullanıcılar</option>
+                                {/* Generate unique users from voices */}
+                                {Array.from(new Map(voices.map(v => [v.user_id, v.profiles])).entries()).map(([userId, profile]) => (
+                                    <option key={userId} value={userId}>
+                                        {profile?.full_name || 'Bilinmeyen Kullanıcı'}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedUserId && (
+                                <button
+                                    onClick={() => setSelectedUserId(null)}
+                                    className="text-xs text-red-500 hover:underline"
+                                >
+                                    Kullanıcı Filtresini Temizle
+                                </button>
+                            )}
                         </div>
 
                         <div className="space-y-3">
