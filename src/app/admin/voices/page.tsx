@@ -326,10 +326,10 @@ export default function AdminVoicesPage() {
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
                                         onClick={() => setMediaFilter(mediaFilter === 'photo' ? 'all' : 'photo')}
-                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${
                                             mediaFilter === 'photo'
-                                                ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300'
-                                                : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                                                ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                                : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                         }`}
                                     >
                                         <ImageIcon size={16} />
@@ -337,10 +337,10 @@ export default function AdminVoicesPage() {
                                     </button>
                                     <button
                                         onClick={() => setMediaFilter(mediaFilter === 'video' ? 'all' : 'video')}
-                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
+                                        className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all ${
                                             mediaFilter === 'video'
-                                                ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300'
-                                                : 'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                                                ? 'bg-black text-white dark:bg-white dark:text-black shadow-md'
+                                                : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800'
                                         }`}
                                     >
                                         <Video size={16} />

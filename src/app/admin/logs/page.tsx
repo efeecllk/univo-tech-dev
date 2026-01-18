@@ -26,6 +26,7 @@ const ACTION_LABELS: Record<string, string> = {
 
 export default function AdminLogsPage() {
     const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [allAdmins, setAllAdmins] = useState<{id: string, full_name: string}[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     
     // Filter states
@@ -38,10 +39,19 @@ export default function AdminLogsPage() {
     useEffect(() => {
         const fetchLogs = async () => {
             try {
-                const res = await fetch('/api/admin/logs');
-                if (res.ok) {
-                    const data = await res.json();
+                const [logsRes, adminsRes] = await Promise.all([
+                    fetch('/api/admin/logs'),
+                    fetch('/api/admin/admins')
+                ]);
+
+                if (logsRes.ok) {
+                    const data = await logsRes.json();
                     setLogs(data);
+                }
+                
+                if (adminsRes.ok) {
+                    const adminData = await adminsRes.json();
+                    setAllAdmins(adminData);
                 }
             } finally {
                 setIsLoading(false);
@@ -52,7 +62,7 @@ export default function AdminLogsPage() {
 
     // Unique values for filters
     const uniqueActions = useMemo(() => [...new Set(logs.map(l => l.action))], [logs]);
-    const uniqueAdmins = useMemo(() => [...new Set(logs.map(l => l.admin_name))], [logs]);
+    // Removed uniqueAdmins calculation as we now fetch all admins explicitly
     const uniqueTargetUsers = useMemo(() => 
         [...new Set(logs.map(l => l.target_user_name).filter(Boolean))] as string[], 
     [logs]);
@@ -176,8 +186,8 @@ export default function AdminLogsPage() {
                                 className="w-full px-3 py-2 border border-neutral-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white text-sm"
                             >
                                 <option value="">Tümü</option>
-                                {uniqueAdmins.map(admin => (
-                                    <option key={admin} value={admin}>{admin}</option>
+                                {allAdmins.map(admin => (
+                                    <option key={admin.id} value={admin.full_name}>{admin.full_name}</option>
                                 ))}
                             </select>
                         </div>

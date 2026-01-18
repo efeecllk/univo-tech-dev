@@ -242,21 +242,33 @@ export default function AdminCommunitiesPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Link 
-                                                href={`/dashboard?communityId=${community.id}`}
-                                                className="p-2 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                                                title="Panelini Görüntüle"
-                                            >
-                                                <Settings size={18} />
-                                            </Link>
-                                            <button
-                                                onClick={() => handleDelete(community.id)}
-                                                className="p-2 text-neutral-400 hover:text-red-600 transition-colors"
-                                                title="Topluluğu Sil"
-                                            >
-                                                <Trash2 size={18} />
-                                            </button>
+                                        <div className="flex items-center justify-end">
+                                            <div className="relative group/menu">
+                                                <button className="p-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
+                                                    <Settings size={18} />
+                                                </button>
+                                                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-xl overflow-hidden z-10 hidden group-hover/menu:block animate-in fade-in slide-in-from-top-2">
+                                                    <Link 
+                                                        href={`/admin/communities/${community.id}`}
+                                                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 flex items-center gap-2"
+                                                    >
+                                                        <Search size={14} /> Detaylar
+                                                    </Link>
+                                                    <Link 
+                                                        href={`/dashboard?communityId=${community.id}`}
+                                                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700/50 flex items-center gap-2"
+                                                    >
+                                                        <Settings size={14} /> Yönetim Paneli
+                                                    </Link>
+                                                    <div className="h-px bg-neutral-100 dark:bg-neutral-700 my-1"></div>
+                                                    <button
+                                                        onClick={() => handleDelete(community.id)}
+                                                        className="w-full text-left px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center gap-2"
+                                                    >
+                                                        <Trash2 size={14} /> Sil
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
