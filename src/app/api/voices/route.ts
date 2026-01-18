@@ -134,8 +134,8 @@ export async function GET(request: Request) {
     }
 
     const formattedData = filteredData.map((voice: any) => {
-      const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
-      const dislikes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'dislike').length;
+      const likes = (voice.voice_reactions || []).filter((r: any) => r.reaction_type === 'like').length;
+      const dislikes = (voice.voice_reactions || []).filter((r: any) => r.reaction_type === 'dislike').length;
       const commentsCount = (voice.voice_comments || []).length;
       
       const cleanDept = (dept: string) => {

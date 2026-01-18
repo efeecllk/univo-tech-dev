@@ -618,6 +618,13 @@ export default function VoiceView() {
         setVisibleCommentsCount(prev => ({ ...prev, [voiceId]: (prev[voiceId] || 10) + 10 }));
     };
 
+    // Force global mode for guest users
+    useEffect(() => {
+        if (!user) {
+            setIsGlobalMode(true);
+        }
+    }, [user]);
+
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<string | null>(null); // New state for reply
@@ -1612,31 +1619,33 @@ export default function VoiceView() {
                     </h2>
 
                     {/* Global Mode Switch - Moved Here */}
-                    {/* Global Mode Switch - Custom Morphing Button (3D Flip) */}
-                    <div className="flex items-center gap-3">
-                        <div 
-                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                            onClick={() => setIsGlobalMode(!isGlobalMode)}
-                        title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
-                        >
-                                <div 
-                                    className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
-                                    style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
-                                >
-                                {/* Front: Uni Logo */}
-                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center">
-                                     <img src={isBilkent ? "/bilkent_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-10 h-10 object-contain" />
-                                </div>
-                                {/* Back: Global */}
-                                <div 
-                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
-                                    style={{ transform: 'rotateY(180deg)' }}
-                                >
-                                    <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                    {/* Global Mode Switch - Custom Morphing Button (3D Flip) - Hidden for Guests */}
+                    {user && (
+                        <div className="flex items-center gap-3">
+                            <div 
+                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
+                                onClick={() => setIsGlobalMode(!isGlobalMode)}
+                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                            >
+                                    <div 
+                                        className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
+                                        style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                                    >
+                                    {/* Front: Uni Logo */}
+                                    <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center">
+                                         <img src={isBilkent ? "/bilkent_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-10 h-10 object-contain" />
+                                    </div>
+                                    {/* Back: Global */}
+                                    <div 
+                                        className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
+                                        style={{ transform: 'rotateY(180deg)' }}
+                                    >
+                                        <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <div className="flex justify-between items-center text-sm font-medium border-t-2 border-black dark:border-neutral-600 pt-2 mt-4 max-w-2xl mx-auto text-neutral-600 dark:text-neutral-400 h-8">
