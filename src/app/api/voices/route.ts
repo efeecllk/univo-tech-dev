@@ -62,13 +62,6 @@ export async function GET(request: Request) {
       query = query.is('image_url', null);
     }
 
-    if (university === 'metu') {
-      // ODTÜ users see posts from profiles with university 'metu' OR NULL
-      query = query.or('university.eq.metu,university.is.null', { foreignTable: 'profiles' });
-    } else if (university && university !== 'global') {
-      query = query.filter('profiles.university', 'eq', university);
-    }
-
     // Always sort by newest first by default or specified
     query = query.order('created_at', { ascending: false });
 
@@ -109,12 +102,6 @@ export async function GET(request: Request) {
         fallbackQuery = fallbackQuery.is('image_url', null);
       }
       
-      if (university === 'metu') {
-        fallbackQuery = fallbackQuery.or('university.eq.metu,university.is.null', { foreignTable: 'profiles' });
-      } else if (university && university !== 'global') {
-        fallbackQuery = fallbackQuery.filter('profiles.university', 'eq', university);
-      }
-      
       fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
       
       const fallbackResult = await fallbackQuery as any;
@@ -127,9 +114,26 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // 3. Post-Fetch Filtering by University (Democratic & Robust)
+    // We do this in JS to avoid complex Supabase join filter issues with NULL values
+    let filteredData = data as any[] || [];
+    
+    if (university && university !== 'global') {
+      filteredData = filteredData.filter(voice => {
+        const p = Array.isArray(voice.profiles) ? voice.profiles[0] : voice.profiles;
+        const profileUni = p?.university;
+        
+        if (university === 'metu') {
+          // ODTÜ students see METU posts + legacy posts (null)
+          return profileUni === 'metu' || profileUni === null || profileUni === undefined || profileUni === '';
+        }
+        
+        // Other universities see exact matches
+        return profileUni === university;
+      });
+    }
 
-
-    const formattedData = (data as any[] || []).map((voice: any) => {
+    const formattedData = filteredData.map((voice: any) => {
       const likes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'like').length;
       const dislikes = voice.voice_reactions.filter((r: any) => r.reaction_type === 'dislike').length;
       const commentsCount = (voice.voice_comments || []).length;
