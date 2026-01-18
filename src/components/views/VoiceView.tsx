@@ -1588,7 +1588,8 @@ export default function VoiceView() {
     useEffect(() => {
         const fetchPoll = async () => {
             try {
-                const res = await fetch(`/api/poll?uni=${university}`);
+                const targetUni = isGlobalMode ? 'global' : university;
+                const res = await fetch(`/api/poll?uni=${targetUni}`);
                 const data = await res.json();
                 setActivePoll(data);
                 fetchPollResults(data);
@@ -1598,7 +1599,7 @@ export default function VoiceView() {
             } finally { setPollLoading(false); }
         };
         fetchPoll();
-    }, [user, university]);
+    }, [user, university, isGlobalMode]);
 
     const fetchVoters = async () => {
         if (!activePoll) return;

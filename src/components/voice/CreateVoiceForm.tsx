@@ -77,11 +77,6 @@ export default function CreateVoiceForm({
 
             <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white justify-between">
                 <span>Sesini Duyur</span>
-                {isGlobalMode && (
-                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-1 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
-                        🌍 Global
-                    </span>
-                )}
             </h4>
 
             <form onSubmit={handlePost} className="relative z-50">
@@ -91,7 +86,7 @@ export default function CreateVoiceForm({
                     maxLength={280}
                     className="w-full p-3 border-2 border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-transparent focus:ring-2 hover:border-neutral-400 dark:hover:border-neutral-600 bg-white dark:bg-neutral-800 dark:text-white mb-3 font-serif resize-none transition-colors placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                     style={{ '--tw-ring-color': 'var(--primary-color, #C8102E)' } as React.CSSProperties}
-                    placeholder="Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"
+                    placeholder={isGlobalMode ? "Dünya gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)" : "Kampüs gündemi hakkında ne düşünüyorsun? (#etiket kullanabilirsin)"}
                     value={newStatus}
                     onChange={handleTextChange}
                     onClick={(e) => setCursorPos(e.currentTarget.selectionStart)}
