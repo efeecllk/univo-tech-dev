@@ -144,6 +144,7 @@ interface VoiceItemProps {
     imageFile: File | null;
     setImageFile: (val: File | null) => void;
     handleImageSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isPlaying: boolean;
 }
 
 function VoiceItem({
@@ -185,7 +186,8 @@ function VoiceItem({
     setImagePreview,
     imageFile,
     setImageFile,
-    handleImageSelect
+    handleImageSelect,
+    isPlaying
 }: VoiceItemProps) {
     const { openReportModal } = useReport();
     const reactions = voice.reactions || [];
@@ -387,7 +389,7 @@ function VoiceItem({
                                                 <VideoPlayer 
                                                     src={voice.image_url} 
                                                     className="w-full h-full"
-                                                    shouldPlay={playingVideoId === voice.id}
+                                                    shouldPlay={isPlaying}
                                                 />
                                             </div>
                                         ) : (
@@ -1732,6 +1734,7 @@ export default function VoiceView() {
                                                         imageFile={mediaFile}
                                                         setImageFile={setMediaFile}
                                                         handleImageSelect={handleMediaSelect}
+                                                        isPlaying={playingVideoId === voice.id}
                                                     />
                                                 ))}
                                             </motion.div>
