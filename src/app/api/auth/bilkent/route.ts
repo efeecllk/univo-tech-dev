@@ -70,8 +70,8 @@ export async function POST(request: Request) {
         
         // --- 3. UNIVO AUTHENTICATION ---
         // Bilkent student emails can be id@ug.bilkent.edu.tr or firstname.lastname@ug...
-        // For consistency with ODTÜ (which uses eXXXXXX@metu.edu.tr), we use id@bilkent.edu.tr as a stable key
-        const eduEmail = username.includes('@') ? username : `${username}@bilkent.edu.tr`;
+        // For consistency with ODTÜ (which uses eXXXXXX@metu.edu.tr), we use id@ug.bilkent.edu.tr as a stable key
+        const eduEmail = username.includes('@') ? username : `${username}@ug.bilkent.edu.tr`;
         const supabaseAdmin = getSupabaseAdmin();
         
         // Find user

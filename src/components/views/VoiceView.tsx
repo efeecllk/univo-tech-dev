@@ -884,6 +884,11 @@ export default function VoiceView() {
             if (filters.hasImage !== null) params.append('has_image', String(filters.hasImage));
             if (filters.userId) params.append('user_id', filters.userId);
             
+            // Apply university filter if not in global mode
+            if (!isGlobalMode) {
+                params.append('university', university);
+            }
+            
             const res = await fetch(`/api/voices?${params.toString()}`);
             const data = await res.json();
             

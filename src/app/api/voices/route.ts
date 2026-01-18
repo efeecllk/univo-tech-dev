@@ -22,6 +22,7 @@ export async function GET(request: Request) {
     const isAnonymous = searchParams.get('is_anonymous');
     const hasImage = searchParams.get('has_image');
     const sort = searchParams.get('sort');
+    const university = searchParams.get('university'); // University filter
 
     // Parse tags into array
     const tags = tagsParam ? tagsParam.split(',').filter(t => t.trim().length > 0) : [];
@@ -59,6 +60,13 @@ export async function GET(request: Request) {
       query = query.not('image_url', 'is', null);
     } else if (hasImage === 'false') {
       query = query.is('image_url', null);
+    }
+
+    if (university === 'metu') {
+      // ODTÜ can have 'metu' or NULL for university
+      query = query.or('university.eq.metu,university.is.null', { foreignTable: 'profiles' });
+    } else if (university && university !== 'global') {
+      query = query.filter('profiles.university', 'eq', university);
     }
 
     // Always sort by newest first by default or specified
@@ -99,6 +107,12 @@ export async function GET(request: Request) {
         fallbackQuery = fallbackQuery.not('image_url', 'is', null);
       } else if (hasImage === 'false') {
         fallbackQuery = fallbackQuery.is('image_url', null);
+      }
+      
+      if (university === 'metu') {
+        fallbackQuery = fallbackQuery.or('university.eq.metu,university.is.null', { foreignTable: 'profiles' });
+      } else if (university && university !== 'global') {
+        fallbackQuery = fallbackQuery.filter('profiles.university', 'eq', university);
       }
       
       fallbackQuery = fallbackQuery.order('created_at', { ascending: false });
