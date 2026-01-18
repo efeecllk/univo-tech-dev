@@ -203,29 +203,49 @@ export default function AdminVoicesPage() {
 
                 {showFilters && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl border border-neutral-200 dark:border-neutral-700">
-                        <div className="space-y-3">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Gizlilik Durumu</label>
-                            <div className="flex gap-2">
-                                {[
-                                    { id: 'all', label: 'Tümü' },
-                                    { id: 'anonymous', label: 'Anonimler' },
-                                    { id: 'public', label: 'Herkese Açık' }
-                                ].map((btn) => (
+                        {/* Left Column: Gizlilik + Medya stacked */}
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Gizlilik Durumu</label>
+                                <div className="flex gap-2 flex-wrap">
+                                    {[
+                                        { id: 'all', label: 'Tümü' },
+                                        { id: 'anonymous', label: 'Anonimler' },
+                                        { id: 'public', label: 'Herkese Açık' }
+                                    ].map((btn) => (
+                                        <button
+                                            key={btn.id}
+                                            onClick={() => setFilter(btn.id as any)}
+                                            className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                                filter === btn.id 
+                                                ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
+                                                : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
+                                            }`}
+                                        >
+                                            {btn.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
+                                <div className="flex gap-2">
                                     <button
-                                        key={btn.id}
-                                        onClick={() => setFilter(btn.id as any)}
+                                        onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
                                         className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                            filter === btn.id 
+                                            filter === 'with_images'
                                             ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                             : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                         }`}
                                     >
-                                        {btn.label}
+                                        Fotoğraflılar
                                     </button>
-                                ))}
+                                </div>
                             </div>
                         </div>
 
+                        {/* Right Column: Tag Yönetimi */}
                         <div className="space-y-3">
                             <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Tag Yönetimi</label>
                             
@@ -286,22 +306,6 @@ export default function AdminVoicesPage() {
                                     {topTags.filter(t => !selectedTags.includes(t)).length === 0 && topTags.length > 0 && <span className="text-xs text-neutral-400 italic">Tüm popüler taglar seçili.</span>}
                                     {topTags.length === 0 && <span className="text-xs text-neutral-400 italic">Henüz etiket bulunmuyor.</span>}
                                 </div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
-                                    className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                        filter === 'with_images'
-                                        ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
-                                        : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
-                                    }`}
-                                >
-                                    Fotoğraflılar
-                                </button>
                             </div>
                         </div>
 
