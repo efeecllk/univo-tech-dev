@@ -29,7 +29,9 @@ export default function AdminVoicesPage() {
     const [tagHistory, setTagHistory] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<'all' | 'anonymous' | 'public' | 'with_images'>('all');
+    // Separated filters: privacy and media
+    const [privacyFilter, setPrivacyFilter] = useState<'all' | 'anonymous' | 'public'>('all');
+    const [hasImageFilter, setHasImageFilter] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     // Changed from single string to array for multi-tag support
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -144,11 +146,14 @@ export default function AdminVoicesPage() {
                 v.profiles?.nickname?.toLowerCase().includes(search.toLowerCase())
             );
             
-            const matchesFilter = 
-                filter === 'all' ? true :
-                filter === 'anonymous' ? v.is_anonymous :
-                filter === 'with_images' ? !!v.image_url :
+            // Privacy filter (independent)
+            const matchesPrivacy = 
+                privacyFilter === 'all' ? true :
+                privacyFilter === 'anonymous' ? v.is_anonymous :
                 !v.is_anonymous;
+
+            // Media filter (independent)
+            const matchesMedia = !hasImageFilter || !!v.image_url;
 
             // Multi-tag matching: post must contain ALL selected tags
             const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => 
@@ -158,11 +163,11 @@ export default function AdminVoicesPage() {
             // User matching: post must be from one of the selected users
             const matchesUsers = selectedUsers.length === 0 || selectedUsers.some(u => u.id === v.user_id);
 
-            return matchesSearch && matchesFilter && matchesTags && matchesUsers;
+            return matchesSearch && matchesPrivacy && matchesMedia && matchesTags && matchesUsers;
         });
-    }, [voices, search, filter, selectedTags, selectedUsers]);
+    }, [voices, search, privacyFilter, hasImageFilter, selectedTags, selectedUsers]);
 
-    const activeFilterCount = [filter !== 'all', selectedTags.length > 0, selectedUsers.length > 0].filter(Boolean).length;
+    const activeFilterCount = [privacyFilter !== 'all', hasImageFilter, selectedTags.length > 0, selectedUsers.length > 0].filter(Boolean).length;
 
     if (isLoading) {
         return (
@@ -282,9 +287,9 @@ export default function AdminVoicesPage() {
                                     ].map((btn) => (
                                         <button
                                             key={btn.id}
-                                            onClick={() => setFilter(btn.id as any)}
+                                            onClick={() => setPrivacyFilter(btn.id as any)}
                                             className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                                filter === btn.id 
+                                                privacyFilter === btn.id 
                                                 ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                                 : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                             }`}
@@ -299,9 +304,9 @@ export default function AdminVoicesPage() {
                                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-500">Medya</label>
                                 <div className="flex gap-2">
                                     <button
-                                        onClick={() => setFilter(filter === 'with_images' ? 'all' : 'with_images')}
+                                        onClick={() => setHasImageFilter(!hasImageFilter)}
                                         className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                            filter === 'with_images'
+                                            hasImageFilter
                                             ? 'bg-black text-white dark:bg-white dark:text-black shadow-md' 
                                             : 'bg-white text-neutral-500 border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700'
                                         }`}
@@ -404,7 +409,8 @@ export default function AdminVoicesPage() {
                             <div className="sm:col-span-2 flex justify-end pt-4 border-t border-neutral-200 dark:border-neutral-700">
                                 <button
                                     onClick={() => {
-                                        setFilter('all');
+                                        setPrivacyFilter('all');
+                                        setHasImageFilter(false);
                                         setSearch('');
                                         setSelectedTags([]);
                                         setSelectedUsers([]);
