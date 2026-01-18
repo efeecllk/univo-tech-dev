@@ -176,12 +176,12 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
 
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
-                        <button onClick={togglePlay} className="text-white hover:text-primary transition-colors">
+                        <button type="button" onClick={togglePlay} className="text-white hover:text-primary transition-colors">
                             {isPlaying ? <Pause size={20} className="fill-current" /> : <Play size={20} className="fill-current" />}
                         </button>
 
                         <div className="flex items-center gap-2 group/volume">
-                            <button onClick={toggleMute} className="text-white hover:text-primary transition-colors">
+                            <button type="button" onClick={toggleMute} className="text-white hover:text-primary transition-colors">
                                 {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
                             </button>
                             <div className="w-0 overflow-hidden group-hover/volume:w-20 transition-all duration-300">
@@ -202,7 +202,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
                         </span>
                     </div>
 
-                    <button onClick={toggleFullscreen} className="text-white hover:text-primary transition-colors">
+                    <button type="button" onClick={toggleFullscreen} className="text-white hover:text-primary transition-colors">
                         {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
                     </button>
                 </div>
