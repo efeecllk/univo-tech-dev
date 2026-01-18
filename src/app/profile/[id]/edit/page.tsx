@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Save, User, BookOpen, Heart, Quote, Globe, Lock, Eye, EyeOff, Linkedin, Github, Twitter, Instagram, Camera, Upload, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { METU_DEPARTMENTS } from '@/lib/constants';
+import { METU_DEPARTMENTS, BILKENT_DEPARTMENTS } from '@/lib/constants';
 import Image from 'next/image';
 
 interface SocialLinks {
@@ -36,6 +36,7 @@ interface Profile {
   interests?: string[];
   social_links?: SocialLinks;
   privacy_settings?: PrivacySettings;
+  university?: string;
 }
 
 // Predefined interest options
@@ -56,6 +57,7 @@ const cleanDept = (dept?: string) => {
         .replace(/\.base/gi, '')
         .replace(/base/gi, '')
         .replace(/dbe/gi, '')
+        .replace(/ge\d*/gi, '') // Bilkent GE courses
         .replace(/\.hazırlık/gi, '')
         .replace(/hazırlık/gi, '')
         .split('.')
@@ -66,7 +68,7 @@ const cleanDept = (dept?: string) => {
 
 export default function EditProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { user, refreshProfile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
@@ -81,7 +83,8 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
     bio: '',
     interests: [],
     social_links: { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-    privacy_settings: { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true }
+    privacy_settings: { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true },
+    university: ''
   });
   
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -118,7 +121,8 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
           bio: data.bio || '',
           interests: data.interests || [],
           social_links: data.social_links || { linkedin: '', github: '', website: '', twitter: '', instagram: '' },
-          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true }
+          privacy_settings: data.privacy_settings || { show_email: false, show_interests: true, show_activities: true, show_friends: true, show_polls: true },
+          university: data.university || ''
         });
         setInitialNickname(data.nickname || '');
       }
@@ -328,7 +332,9 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
               
               {/* Added Email Field (Read Only) */}
               <div>
-                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">E-Posta (ODTÜ)</label>
+                 <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    E-Posta ({profile?.university === 'bilkent' ? 'Bilkent' : 'ODTÜ'})
+                  </label>
                  <input 
                     type="text" 
                     value={user?.email || ' - '} 
@@ -405,7 +411,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                     className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
                   >
                     <option value="">Seçiniz</option>
-                    {METU_DEPARTMENTS.map(dept => (
+                    {(profile?.university === 'bilkent' ? BILKENT_DEPARTMENTS : METU_DEPARTMENTS).map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
                   </select>
@@ -435,7 +441,7 @@ export default function EditProfilePage({ params }: { params: Promise<{ id: stri
                     name="nickname"
                     value={formData.nickname}
                     onChange={handleChange}
-                    placeholder="Kampüs Kedisi, ODTÜ'lü..."
+                    placeholder={`Kampüs Kedisi, ${profile?.university === 'bilkent' ? "Bilkent'li" : "ODTÜ'lü"}...`}
                     className="w-full p-2 border border-neutral-300 dark:border-neutral-700 rounded-md focus:ring-2 focus:ring-[#C8102E] focus:border-transparent outline-none bg-white dark:bg-neutral-800 dark:text-white"
                   />
                 </div>

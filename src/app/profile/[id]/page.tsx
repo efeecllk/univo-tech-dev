@@ -39,6 +39,7 @@ interface Profile {
         twitter?: string;
         instagram?: string;
     };
+    university?: string;
 }
 
 interface EventAttendance {
@@ -597,6 +598,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             .replace(/\.base/gi, '')
             .replace(/base/gi, '')
             .replace(/dbe/gi, '')
+            .replace(/ge\d*/gi, '')
             .replace(/\.hazırlık/gi, '')
             .replace(/hazırlık/gi, '')
             .split('.')
@@ -762,7 +764,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     const classYr = profile.class_year || 'Sınıf Belirtilmemiş';
                                     // Avoid "Hazırlık • Hazırlık" duplication
                                     if (dept === 'Hazırlık' && classYr === 'Hazırlık') {
-                                        return 'İngilizce Hazırlık Programı';
+                                        return profile.university === 'bilkent' ? 'English Preparatory Program' : 'İngilizce Hazırlık Programı';
                                     }
                                     return `${dept} • ${classYr}`;
                                 })()}

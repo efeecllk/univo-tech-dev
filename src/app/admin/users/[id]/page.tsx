@@ -204,6 +204,15 @@ export default function AdminUserDetailPage({ params }: { params: Promise<{ id: 
                                 </div>
                             </div>
                             <div className="flex items-start gap-4">
+                                <Shield size={18} className="text-neutral-400 mt-1" />
+                                <div>
+                                    <p className="text-xs font-bold uppercase text-neutral-400 mb-0.5">Üniversite</p>
+                                    <p className="text-sm font-medium">
+                                        {user.university === 'bilkent' ? 'Bilkent Üniversitesi' : (user.university === 'metu' || !user.university) ? 'Orta Doğu Teknik Üniversitesi' : user.university}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-4">
                                 <Clock size={18} className="text-neutral-400 mt-1" />
                                 <div>
                                     <p className="text-xs font-bold uppercase text-neutral-400 mb-0.5">Son Giriş</p>

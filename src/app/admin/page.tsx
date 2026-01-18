@@ -17,6 +17,7 @@ interface User {
     ban_reason?: string;
     ban_category?: string;
     banned_by?: string;
+    university?: string;
 }
 
 interface Stats {
@@ -121,6 +122,7 @@ export default function AdminPage() {
             u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
             u.student_id?.toLowerCase().includes(search.toLowerCase()) ||
             u.department?.toLowerCase().includes(search.toLowerCase()) ||
+            u.university?.toLowerCase().includes(search.toLowerCase()) ||
             u.email?.toLowerCase().includes(search.toLowerCase());
         
         const matchesStatus = 
@@ -236,6 +238,7 @@ export default function AdminPage() {
                             <tr>
                                 <th className="px-6 py-3">E-Posta</th>
                                 <th className="px-6 py-3">Öğrenci No</th>
+                                <th className="px-6 py-3">Üniversite</th>
                                 <th className="px-6 py-3">Bölüm</th>
                                 <th className="px-6 py-3">Durum</th>
                                 <th className="px-6 py-3 text-right">İşlemler</th>
@@ -254,6 +257,21 @@ export default function AdminPage() {
                                         <div className="font-mono text-sm text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded inline-block">
                                             {getDisplayId(user)}
                                         </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {user.university === 'bilkent' ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 text-xs font-bold border border-blue-100 dark:border-blue-800">
+                                                Bilkent
+                                            </span>
+                                        ) : user.university === 'metu' || !user.university ? (
+                                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-bold border border-red-100 dark:border-red-800">
+                                                ODTÜ
+                                            </span>
+                                        ) : (
+                                            <span className="text-neutral-600 dark:text-neutral-400 uppercase text-xs font-bold tracking-tight">
+                                                {user.university}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400">
                                         {user.department || '-'}
