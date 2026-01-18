@@ -704,9 +704,10 @@ export default function VoiceView() {
                         setIsPosting(false);
                         return;
                     }
-                } catch (err) {
+                } catch (err: any) {
                     console.error('Image upload failed:', err);
-                    toast.error('Fotoğraf yüklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+                    const errorMessage = err?.message || 'Bilinmeyen bir hata';
+                    toast.error(`Fotoğraf yüklenirken bir hata oluştu: ${errorMessage}`);
                     setIsPosting(false);
                     return;
                 }
