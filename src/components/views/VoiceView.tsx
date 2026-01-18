@@ -691,16 +691,7 @@ export default function VoiceView() {
             }
         };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const videoId = entry.target.getAttribute('data-voice-id');
-                if (entry.isIntersecting) {
-                    setPlayingVideoId(videoId);
-                } else {
-                     setPlayingVideoId(prev => (prev === videoId ? null : prev));
-                }
-            });
-        }, observerOptions);
+        const observer = new IntersectionObserver(handleIntersection, observerOptions);
 
         let timeoutId: NodeJS.Timeout;
         
