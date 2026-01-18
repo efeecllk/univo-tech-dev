@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }));
 
     // 2. Bilkent Moodle Login (Scraping)
-    const baseUrl = 'https://moodle.bilkent.edu.tr/2024-2025-fall';
+    const baseUrl = 'https://moodle.bilkent.edu.tr/2025-2026-fall';
     const loginPageUrl = `${baseUrl}/login/index.php`;
 
     try {
