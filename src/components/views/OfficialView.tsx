@@ -143,6 +143,50 @@ export default function OfficialView() {
     // Pagination State - Show 10 items at a time
     const [displayLimit, setDisplayLimit] = React.useState(10);
 
+    // Helper to trigger a real notification via Supabase
+    const triggerEmailNotification = React.useCallback(async (msg: any) => {
+        if (!user) return;
+        try {
+            await supabase.from('notifications').insert({
+                user_id: user.id,
+                actor_id: user.id, // Self-acting since it's a pull-based notification
+                type: 'email_subscription',
+                message: `Takip ettiğiniz "${msg.source}" kaynağından yeni e-posta: ${msg.title}`,
+                metadata: {
+                    email_id: msg.id,
+                    source: msg.source,
+                    link: msg.link
+                }
+            });
+        } catch (err) {
+            console.error('Failed to trigger email notification', err);
+        }
+    }, [user]);
+
+    // Check if any of the new emails should trigger a notification
+    const checkEmailNotifications = React.useCallback(async (newEmails: any[], subs: string[]) => {
+        if (!user || subs.length === 0) return;
+        
+        const notifiedUids = JSON.parse(localStorage.getItem('univo_notified_email_uids') || '[]');
+        const newNotifiedUids = [...notifiedUids];
+        let hasNewNotif = false;
+
+        for (const email of newEmails) {
+            const uid = email.id;
+            if (subs.includes(email.source) && !notifiedUids.includes(uid)) {
+                await triggerEmailNotification(email);
+                newNotifiedUids.push(uid);
+                hasNewNotif = true;
+            }
+        }
+
+        if (hasNewNotif) {
+            // Keep only last 100 notified IDs to prevent localStorage bloat
+            const trimmedUids = newNotifiedUids.slice(-100);
+            localStorage.setItem('univo_notified_email_uids', JSON.stringify(trimmedUids));
+        }
+    }, [user, triggerEmailNotification]);
+
     // Check Session & Auto-Connect
     React.useEffect(() => {
         async function checkSession() {
@@ -219,6 +263,10 @@ export default function OfficialView() {
                     setIsEmailConnected(true);
                     if (data.username) setLoginForm(prev => ({ ...prev, username: data.username }));
 
+                    // Trigger notifications for subscribed sources
+                    const currentSubs = savedSubscribed ? JSON.parse(savedSubscribed) : [];
+                    checkEmailNotifications(mappedEmails, currentSubs);
+
                     // Update Cache
                     localStorage.setItem('univo_cached_emails', JSON.stringify(mappedEmails));
                     localStorage.setItem('univo_email_user', data.username || savedUser);
@@ -280,6 +328,9 @@ export default function OfficialView() {
             setIsEmailConnected(true);
             setShowLoginModal(false);
             toast.success('E-postalar başarıyla getirildi');
+
+            // Trigger notifications for subscribed sources
+            checkEmailNotifications(mappedEmails, subscribedSources);
 
             // Update Cache
             localStorage.setItem('univo_cached_emails', JSON.stringify(mappedEmails));
