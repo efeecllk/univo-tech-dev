@@ -14,6 +14,7 @@ import CreateVoiceForm from '@/components/voice/CreateVoiceForm';
 import FriendButton from '../FriendButton';
 import VoiceStatsWidget from './VoiceStatsWidget';
 import VideoPlayer from '@/components/ui/VideoPlayer';
+import { transcodeVideo } from '@/lib/videoUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReport } from '@/contexts/ReportContext';
 // Shared Component Import
@@ -622,12 +623,20 @@ export default function VoiceView() {
     const [cursorPos, setCursorPos] = useState<number>(0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+import { transcodeVideo } from '@/lib/videoUtils';
+
+// ... (existing imports, but I can't put import mid-file, so I will add state here and import separately or assume import is added)
+
     // Media Upload State (Image & Video)
     const [mediaFile, setMediaFile] = useState<File | null>(null);
     const [mediaPreview, setMediaPreview] = useState<string | null>(null);
     const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
     const [photoPostsEnabled, setPhotoPostsEnabled] = useState(true);
     const [videoPostsEnabled, setVideoPostsEnabled] = useState(true);
+    
+    // Video Optimization State
+    const [isOptimizing, setIsOptimizing] = useState(false);
+    const [optimizationProgress, setOptimizationProgress] = useState(0);
 
     const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -641,11 +650,41 @@ export default function VoiceView() {
                     if (e.target) e.target.value = '';
                     return;
                 }
-                if (file.size > 50 * 1024 * 1024) { // 50MB limit for video
-                    toast.error('Video boyutu 50MB\'dan küçük olmalıdır.');
+                if (file.size > 200 * 1024 * 1024) { // Increased limit to 200MB since we compress
+                    toast.error('Video boyutu 200MB\'dan küçük olmalıdır.');
                     return;
                 }
                 setMediaType('video');
+                
+                // Start Optimization
+                setIsOptimizing(true);
+                setOptimizationProgress(0);
+                
+                // Show initial preview (might be broken on Windows if HEVC, but better than nothing)
+                const reader = new FileReader();
+                reader.onload = (e) => setMediaPreview(e.target?.result as string);
+                reader.readAsDataURL(file);
+
+                transcodeVideo(file, (progress) => {
+                    setOptimizationProgress(progress);
+                }).then((optimizedFile) => {
+                    setMediaFile(optimizedFile);
+                    setIsOptimizing(false);
+                    toast.success('Video optimize edildi ve paylaşıma hazır!');
+                    
+                    // Update preview with the optimized file (guaranteed to work)
+                    const optReader = new FileReader();
+                    optReader.onload = (e) => setMediaPreview(e.target?.result as string);
+                    optReader.readAsDataURL(optimizedFile);
+                }).catch((err) => {
+                    console.error('Video Optimization failed:', err);
+                    toast.error('Video optimizasyonu başarısız oldu. Orijinal dosya kullanılacak.');
+                    setMediaFile(file); // Fallback to original
+                    setIsOptimizing(false);
+                });
+
+                return; // Return early, async logic handles the rest
+
             } else if (isImage) {
                  if (!photoPostsEnabled) {
                     toast.error('Fotoğraf yükleme özelliği geçici olarak devre dışı bırakılmıştır.');
@@ -1592,6 +1631,8 @@ export default function VoiceView() {
                                         photoPostsEnabled={photoPostsEnabled}
                                         videoPostsEnabled={videoPostsEnabled}
                                         mediaType={mediaType}
+                                        isOptimizing={isOptimizing}
+                                        optimizationProgress={optimizationProgress}
                                     />
                                 ) : (
                                     <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">

@@ -29,6 +29,8 @@ interface CreateVoiceFormProps {
     photoPostsEnabled: boolean;
     videoPostsEnabled: boolean;
     mediaType: 'image' | 'video';
+    isOptimizing?: boolean;
+    optimizationProgress?: number;
 }
 
 export default function CreateVoiceForm({
@@ -53,7 +55,9 @@ export default function CreateVoiceForm({
     handleImageSelect,
     photoPostsEnabled,
     videoPostsEnabled,
-    mediaType
+    mediaType,
+    isOptimizing = false,
+    optimizationProgress = 0
 }: CreateVoiceFormProps) {
     if (!user) {
         return (
@@ -90,19 +94,41 @@ export default function CreateVoiceForm({
                 {imagePreview && (
                     <div className="relative w-full max-h-64 mb-3 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800">
                         {mediaType === 'video' ? (
-                            <div className="h-64 w-full bg-black">
+                            <div className="h-64 w-full bg-black relative">
                                 <VideoPlayer src={imagePreview} className="w-full h-full object-contain" />
+                                
+                                {isOptimizing && (
+                                    <div className="absolute inset-0 z-20 bg-black/80 flex flex-col items-center justify-center">
+                                        <div className="flex flex-col items-center gap-3 p-4">
+                                            <div className="flex items-center gap-2 text-white/90 font-medium">
+                                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                <span>Video Optimize Ediliyor</span>
+                                            </div>
+                                            <div className="w-48 h-1 bg-white/20 rounded-full overflow-hidden">
+                                                <div 
+                                                    className="h-full bg-primary transition-all duration-300 ease-out"
+                                                    style={{ width: `${optimizationProgress}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-xs text-white/60 font-mono">{optimizationProgress}%</span>
+                                            <p className="text-[10px] text-white/40 max-w-[200px] text-center mt-1">
+                                                iPhone videolarının her yerde açılması için format uyarlanıyor. Lütfen bekleyin.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
                         )}
                         <button
                             type="button"
+                            disabled={isOptimizing}
                             onClick={() => {
                                 setImagePreview(null);
                                 setImageFile(null);
                             }}
-                            className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10"
+                            className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors z-10 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <X size={20} />
                         </button>
@@ -161,7 +187,7 @@ export default function CreateVoiceForm({
                         <span className="text-xs text-neutral-400 dark:text-neutral-500">{newStatus.length}/280</span>
                         <button
                             type="submit"
-                            disabled={!newStatus.trim() || isPosting}
+                            disabled={!newStatus.trim() || isPosting || isOptimizing}
                             className="px-4 sm:px-6 py-2 bg-black dark:bg-white text-white dark:text-black font-bold uppercase text-xs sm:text-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 disabled:opacity-50 flex items-center justify-center gap-2 transition-colors min-w-[80px] sm:min-w-[110px] h-[38px]"
                         >
                             {isPosting ? (
