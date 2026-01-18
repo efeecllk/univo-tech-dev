@@ -63,7 +63,7 @@ export async function GET(request: Request) {
     }
 
     if (university === 'metu') {
-      // ODTÜ can have 'metu' or NULL for university
+      // ODTÜ users see posts from profiles with university 'metu' OR NULL
       query = query.or('university.eq.metu,university.is.null', { foreignTable: 'profiles' });
     } else if (university && university !== 'global') {
       query = query.filter('profiles.university', 'eq', university);

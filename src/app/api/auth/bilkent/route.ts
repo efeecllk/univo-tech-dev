@@ -36,8 +36,9 @@ export async function POST(request: Request) {
         const $ = cheerio.load(initialRes.data);
         const loginToken = $('input[name="logintoken"]').val();
 
+        const moodleUsername = username.split('@')[0];
         const formData = new URLSearchParams();
-        formData.append('username', username);
+        formData.append('username', moodleUsername);
         formData.append('password', password);
         formData.append('anchor', '');
         if (loginToken) formData.append('logintoken', loginToken as string);

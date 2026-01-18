@@ -871,7 +871,7 @@ export default function VoiceView() {
 
     useEffect(() => {
         fetchVoices();
-    }, [filters]);
+    }, [filters, university, isGlobalMode]);
 
     const fetchVoices = async () => {
         // Only set view loading if we don't have voices yet (initial load)
