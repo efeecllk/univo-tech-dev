@@ -896,8 +896,10 @@ export default function VoiceView() {
             if (filters.hasImage !== null) params.append('has_image', String(filters.hasImage));
             if (filters.userId) params.append('user_id', filters.userId);
             
-            // Apply university filter if not in global mode
-            if (!isGlobalMode) {
+            // Apply university filter
+            if (isGlobalMode) {
+                params.append('university', 'global');
+            } else {
                 params.append('university', university);
             }
             
@@ -1028,7 +1030,15 @@ export default function VoiceView() {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) return toast.error('Oturum hatası');
 
-            const extractedTags = newStatus.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c7]+/g) || [];
+            const extractedTagsMatches = newStatus.match(/#[\w\u011f\u011e\u0131\u0130\u00f6\u00d6\u015f\u015e\u00fc\u00dc\u00e7\u00c7]+/g);
+            let finalTags: string[] = extractedTagsMatches ? Array.from(extractedTagsMatches) : [];
+
+            if (isGlobalMode) {
+                // Ensure #global tag exists
+                if (!finalTags.some((t) => t.toLowerCase() === '#global')) {
+                    finalTags = [...finalTags, '#global'];
+                }
+            }
 
             const res = await fetch('/api/voices', {
                 method: 'POST',
@@ -1039,7 +1049,7 @@ export default function VoiceView() {
                 body: JSON.stringify({
                     content: newStatus,
                     is_anonymous: isAnonymous,
-                    tags: extractedTags,
+                    tags: finalTags,
                     image_url: uploadedMediaUrl // Renamed from image_url to media_url if backend supports
                 })
             });
@@ -1704,16 +1714,7 @@ export default function VoiceView() {
                         transition={{ duration: 0.3 }}
                         className="w-full"
                     >
-                        {/* Global Banner */}
-                        {isGlobalMode && (
-                             <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-100 dark:border-blue-800 text-center relative overflow-hidden">
-                                <div className="relative z-10">
-                                    <h2 className="text-2xl font-bold mb-2 font-serif text-blue-900 dark:text-blue-100">🌍 Global Sohbet</h2>
-                                    <p className="text-blue-700 dark:text-blue-300">Tüm üniversitelerden öğrencilerin buluşma noktası.</p>
-                                </div>
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
-                             </div>
-                        )}
+
 
                     <motion.div
                         key="odtu"
@@ -1761,6 +1762,7 @@ export default function VoiceView() {
                                         mediaType={mediaType}
                                         isOptimizing={isOptimizing}
                                         optimizationProgress={optimizationProgress}
+                                        isGlobalMode={isGlobalMode}
                                     />
                                 ) : (
                                     <div className="bg-neutral-100 dark:bg-neutral-900 p-6 text-center border border-neutral-200 dark:border-neutral-800 mb-8">

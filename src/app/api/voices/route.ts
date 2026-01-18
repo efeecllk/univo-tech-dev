@@ -118,8 +118,21 @@ export async function GET(request: Request) {
     // We do this in JS to avoid complex Supabase join filter issues with NULL values
     let filteredData = data as any[] || [];
     
-    if (university && university !== 'global') {
-      filteredData = filteredData.filter(voice => {
+    if (university === 'global') {
+       // Global Feed: ONLY posts tagged with #global
+       filteredData = filteredData.filter(voice => {
+         const tags = voice.tags || [];
+         return tags.some((t: string) => t.toLowerCase().replace('#', '') === 'global');
+       });
+    } else if (university) {
+       // Local Feed: Exclude posts tagged #global AND match university
+       filteredData = filteredData.filter(voice => {
+        // 1. Exclude Global Posts
+        const tags = voice.tags || [];
+        const isGlobal = tags.some((t: string) => t.toLowerCase().replace('#', '') === 'global');
+        if (isGlobal) return false;
+
+        // 2. University Match Logic
         const p = Array.isArray(voice.profiles) ? voice.profiles[0] : voice.profiles;
         const profileUni = p?.university;
         

@@ -31,6 +31,7 @@ interface CreateVoiceFormProps {
     mediaType: 'image' | 'video';
     isOptimizing?: boolean;
     optimizationProgress?: number;
+    isGlobalMode?: boolean;
 }
 
 export default function CreateVoiceForm({
@@ -57,7 +58,8 @@ export default function CreateVoiceForm({
     videoPostsEnabled,
     mediaType,
     isOptimizing = false,
-    optimizationProgress = 0
+    optimizationProgress = 0,
+    isGlobalMode = false
 }: CreateVoiceFormProps) {
     if (!user) {
         return (
@@ -73,8 +75,13 @@ export default function CreateVoiceForm({
                 <MessageSquare size={100} />
             </div>
 
-            <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white">
-                Sesini Duyur
+            <h4 className="font-bold font-serif text-lg mb-4 flex items-center gap-2 dark:text-white justify-between">
+                <span>Sesini Duyur</span>
+                {isGlobalMode && (
+                    <span className="text-[10px] bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 px-2 py-1 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                        🌍 Global
+                    </span>
+                )}
             </h4>
 
             <form onSubmit={handlePost} className="relative z-50">
