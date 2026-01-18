@@ -587,13 +587,26 @@ export default function VoiceView() {
         if (!imageFile || !user) return null;
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        console.log('Uploading image to post_images bucket:', fileName);
+        
         const { error: uploadError } = await supabase.storage
             .from('post_images')
-            .upload(fileName, imageFile);
-        if (uploadError) throw uploadError;
+            .upload(fileName, imageFile, { 
+                upsert: true,
+                contentType: imageFile.type 
+            });
+
+        if (uploadError) {
+            console.error('Supabase Storage Error:', uploadError);
+            throw uploadError;
+        }
+
         const { data: { publicUrl } } = supabase.storage
             .from('post_images')
             .getPublicUrl(fileName);
+
+        console.log('Image uploaded successfully. Public URL:', publicUrl);
         return publicUrl;
     };
 
