@@ -40,6 +40,21 @@ export const DEPT_CODES: Record<string, string> = {
   'BASE': 'Hazırlık',
   'ENG': 'İngilizce',
   'EFL': 'İngilizce',
+  // Bilkent specific or different codes
+  'CS': 'Bilgisayar Mühendisliği',
+  'MAN': 'İşletme',
+  'PSYC': 'Psikoloji',
+  'POLS': 'Siyaset Bilimi ve Kamu Yönetimi',
+  'IAED': 'İç Mimarlık ve Çevre Tasarımı',
+  'GRA': 'Grafik Tasarım',
+  'COMD': 'İletişim ve Tasarım',
+  'THM': 'Turizm ve Otel İşletmeciliği',
+  'LAW': 'Hukuk',
+  'MBG': 'Moleküler Biyoloji ve Genetik',
+  'AMER': 'Amerikan Kültürü ve Edebiyatı',
+  'ELIT': 'İngiliz Dili ve Edebiyatı',
+  'HART': 'Arkeoloji',
+  'GE': 'Genel Eğitim',
 };
 
 // Common/service courses that don't indicate department

@@ -1,14 +1,20 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Footer() {
   const pathname = usePathname();
+  const { profile } = useAuth();
+  
+  const university = profile?.university || 'metu'; // Default to metu
   
   // Hide footer on login and register pages
   if (pathname === '/login' || pathname === '/register') {
     return null;
   }
+
+  const isBilkent = university === 'bilkent';
   
   return (
     <footer className="bg-white dark:bg-neutral-900 mt-20 pb-12 transition-colors">
@@ -48,11 +54,23 @@ export default function Footer() {
           <div className="md:col-span-1 border-l-0 md:border-l-2 border-black dark:border-white pl-0 md:pl-8 dark:text-white transition-colors">
             <h4 className="font-bold font-serif uppercase mb-4 text-sm tracking-wider">Kampüs Rehberi</h4>
             <ul className="space-y-2 text-sm font-medium">
-              <li><a href="/?view=official" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Yemekhane Menüsü</a></li>
-              <li><a href="https://tim.metu.edu.tr/tr/ring-services" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Ring Saatleri</a></li>
-              <li><a href="https://lib.metu.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Kütüphane Durumu</a></li>
-              <li><a href="https://oidb.metu.edu.tr/tr/akademik-takvim" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Akademik Takvim</a></li>
-              <li><a href="https://ohpha1.netlify.app" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Hazırlık Ort. Hesaplama</a></li>
+              {isBilkent ? (
+                <>
+                  <li><a href="https://moodle.bilkent.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Bilkent Moodle</a></li>
+                  <li><a href="https://bilkent.edu.tr/bilkent/ulasim/" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Ring Saatleri</a></li>
+                  <li><a href="https://library.bilkent.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Kütüphane</a></li>
+                  <li><a href="https://bilkent.edu.tr/bilkent/academic-calendar/" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Akademik Takvim</a></li>
+                  <li><a href="https://stars.bilkent.edu.tr/srs" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Stars SRS</a></li>
+                </>
+              ) : (
+                <>
+                  <li><a href="/?view=official" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Yemekhane Menüsü</a></li>
+                  <li><a href="https://tim.metu.edu.tr/tr/ring-services" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Ring Saatleri</a></li>
+                  <li><a href="https://lib.metu.edu.tr" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Kütüphane Durumu</a></li>
+                  <li><a href="https://oidb.metu.edu.tr/tr/akademik-takvim" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Akademik Takvim</a></li>
+                  <li><a href="https://ohpha1.netlify.app" target="_blank" className="hover:bg-neutral-100 dark:hover:bg-neutral-800 block -ml-2 px-2 py-1 transition-colors rounded-sm">Hazırlık Ort. Hesaplama</a></li>
+                </>
+              )}
             </ul>
           </div>
 
@@ -60,9 +78,19 @@ export default function Footer() {
           <div className="md:col-span-1 border-l-0 md:border-l-2 border-black dark:border-neutral-600 pl-0 md:pl-8 transition-colors">
             <h4 className="font-bold font-serif uppercase mb-4 text-sm tracking-wider dark:text-white">Künye</h4>
             <address className="not-italic text-sm text-neutral-600 dark:text-neutral-400 mb-6 font-serif">
-              ODTÜ Üniversiteler Mah.<br />
-              Dumlupınar Blv. No:1<br />
-              06800 Çankaya/Ankara
+              {isBilkent ? (
+                <>
+                  Bilkent Üniversitesi<br />
+                  Üniversiteler Mah.<br />
+                  06800 Bilkent/Ankara
+                </>
+              ) : (
+                <>
+                  ODTÜ Üniversiteler Mah.<br />
+                  Dumlupınar Blv. No:1<br />
+                  06800 Çankaya/Ankara
+                </>
+              )}
             </address>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wider">
               &copy; {new Date().getFullYear()} UNIVO GAZETTE.<br />Tüm Hakları Saklıdır.

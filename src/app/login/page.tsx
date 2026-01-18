@@ -34,8 +34,8 @@ const UNIVERSITIES = [
         fullName: 'Bilkent Üniversitesi',
         color: '#002D72',
         logo: '/universities/bilkent_cleaned.png',
-        enabled: false,
-        moodleUrl: ''
+        enabled: true,
+        moodleUrl: 'moodle.bilkent.edu.tr'
     },
     {
         id: 'hacettepe',
@@ -68,7 +68,7 @@ const UNIVERSITIES = [
 
 export default function LoginPage() {
     const router = useRouter();
-    const { signInWithMetu } = useAuth();
+    const { signIn, signInWithMetu } = useAuth();
     const { resolvedTheme } = useTheme();
     // Step: 'select' or 'login'
     const [step, setStep] = useState<'select' | 'login'>('select');
@@ -120,8 +120,8 @@ export default function LoginPage() {
         }, 8000); // 8 seconds
 
         try {
-            // For now, only ODTÜ is supported
-            const result = await signInWithMetu(username, password);
+            if (!selectedUni) throw new Error('Lütfen bir üniversite seçin.');
+            const result = await signIn(username, password, selectedUni.id);
             clearTimeout(timer);
 
             if (result.success) {
@@ -147,7 +147,7 @@ export default function LoginPage() {
                 const welcomeName = (result.studentInfo?.fullName || 'Öğrenci')
                     .toLowerCase()
                     .split(' ')
-                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
                     .join(' ');
                 
                 // Immediate loading reset upon success
@@ -460,7 +460,9 @@ export default function LoginPage() {
                                         onChange={e => setUsername(e.target.value)}
                                         disabled={isLoading}
                                     />
-                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">@metu.edu.tr</span>
+                                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">
+                                        @{selectedUni?.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr'}
+                                    </span>
                                 </div>
                             </div>
 

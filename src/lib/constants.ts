@@ -40,6 +40,33 @@ export const METU_DEPARTMENTS = [
   "Diğer"
 ];
 
+export const BILKENT_DEPARTMENTS = [
+  "Bilgisayar Mühendisliği",
+  "Elektrik ve Elektronik Mühendisliği",
+  "Endüstri Mühendisliği",
+  "Makine Mühendisliği",
+  "İşletme",
+  "İktisat",
+  "Uluslararası İlişkiler",
+  "Siyaset Bilimi ve Kamu Yönetimi",
+  "Psikoloji",
+  "Mimarlık",
+  "İç Mimarlık ve Çevre Tasarımı",
+  "Grafik Tasarım",
+  "İletişim ve Tasarım",
+  "Turizm ve Otel İşletmeciliği",
+  "Hukuk",
+  "Fizik",
+  "Kimya",
+  "Matematik",
+  "Moleküler Biyoloji ve Genetik",
+  "İngiliz Dili ve Edebiyatı",
+  "Amerikan Kültürü ve Edebiyatı",
+  "Arkeoloji",
+  "Felsefe",
+  "Diğer"
+];
+
 export const ADMIN_EMAIL = "dogan.kerem@metu.edu.tr";
 export const ADMIN_NAME = "Kerem Doğan";
 

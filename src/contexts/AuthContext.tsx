@@ -14,9 +14,10 @@ interface Profile {
   ban_reason?: string;
   ban_category?: string;
   banned_by?: string;
+  university?: string;
 }
 
-interface MetuLoginResult {
+interface UniversityLoginResult {
   success: boolean;
   studentInfo?: {
       fullName: string;
@@ -32,7 +33,8 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  signInWithMetu: (username: string, password: string) => Promise<MetuLoginResult>;
+  signIn: (username: string, password: string, universityId: string) => Promise<UniversityLoginResult>;
+  signInWithMetu: (username: string, password: string) => Promise<UniversityLoginResult>; // Keep for compatibility temporarily
   setViewLoading: (loading: boolean) => void;
   isGlobalLoading: boolean;
   authLoading: boolean;
@@ -46,6 +48,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signOut: async () => {},
   refreshProfile: async () => {},
+  signIn: async () => ({ success: false, error: 'Not implemented' }),
   signInWithMetu: async () => ({ success: false, error: 'Not implemented' }),
   setViewLoading: () => {},
   isGlobalLoading: true,
@@ -93,9 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signInWithMetu = async (username: string, password: string): Promise<MetuLoginResult> => {
+  const signIn = async (username: string, password: string, universityId: string): Promise<UniversityLoginResult> => {
      try {
-        const res = await fetch('/api/auth/metu', {
+        const res = await fetch(`/api/auth/${universityId}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -107,7 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return { success: false, error: data.error || 'Giriş başarısız' };
         }
         
-        // If we received session tokens, set the session directly
         if (data.session) {
             const { error: setSessionError } = await supabase.auth.setSession({
                 access_token: data.session.access_token,
@@ -119,7 +121,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return { success: false, error: 'Oturum oluşturulamadı.' };
             }
 
-            // Explicitly verify session existence (Crucial for Mobile)
             const { data: { session }, error: getSessionError } = await supabase.auth.getSession();
             if (getSessionError || !session) {
                 console.error('Session verify error:', getSessionError);
@@ -135,6 +136,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
          return { success: false, error: err.message || 'Sunucu hatası' };
      }
   };
+
+  const signInWithMetu = (username: string, password: string) => signIn(username, password, 'metu');
 
   useEffect(() => {
     const startTime = Date.now();
@@ -223,6 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       authLoading,
       signOut, 
       refreshProfile, 
+      signIn,
       signInWithMetu,
       setViewLoading,
       isBanned,
