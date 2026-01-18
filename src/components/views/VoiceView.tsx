@@ -1835,6 +1835,11 @@ export default function VoiceView() {
                             {/* Right Sidebar - Sticky on desktop */}
                             <div className="lg:col-span-1 space-y-6">
                                 <VoiceStatsWidget 
+                                    activePoll={activePoll}
+                                    pollLoading={pollLoading}
+                                    pollResults={pollResults}
+                                    totalVotes={totalVotes}
+                                    userVote={userVote}
                                     onPollVote={handlePollVote}
                                     allTags={allTags}
                                     activeTags={filters.tags}
