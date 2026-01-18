@@ -379,10 +379,15 @@ function VoiceItem({
                                 {voice.image_url && (
                                     <div className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 mb-3">
                                         {voice.image_url.match(/\.(mp4|webm|ogg|mov)/i) ? (
-                                            <div className="w-full bg-black flex justify-center items-center" style={{ height: '500px' }}>
+                                            <div 
+                                                className="w-full bg-black flex justify-center items-center autoplay-video-container" 
+                                                style={{ height: '500px' }}
+                                                data-voice-id={voice.id}
+                                            >
                                                 <VideoPlayer 
                                                     src={voice.image_url} 
                                                     className="w-full h-full"
+                                                    shouldPlay={playingVideoId === voice.id}
                                                 />
                                             </div>
                                         ) : (
@@ -635,6 +640,41 @@ export default function VoiceView() {
     // Video Optimization State
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [optimizationProgress, setOptimizationProgress] = useState(0);
+
+    // Auto-play Logic
+    const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.7 // Video must be 70% visible to play
+        };
+
+        const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const videoId = entry.target.getAttribute('data-voice-id');
+                    if (videoId) {
+                        // Start playing this video
+                        setPlayingVideoId(videoId);
+                    }
+                } else {
+                    const videoId = entry.target.getAttribute('data-voice-id');
+                    // Only stop if it's the currently playing one
+                    setPlayingVideoId(prev => (prev === videoId ? null : prev));
+                }
+            });
+        };
+
+        const observer = new IntersectionObserver(handleIntersection, observerOptions);
+        const videoElements = document.querySelectorAll('.autoplay-video-container');
+        videoElements.forEach(el => observer.observe(el));
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [voices]); // Re-run when voices list changes
 
     const handleMediaSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {

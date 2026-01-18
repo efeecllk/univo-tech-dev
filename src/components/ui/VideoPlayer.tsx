@@ -5,9 +5,10 @@ interface VideoPlayerProps {
     src: string;
     className?: string;
     poster?: string;
+    shouldPlay?: boolean;
 }
 
-export default function VideoPlayer({ src, className = "", poster }: VideoPlayerProps) {
+export default function VideoPlayer({ src, className = "", poster, shouldPlay = false }: VideoPlayerProps) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -15,7 +16,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
     const [volume, setVolume] = useState(1);
-    const [isMuted, setIsMuted] = useState(false);
+    const [isMuted, setIsMuted] = useState(true); // Default muted for autoplay
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showControls, setShowControls] = useState(true);
     const [showSettings, setShowSettings] = useState(false);
@@ -24,6 +25,24 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
     let controlsTimeout: NodeJS.Timeout;
 
     const [error, setError] = useState(false);
+
+    // React to external shouldPlay prop
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        if (shouldPlay) {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay prevented:", error);
+                    setIsPlaying(false);
+                });
+            }
+        } else {
+            video.pause();
+        }
+    }, [shouldPlay]);
 
     useEffect(() => {
         const video = videoRef.current;
@@ -53,11 +72,16 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
             setIsPlaying(false);
         };
 
+        const handlePlay = () => setIsPlaying(true);
+        const handlePause = () => setIsPlaying(false);
+
         video.addEventListener('timeupdate', updateProgress);
         video.addEventListener('loadedmetadata', updateDuration);
         video.addEventListener('ended', handleEnded);
         video.addEventListener('ratechange', handleRateChange);
         video.addEventListener('error', handleError);
+        video.addEventListener('play', handlePlay);
+        video.addEventListener('pause', handlePause);
 
         return () => {
             video.removeEventListener('timeupdate', updateProgress);
@@ -65,6 +89,8 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
             video.removeEventListener('ended', handleEnded);
             video.removeEventListener('ratechange', handleRateChange);
             video.removeEventListener('error', handleError);
+            video.removeEventListener('play', handlePlay);
+            video.removeEventListener('pause', handlePause);
         };
     }, []);
 
@@ -79,7 +105,7 @@ export default function VideoPlayer({ src, className = "", poster }: VideoPlayer
             } else {
                 videoRef.current.play();
             }
-            setIsPlaying(!isPlaying);
+
         }
     };
 
