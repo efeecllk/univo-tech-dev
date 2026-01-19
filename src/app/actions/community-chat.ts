@@ -33,21 +33,26 @@ export type CommunityPostComment = {
 export async function getCommunityPosts(communityId: string) {
     const supabase = await createClient()
 
-    const { data, error } = await supabase
-        .from('community_posts')
-        .select(`
-      *,
-      profiles:user_id (full_name, avatar_url)
-    `)
-        .eq('community_id', communityId)
-        .order('created_at', { ascending: false })
+    try {
+        const { data, error } = await supabase
+            .from('community_posts')
+            .select(`
+          *,
+          profiles:user_id (full_name, avatar_url)
+        `)
+            .eq('community_id', communityId)
+            .order('created_at', { ascending: false })
 
-    if (error) {
-        console.error('Error fetching posts:', error)
+        if (error) {
+            console.error('Error fetching posts:', error)
+            return []
+        }
+
+        return data as CommunityPost[]
+    } catch (e) {
+        console.error('Unexpected error in getCommunityPosts:', e)
         return []
     }
-
-    return data as CommunityPost[]
 }
 
 export async function createPost(communityId: string, content: string, mediaUrl?: string, isAnnouncement: boolean = false) {
@@ -176,68 +181,91 @@ export async function requestPostPermission(communityId: string) {
 }
 
 export async function getPendingRequests(communityId: string) {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    const { data, error } = await supabase
-        .from('community_permission_requests')
-        .select(`
-        *,
-        profiles:user_id (full_name, avatar_url)
-      `)
-        .eq('community_id', communityId)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false })
+        const { data, error } = await supabase
+            .from('community_permission_requests')
+            .select(`
+            *,
+            profiles:user_id (full_name, avatar_url)
+          `)
+            .eq('community_id', communityId)
+            .eq('status', 'pending')
+            .order('created_at', { ascending: false })
 
-    if (error) {
-        console.error('Error getting requests:', error)
+        if (error) {
+            console.error('Error getting requests:', error)
+            return []
+        }
+
+        return data
+    } catch (e) {
+        console.error('Unexpected error in getPendingRequests:', e)
         return []
     }
-
-    return data
 }
 
 export async function updateRequestStatus(requestId: string, status: 'approved' | 'rejected') {
-    const supabase = await createClient()
+    try {
+        const supabase = await createClient()
 
-    // RLS will check if admin
-    const { error } = await supabase
-        .from('community_permission_requests')
-        .update({ status })
-        .eq('id', requestId)
+        // RLS will check if admin
+        const { error } = await supabase
+            .from('community_permission_requests')
+            .update({ status })
+            .eq('id', requestId)
 
-    if (error) {
-        console.error('Error updating request:', error)
-        throw new Error('Could not update request')
+        if (error) {
+            console.error('Error updating request:', error)
+            throw new Error('Could not update request')
+        }
+
+        return { success: true }
+    } catch (e: any) {
+        console.error('Unexpected error in updateRequestStatus:', e)
+        return { success: false, message: e.message || 'Bir hata oluştu' }
     }
-
-    return { success: true }
 }
 
 export async function checkUserPermission(communityId: string) {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) return { hasPermission: false, isAdmin: false }
+        if (!user) return { hasPermission: false, isAdmin: false }
 
-    // Check if admin
-    const { data: community } = await supabase
-        .from('communities')
-        .select('admin_id')
-        .eq('id', communityId)
-        .single()
+        // Check if admin
+        const { data: community, error: communityError } = await supabase
+            .from('communities')
+            .select('admin_id')
+            .eq('id', communityId)
+            .maybeSingle()
 
-    if (community && community.admin_id === user.id) {
-        return { hasPermission: true, isAdmin: true }
+        if (communityError) {
+            console.error('Error checking community admin:', communityError)
+        }
+
+        if (community && community.admin_id === user.id) {
+            return { hasPermission: true, isAdmin: true }
+        }
+
+        // Check if approved request
+        const { data: request, error: requestError } = await supabase
+            .from('community_permission_requests')
+            .select('id')
+            .eq('community_id', communityId)
+            .eq('user_id', user.id)
+            .eq('status', 'approved')
+            .maybeSingle()
+
+        if (requestError) {
+            console.error('Error checking user permission:', requestError)
+        }
+
+        return { hasPermission: !!request, isAdmin: false }
+    } catch (e) {
+        console.error('Unexpected error in checkUserPermission:', e)
+        return { hasPermission: false, isAdmin: false }
     }
-
-    // Check if approved request
-    const { data: request } = await supabase
-        .from('community_permission_requests')
-        .select('id')
-        .eq('community_id', communityId)
-        .eq('user_id', user.id)
-        .eq('status', 'approved')
-        .single()
-
-    return { hasPermission: !!request, isAdmin: false }
 }
