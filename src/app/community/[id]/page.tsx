@@ -15,7 +15,7 @@ async function getCommunity(id: string) {
     .from('communities')
     .select('*')
     .eq('id', id)
-    .single();
+    .maybeSingle();
   
   if (error) return null;
   return data;

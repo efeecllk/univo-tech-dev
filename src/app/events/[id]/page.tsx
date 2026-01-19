@@ -25,7 +25,7 @@ export default async function EventDetailPage({
         community:communities(id, name, logo_url, category)
     `)
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
   // 2. Fallback to Mock Data
   let event = dbEvent || mockEvents.find((e) => e.id === id);
