@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Calendar, BarChart2, Settings, LogOut, PlusCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
-import { SUPER_ADMIN_NAMES } from '@/lib/constants';
+import { SUPER_ADMIN_NAMES, SUPER_ADMIN_EMAILS } from '@/lib/constants';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, profile, signOut, loading: authLoading } = useAuth();
@@ -24,7 +24,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
 
     async function checkAdminStatus() {
-        const isSuperAdmin = profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name);
+        const isSuperAdmin = (profile?.full_name && SUPER_ADMIN_NAMES.includes(profile.full_name)) || 
+                           (user?.email && SUPER_ADMIN_EMAILS.includes(user.email));
         
         // 1. Check if user owns a community
         const { data, error } = await supabase

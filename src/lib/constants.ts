@@ -73,7 +73,13 @@ export const ADMIN_NAME = "Kerem Doğan";
 export const SUPER_ADMIN_NAMES = [
   "Kerem Doğan",
   "Berke Şen",
-  "Salih Kızıler"
+  "Salih Kızıler",
+  "Salih Kiziler"
+];
+
+export const SUPER_ADMIN_EMAILS = [
+  "dogan.kerem@metu.edu.tr",
+  "e277326@metu.edu.tr"
 ];
 
 export const METU_CLASSES = [
