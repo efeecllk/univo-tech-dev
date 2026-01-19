@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { CommunityPost, CommunityPostComment, requestPostPermission, createComment, getPostComments, getCommunityPosts, reactToPost, deletePost, reactToComment, updateComment, deleteComment } from '@/app/actions/community-chat';
 import PostComposer from './PostComposer';
 import AdminRequestPanel from './AdminRequestPanel';
-import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, Loader2, Edit2, User, MoreVertical } from 'lucide-react';
+import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, Loader2, Edit2, User, MoreVertical, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { ThreadConnector, BranchConnector } from '../ui/ThreadConnectors';
 
 // Relative time formatter to match VoiceView
 const formatRelativeTime = (dateString: string) => {
@@ -139,6 +140,11 @@ function PostItem({
     const [showMenu, setShowMenu] = useState(false);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
     
+    // Connection Line Refs
+    const rootContainerRef = useRef<HTMLDivElement>(null);
+    const postOwnerAvatarRef = useRef<HTMLDivElement>(null);
+    const rootAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+    
     // Reaction State
     const [reactionCount, setReactionCount] = useState(post.reaction_count || 0);
     const [userReaction, setUserReaction] = useState<'like' | 'dislike' | null>(post.user_reaction || null);
@@ -224,12 +230,24 @@ function PostItem({
     };
 
     return (
-        <div className="bg-white dark:bg-[#0a0a0a] border-2 border-black dark:border-neutral-700 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] overflow-visible relative z-20 transition-colors">
+        <div ref={rootContainerRef} className="bg-white dark:bg-[#0a0a0a] border-2 border-black dark:border-neutral-700 rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.05)] overflow-visible relative z-20 transition-colors">
+            {/* Thread Rail: From post author to the last root comment */}
+            {showComments && comments.length > 0 && (
+                <ThreadConnector 
+                    containerRef={rootContainerRef}
+                    startRef={postOwnerAvatarRef}
+                    endRefs={rootAvatarRefs}
+                    offsetX={36} // Center of the 40px avatar (16px from left + 20px)
+                />
+            )}
             <div className="p-4">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700">
+                        <div 
+                            ref={postOwnerAvatarRef}
+                            className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700 relative z-20"
+                        >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.profiles?.avatar_url || '/placeholder-user.jpg'}
@@ -377,8 +395,8 @@ function PostItem({
                             <Loader2 size={24} className="animate-spin mx-auto text-black dark:text-white opacity-20" />
                         </div>
                     ) : (
-                        <div className="space-y-4 mb-4">
-                            {comments.map((comment) => (
+                        <div className="space-y-4 mb-4 overflow-visible">
+                            {comments.map((comment, idx) => (
                                 <CommentItem 
                                     key={comment.id}
                                     comment={comment}
@@ -389,6 +407,9 @@ function PostItem({
                                     replyingTo={replyingTo}
                                     setReplyingTo={setReplyingTo}
                                     submittingComment={submittingComment}
+                                    containerRef={rootContainerRef}
+                                    offsetX={36}
+                                    onAvatarRef={(el) => { rootAvatarRefs.current[idx] = el; }}
                                 />
                             ))}
                             {comments.length === 0 && (
@@ -439,7 +460,10 @@ function CommentItem({
     depth = 0,
     replyingTo,
     setReplyingTo,
-    submittingComment
+    submittingComment,
+    containerRef,
+    offsetX = 0,
+    onAvatarRef
 }: { 
     comment: CommunityPostComment; 
     post: CommunityPost;
@@ -450,7 +474,17 @@ function CommentItem({
     replyingTo: string | null;
     setReplyingTo: (id: string | null) => void;
     submittingComment: boolean;
+    containerRef?: React.RefObject<HTMLDivElement | null>;
+    offsetX?: number;
+    onAvatarRef?: (el: HTMLDivElement | null) => void;
 }) {
+    const avatarRef = useRef<HTMLDivElement>(null);
+    const childAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    useEffect(() => {
+        if (onAvatarRef) onAvatarRef(avatarRef.current);
+    }, [onAvatarRef]);
+
     const isOwner = comment.user_id === currentUserId;
     const isCommunityAdminComment = communityAdminId === comment.user_id;
     const [showMenu, setShowMenu] = useState(false);
@@ -525,9 +559,30 @@ function CommentItem({
     };
 
     return (
-        <div className={`flex flex-col gap-2 ${depth > 0 ? 'ml-7 mt-2' : ''}`}>
-            <div className="flex gap-2.5">
-                <div className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800">
+        <div className={`flex flex-col gap-2 relative overflow-visible ${depth > 0 ? 'ml-9 mt-2' : 'ml-[4px]'}`}>
+            {/* Connectors */}
+            {containerRef && (
+                <BranchConnector 
+                    containerRef={containerRef}
+                    avatarRef={avatarRef}
+                    offsetX={offsetX}
+                />
+            )}
+
+            {comment.children && comment.children.length > 0 && (
+                <ThreadConnector 
+                    containerRef={containerRef || { current: null }}
+                    startRef={avatarRef}
+                    endRefs={childAvatarRefs}
+                    offsetX={offsetX + (depth * 36)} // This is still slightly risky, but works if alignment is right
+                />
+            )}
+
+            <div className="flex gap-2.5 relative">
+                <div 
+                    ref={avatarRef}
+                    className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800 z-20"
+                >
                     <img
                         src={comment.profiles?.avatar_url || '/placeholder-user.jpg'}
                         className="w-full h-full object-cover"
@@ -654,8 +709,8 @@ function CommentItem({
 
             {/* Children */}
             {comment.children && comment.children.length > 0 && (
-                <div className="flex flex-col gap-2">
-                    {comment.children.map((child) => (
+                <div className="flex flex-col gap-2 overflow-visible">
+                    {comment.children.map((child, idx) => (
                         <CommentItem 
                             key={child.id}
                             comment={child}
@@ -667,6 +722,9 @@ function CommentItem({
                             replyingTo={replyingTo}
                             setReplyingTo={setReplyingTo}
                             submittingComment={submittingComment}
+                            containerRef={containerRef}
+                            offsetX={offsetX + (depth * 36)}
+                            onAvatarRef={(el) => { childAvatarRefs.current[idx] = el; }}
                         />
                     ))}
                 </div>
