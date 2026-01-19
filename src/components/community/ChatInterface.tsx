@@ -7,6 +7,7 @@ import AdminRequestPanel from './AdminRequestPanel';
 import { MessageSquare, Heart, Share2, MoreHorizontal, Hand, Send, Trash2, ShieldCheck, Flag } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { ThreadConnector, BranchConnector } from '../ui/ThreadConnectors';
 
 interface ChatInterfaceProps {
     communityId: string;
@@ -117,6 +118,11 @@ function PostItem({
     const [submittingComment, setSubmittingComment] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     
+    // Refs for Connection Lines
+    const postOwnerAvatarRef = useRef<HTMLDivElement>(null);
+    const commentsContainerRef = useRef<HTMLDivElement>(null);
+    const commentAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
+    
     // Reaction State
     const [reactionCount, setReactionCount] = useState(post.reaction_count || 0);
     const [userReaction, setUserReaction] = useState<'like' | 'dislike' | null>(post.user_reaction || null);
@@ -202,7 +208,10 @@ function PostItem({
                 {/* Header */}
                 <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700">
+                        <div 
+                            ref={postOwnerAvatarRef}
+                            className="w-10 h-10 rounded-full bg-neutral-200 overflow-hidden border-2 border-black dark:border-neutral-700 z-20"
+                        >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={post.profiles?.avatar_url || '/placeholder-user.jpg'}
@@ -308,17 +317,35 @@ function PostItem({
 
             {/* Comments Section */}
             {showComments && (
-                <div className="bg-neutral-50 dark:bg-neutral-950/30 p-4 border-t-2 border-black dark:border-neutral-700">
+                <div ref={commentsContainerRef} className="bg-neutral-50 dark:bg-neutral-950/30 p-4 border-t-2 border-black dark:border-neutral-700 relative">
                     {loadingComments ? (
                         <div className="text-center py-4">
                             <Loader2 size={24} className="animate-spin mx-auto text-black dark:text-white opacity-20" />
                         </div>
                     ) : (
-                        <div className="space-y-4 mb-4">
-                            {comments.map(comment => (
-                                <div key={comment.id} className="group">
-                                    <div className="flex gap-2.5">
-                                        <div className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800">
+                        <div className="space-y-4 mb-4 relative">
+                            {/* Vertical Rail from Post Owner to last comment */}
+                            <ThreadConnector 
+                                containerRef={commentsContainerRef}
+                                startRef={postOwnerAvatarRef}
+                                endRefs={commentAvatarRefs}
+                                offsetX={16} // Center of the 8x8 comment avatar (offset 4) + padding 16? No, avatar is 32px (8w), center is 16px.
+                            />
+
+                            {comments.map((comment, idx) => (
+                                <div key={comment.id} className="group relative">
+                                    {/* Branch from Rail to this avatar */}
+                                    <BranchConnector 
+                                        containerRef={commentsContainerRef}
+                                        avatarRef={{ current: commentAvatarRefs.current[idx] }}
+                                        offsetX={16}
+                                    />
+
+                                    <div className="flex gap-2.5 relative">
+                                        <div 
+                                            ref={el => { commentAvatarRefs.current[idx] = el; }}
+                                            className="w-8 h-8 rounded-full bg-neutral-200 overflow-hidden flex-shrink-0 border border-black dark:border-neutral-800 z-20"
+                                        >
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={comment.profiles?.avatar_url || '/placeholder-user.jpg'}
@@ -326,7 +353,7 @@ function PostItem({
                                                 alt="User"
                                             />
                                         </div>
-                                        <div className="bg-white dark:bg-neutral-900 px-3 py-2 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] relative">
+                                        <div className="bg-white dark:bg-neutral-900 px-3 py-2 border-2 border-black dark:border-neutral-700 text-sm flex-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.05)] relative z-20">
                                             <div className="flex justify-between items-baseline mb-1">
                                                 <span className="font-bold text-[11px] text-neutral-900 dark:text-neutral-200">
                                                     {comment.profiles?.full_name}
