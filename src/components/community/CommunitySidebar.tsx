@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Users, Instagram, Twitter, Globe } from 'lucide-react';
+import { Users, Instagram, Twitter, Globe, MessageSquare } from 'lucide-react';
 import FollowButton from '@/components/FollowButton';
 import CommunityFollowersModal from './CommunityFollowersModal';
+import Link from 'next/link';
 
 interface CommunitySidebarProps {
     community: any;
@@ -16,7 +17,7 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
 
     return (
         <div className="bg-white dark:bg-neutral-900 border-4 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.1)] sticky top-24 transition-colors">
-            
+
             {/* Logo */}
             <div className="w-24 h-24 bg-neutral-100 dark:bg-neutral-800 rounded-full mx-auto mb-4 flex items-center justify-center border-2 border-dashed border-neutral-300 dark:border-neutral-700">
                 {community.logo_url ? (
@@ -25,7 +26,7 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
                     <Users size={32} className="text-neutral-400" />
                 )}
             </div>
-            
+
             {/* Name */}
             <h1 className="text-2xl font-black font-serif text-center mb-2 leading-tight dark:text-white">
                 {community.name}
@@ -33,7 +34,7 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
 
             {/* Stats - Follower Count is Clickable */}
             <div className="grid grid-cols-2 gap-2 border-y-2 border-neutral-100 dark:border-neutral-800 py-4 my-4 text-center">
-                <div 
+                <div
                     onClick={() => setShowFollowersModal(true)}
                     className="cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-800 rounded-lg transition-colors p-1"
                 >
@@ -47,8 +48,13 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
             </div>
 
             {/* Follow Button (Moved Above About) */}
-            <div className="mb-6">
-                 <FollowButton communityId={community.id} initialIsFollowing={false} />
+            <div className="mb-6 space-y-3">
+                <FollowButton communityId={community.id} initialIsFollowing={false} />
+
+                <Link href={`/community/${community.id}/chat`} className="flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 px-4 rounded-lg transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none">
+                    <MessageSquare size={20} />
+                    Topluluk Sohbeti
+                </Link>
             </div>
 
             {/* About Section */}
@@ -78,7 +84,7 @@ export default function CommunitySidebar({ community, followerCount, eventCount 
                 )}
             </div>
 
-            <CommunityFollowersModal 
+            <CommunityFollowersModal
                 communityId={community.id}
                 isOpen={showFollowersModal}
                 onClose={() => setShowFollowersModal(false)}
