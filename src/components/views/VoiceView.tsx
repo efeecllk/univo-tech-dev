@@ -1762,9 +1762,9 @@ export default function VoiceView() {
             <AnimatePresence mode="wait">
                     <motion.div
                         key="odtu"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.3 }}
                         className="w-full"
                     >
@@ -1862,9 +1862,9 @@ export default function VoiceView() {
                                             <motion.div
                                                 layout
                                                 key="voices-list"
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -20 }}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                exit={{ opacity: 0, x: 20 }}
                                                 transition={{ duration: 0.3 }}
                                                 className="space-y-4"
                                             >
