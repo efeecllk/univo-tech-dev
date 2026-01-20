@@ -135,21 +135,6 @@ export default function VoiceStatsWidget({
                         {isGlobalMode ? 'Global Gündem' : 'Kampüste Gündem'}
                     </h3>
                     
-                    {/* Active Filter Indicator */}
-                    {activeTagFilter && (
-                        <div className="mb-4 p-3 bg-black dark:bg-white rounded-lg flex items-center justify-between">
-                            <span className="text-white dark:text-black text-sm font-bold">
-                                {activeTagFilter.startsWith('#') ? activeTagFilter : `#${activeTagFilter}`}
-                            </span>
-                            <button 
-                                onClick={() => onTagFilterChange(null)}
-                                className="text-white/70 dark:text-black/70 hover:text-white dark:hover:text-black"
-                            >
-                                <X size={16} />
-                            </button>
-                        </div>
-                    )}
-                    
                     {/* Popular Tags */}
                     <div className="space-y-3">
                         {allTags.length > 0 ? (

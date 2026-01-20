@@ -98,7 +98,11 @@ export const CommentItem = ({
                         
                         <div className="flex justify-between items-start mb-1">
                             <div className="flex items-center gap-1 flex-wrap">
-                                <Link href={`/profile/${comment.user_id}`} className="font-bold text-sm text-neutral-900 dark:text-neutral-200 hover:underline">
+                                <Link 
+                                    href={`/profile/${comment.user_id}`} 
+                                    className="font-bold text-sm hover:underline transition-colors"
+                                    style={{ color: 'var(--primary-color)' }}
+                                >
                                     {comment.user}
                                 </Link>
                                 {comment.user_department && (
@@ -375,6 +379,12 @@ export default function CommentThread({
     // Sort by newest
     roots.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
+    // Stable start ref for ThreadConnector
+    const startRef = useRef({ current: postOwnerAvatarRef });
+    useEffect(() => {
+        startRef.current.current = postOwnerAvatarRef;
+    }, [postOwnerAvatarRef]);
+
     const visibleRoots = roots.slice(0, visibleCommentsCount || 10);
     const rootContainerRef = useRef<HTMLDivElement>(null);
     const rootAvatarRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -384,7 +394,7 @@ export default function CommentThread({
             {/* Main Rail from Post Owner to last root comment */}
             <ThreadConnector 
                 containerRef={rootContainerRef}
-                startRef={{ current: postOwnerAvatarRef }}
+                startRef={startRef.current}
                 endRefs={rootAvatarRefs}
                 offsetX={-36}
             />

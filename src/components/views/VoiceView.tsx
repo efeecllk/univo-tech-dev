@@ -637,6 +637,7 @@ export default function VoiceView() {
 
     const [newStatus, setNewStatus] = useState('');
     const [isAnonymous, setIsAnonymous] = useState(false);
+    const [postsLoading, setPostsLoading] = useState(false);
 
     const [expandedVoices, setExpandedVoices] = useState<Record<string, boolean>>({});
     const [visibleCommentsCount, setVisibleCommentsCount] = useState<Record<string, number>>({}); // Pagination state
@@ -919,7 +920,10 @@ export default function VoiceView() {
     }, [filters, university, isGlobalMode, isModeInitialized]);
 
     const fetchVoices = async () => {
-        // Only set view loading if we don't have voices yet (initial load)
+        // Set posts loading for skeleton display during filtering
+        setPostsLoading(true);
+        
+        // Only set full view loading on initial load (no voices yet)
         if (voices.length === 0) setViewLoading(true);
         
         try {
@@ -965,6 +969,7 @@ export default function VoiceView() {
             console.error('Error fetching voices:', error);
         } finally {
             setViewLoading(false);
+            setPostsLoading(false);
         }
     };
 
@@ -1823,7 +1828,7 @@ export default function VoiceView() {
                                 )}
 
                                 <div className="space-y-6">
-                                    {showSkeleton ? (
+                                    {showSkeleton || postsLoading ? (
                                         <div className="space-y-6">
                                             {[1, 2, 3].map((i) => (
                                                 <div key={i} className="pb-6 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
