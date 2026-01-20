@@ -3,6 +3,19 @@
 -- Run this script in your NEW Supabase Project's SQL Editor
 -- =========================================================
 
+-- 0. CLEAN START (Drop existing tables to prevent "already exists" errors)
+DROP TABLE IF EXISTS public.notifications CASCADE;
+DROP TABLE IF EXISTS public.community_permission_requests CASCADE;
+DROP TABLE IF EXISTS public.community_comment_reactions CASCADE;
+DROP TABLE IF EXISTS public.community_post_comments CASCADE;
+DROP TABLE IF EXISTS public.community_posts CASCADE;
+DROP TABLE IF EXISTS public.voice_comments CASCADE;
+DROP TABLE IF EXISTS public.voice_reactions CASCADE;
+DROP TABLE IF EXISTS public.campus_voices CASCADE;
+DROP TABLE IF EXISTS public.events CASCADE;
+DROP TABLE IF EXISTS public.communities CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+
 -- 0. Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
