@@ -74,21 +74,23 @@ export default function CommunityView() {
   const { user, profile, setViewLoading, loading: showSkeleton } = useAuth();
   const [isGlobalMode, setIsGlobalMode] = useState(false);
   const [isAdminSession, setIsAdminSession] = useState(false);
+  const [modeInitialized, setModeInitialized] = useState(false);
 
   const [university, setUniversity] = useState(profile?.university || 'metu');
   const isBilkent = university === 'bilkent';
 
-  // Enforce Mode Logic: Global for Guests, University for Users (on start)
+  // Enforce Mode Logic: Global for Guests, University for Users (ONLY on initial load)
   useEffect(() => {
-      if (!showSkeleton) {
+      if (!showSkeleton && !modeInitialized) {
           if (!user) {
               setIsGlobalMode(true);
           } else {
               // User logged in: Start with University mode
               setIsGlobalMode(false);
           }
+          setModeInitialized(true);
       }
-  }, [user, showSkeleton]);
+  }, [user, showSkeleton, modeInitialized]);
 
   // Check admin session
   useEffect(() => {
