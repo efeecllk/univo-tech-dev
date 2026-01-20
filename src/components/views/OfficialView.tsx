@@ -427,7 +427,7 @@ export default function OfficialView() {
             }
         };
         fetchData();
-    }, [setViewLoading, user]);
+    }, [setViewLoading, user, university, isGlobalMode]);
 
     if (showSkeleton) {
         return <OfficialViewSkeleton />;

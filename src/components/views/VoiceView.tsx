@@ -1779,7 +1779,7 @@ export default function VoiceView() {
                                                 className="text-xs font-black uppercase px-3 py-1.5 rounded-full flex items-center gap-2 transition-all active:scale-95 shadow-sm group text-white"
                                                 style={{ backgroundColor: 'var(--primary-color, #C8102E)' }}
                                             >
-                                                <span>#{filters.tags[0]}</span>
+                                                <span>{filters.tags[0].startsWith('#') ? filters.tags[0] : `#${filters.tags[0]}`}</span>
                                                 <X size={12} strokeWidth={3} />
                                             </button>
                                         )}

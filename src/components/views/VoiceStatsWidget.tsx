@@ -139,7 +139,7 @@ export default function VoiceStatsWidget({
                     {activeTagFilter && (
                         <div className="mb-4 p-3 bg-black dark:bg-white rounded-lg flex items-center justify-between">
                             <span className="text-white dark:text-black text-sm font-bold">
-                                #{activeTagFilter}
+                                {activeTagFilter.startsWith('#') ? activeTagFilter : `#${activeTagFilter}`}
                             </span>
                             <button 
                                 onClick={() => onTagFilterChange(null)}
