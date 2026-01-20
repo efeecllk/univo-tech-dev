@@ -39,8 +39,11 @@ async function dumpData() {
       const columns = Object.keys(row).join(', ');
       const values = Object.values(row).map(v => {
         if (v === null) return 'NULL';
-        if (typeof v === 'string') return `'${v.replace(/'/g, "''")}'`;
+        if (Array.isArray(v)) {
+          return `ARRAY[${v.map(item => `'${String(item).replace(/'/g, "''")}'`).join(', ')}]::TEXT[]`;
+        }
         if (typeof v === 'object') return `'${JSON.stringify(v).replace(/'/g, "''")}'`;
+        if (typeof v === 'string') return `'${v.replace(/'/g, "''")}'`;
         return v;
       }).join(', ');
       
