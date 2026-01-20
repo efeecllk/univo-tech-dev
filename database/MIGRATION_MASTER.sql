@@ -6,9 +6,9 @@
 -- 0. Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. PROFILES & AUTH SYNC
+-- 1. PROFILES
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY, -- Removed REFERENCES auth.users to allow import
+  id UUID PRIMARY KEY,
   full_name TEXT,
   avatar_url TEXT,
   department TEXT,
@@ -51,11 +51,11 @@ CREATE POLICY "Communities are viewable by everyone" ON public.communities FOR S
 CREATE POLICY "Users can create communities" ON public.communities FOR INSERT WITH CHECK (auth.uid() = admin_id);
 CREATE POLICY "Admins can update their community" ON public.communities FOR UPDATE USING (auth.uid() = admin_id);
 
--- 3. EVENTS (OFFICIAL & COMMUNITY)
+-- 3. EVENTS
 CREATE TABLE IF NOT EXISTS public.events (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   title TEXT NOT NULL,
-  category TEXT NOT NULL CHECK (category IN ('event', 'announcement', 'workshop', 'talk')),
+  category TEXT NOT NULL CHECK (category IN ('event', 'announcement', 'workshop', 'talk', 'partnership')),
   community_id UUID REFERENCES public.communities(id),
   date TIMESTAMP WITH TIME ZONE NOT NULL,
   time TEXT NOT NULL,
@@ -69,7 +69,9 @@ CREATE TABLE IF NOT EXISTS public.events (
 
 ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Events are viewable by everyone" ON public.events FOR SELECT USING (true);
-CREATE POLICY "Admins can manage events" ON public.events FOR INSERT WITH CHECK (EXISTS (SELECT 1 FROM public.communities WHERE id = community_id AND admin_id = auth.uid()));
+CREATE POLICY "Admins can manage events" ON public.events FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.communities WHERE id = community_id AND admin_id = auth.uid())
+);
 
 -- 4. CAMPUS VOICES
 CREATE TABLE IF NOT EXISTS public.campus_voices (
@@ -118,31 +120,37 @@ CREATE TABLE IF NOT EXISTS public.community_posts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  content TEXT, media_url TEXT, created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  content TEXT,
+  media_url TEXT,
+  is_announcement BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS public.community_post_comments (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   post_id UUID REFERENCES public.community_posts(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  content TEXT NOT NULL, parent_id UUID REFERENCES public.community_post_comments(id) ON DELETE CASCADE,
+  content TEXT NOT NULL,
+  parent_id UUID REFERENCES public.community_post_comments(id) ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS public.community_permission_requests (
+CREATE TABLE IF NOT EXISTS public.community_comment_reactions (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  community_id UUID REFERENCES public.communities(id) ON DELETE CASCADE NOT NULL,
+  comment_id UUID REFERENCES public.community_post_comments(id) ON DELETE CASCADE NOT NULL,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
-  status TEXT DEFAULT 'pending', created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  reaction_type TEXT NOT NULL CHECK (reaction_type IN ('like', 'dislike')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(comment_id, user_id)
 );
 
 ALTER TABLE public.community_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.community_post_comments ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.community_permission_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.community_comment_reactions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Posts viewable" ON public.community_posts FOR SELECT USING (true);
+CREATE POLICY "Posts select" ON public.community_posts FOR SELECT USING (true);
 CREATE POLICY "Posts insert" ON public.community_posts FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "Comments viewable" ON public.community_post_comments FOR SELECT USING (true);
+CREATE POLICY "Comments select" ON public.community_post_comments FOR SELECT USING (true);
 
 -- 7. NOTIFICATIONS
 CREATE TABLE IF NOT EXISTS public.notifications (
