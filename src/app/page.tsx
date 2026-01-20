@@ -1,5 +1,5 @@
 'use client';
-// Final push trigger for Vercel synchronization
+// Vercel Deployment Trigger: 2026-01-20 23:18
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
