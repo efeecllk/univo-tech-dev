@@ -44,7 +44,7 @@ function HomeContent() {
     }
   };
 
-  if (loading || isChecking) {
+  if (isChecking) {
        return (
          <div className="min-h-[100dvh] bg-neutral-50 dark:bg-[#0a0a0a] flex items-center justify-center">
              <div className="animate-pulse flex flex-col items-center gap-4">
