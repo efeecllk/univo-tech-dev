@@ -8,15 +8,23 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. PROFILES & AUTH SYNC
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
-  full_name TEXT NOT NULL,
+  id UUID PRIMARY KEY, -- Removed REFERENCES auth.users to allow import
+  full_name TEXT,
   avatar_url TEXT,
   department TEXT,
-  student_id TEXT UNIQUE,
+  student_id TEXT,
   university TEXT DEFAULT 'metu',
   nickname TEXT,
   bio TEXT,
+  class_year TEXT,
+  interests JSONB DEFAULT '[]'::jsonb,
+  privacy_settings JSONB DEFAULT '{"show_email":false,"show_interests":true,"show_activities":true}'::jsonb,
   social_links JSONB DEFAULT '{}'::jsonb,
+  show_friends BOOLEAN DEFAULT true,
+  theme_preference JSONB DEFAULT '{"theme":"system","colorTheme":"default"}'::jsonb,
+  is_archived BOOLEAN DEFAULT false,
+  is_banned BOOLEAN DEFAULT false,
+  notification_settings JSONB DEFAULT '{"likes":true,"follows":true,"comments":true,"mentions":true,"friend_requests":true,"email_subscription":true}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
