@@ -36,10 +36,15 @@ async function fetchBilkentMenu() {
         const $ = cheerio.load(html);
         
         // Find today's tab pane
-        const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const today = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Istanbul' }));
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        
         let $todayPane = $(`#day-${todayStr}-tab-pane`);
         
-        // Fallback to active tab if today's date not found (e.g. weekend/holiday)
+        // Fallback to active tab if today's date not found (e.g. weekend/holiday or selector mismatch)
         if ($todayPane.length === 0) {
             $todayPane = $('.tab-pane.active');
         }

@@ -97,6 +97,15 @@ async function fetchMetuAnnouncements() {
         }
     } catch (e) { console.error('OIDB fetch failed', e); }
 
+    // 4. Fetch General (Rektörlük/Genel)
+    try {
+        const genelRes = await fetch('https://www.metu.edu.tr/tr/duyurular', { next: { revalidate: 3600 } });
+        if (genelRes.ok) {
+            const text = await genelRes.text();
+            results.push(...parseMetuGeneral(text, 'https://www.metu.edu.tr'));
+        }
+    } catch (e) { console.error('General fetch failed', e); }
+
     // Filter last 7 days
     const oneWeekAgo = Date.now() - (14 * 24 * 60 * 60 * 1000); // 14 days for more content
     const filteredResults = results.filter(a => a.timestamp >= oneWeekAgo);
@@ -166,4 +175,34 @@ const parseOidb = (html: string, baseUrl: string): Announcement[] => {
     }
   }
   return announcements;
+};
+
+const parseMetuGeneral = (html: string, baseUrl: string): Announcement[] => {
+    const announcements: Announcement[] = [];
+    const cheerio = require('cheerio');
+    const $ = cheerio.load(html);
+
+    $('.view-content .views-row').each((_: any, el: any) => {
+        const $el = $(el);
+        const titleLink = $el.find('.views-field-title .field-content a');
+        const title = cleanText(titleLink.text());
+        let link = titleLink.attr('href') || '';
+        const body = cleanText($el.find('.views-field-body .field-content').text());
+        
+        if (title && link) {
+            if (!link.startsWith('http')) link = `${baseUrl}${link}`;
+            
+            announcements.push({
+                id: `GENEL-${link}`,
+                source: 'Rektörlük', 
+                title: title,
+                date: 'Güncel',
+                link: link,
+                timestamp: Date.now(), 
+                summary: body || 'ODTÜ Rektörlük Duyurusu'
+            });
+        }
+    });
+
+    return announcements;
 };

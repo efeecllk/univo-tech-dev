@@ -825,8 +825,8 @@ export default function OfficialView() {
                             {/* Main Column */}
                             <div className="lg:col-span-2 space-y-8 min-w-0">
 
-                                {/* Pinned Announcement - Newspaper Theme */}
-                                {news[0] && (
+                                {/* Pinned Announcement - Dynamic from Rektörlük/General Sources */}
+                                {campusNews.length > 0 && (
                                     <div className="border-4 border-black dark:border-neutral-600 p-4 sm:p-6 bg-neutral-50 dark:bg-[#0a0a0a] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] relative mt-4 z-10 rounded-none transition-colors group w-full max-w-full">
                                         <div
                                             className="absolute -top-3 left-6 text-white px-3 py-1 text-xs font-black uppercase tracking-wider -rotate-1 shadow-sm z-20 border-2 border-black dark:border-white"
@@ -836,14 +836,14 @@ export default function OfficialView() {
                                         </div>
                                         <h3 className="text-lg sm:text-xl font-bold mb-2 flex items-center gap-2 text-black dark:text-white mt-2 break-words font-serif uppercase tracking-tight">
                                             <Megaphone size={20} className="text-black dark:text-white shrink-0" />
-                                            {news[0].title}
+                                            {campusNews[0].title}
                                         </h3>
                                         <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed font-serif line-clamp-3">
-                                            {news[0].summary}
+                                            {campusNews[0].summary}
                                         </p>
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs font-bold uppercase text-neutral-500 dark:text-neutral-400">
-                                            <span>{news[0].source} · {news[0].date}</span>
-                                            <a href={news[0].link} className="flex items-center gap-1 hover:underline decoration-2 underline-offset-2 text-black dark:text-white group-hover:translate-x-1 transition-transform">
+                                            <span>{campusNews[0].source} · {campusNews[0].date}</span>
+                                            <a href={campusNews[0].link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:underline decoration-2 underline-offset-2 text-black dark:text-white group-hover:translate-x-1 transition-transform">
                                                 Detaylar <ArrowRight size={12} />
                                             </a>
                                         </div>
@@ -854,8 +854,11 @@ export default function OfficialView() {
                                 <div className="flex border-b-2 border-black dark:border-white mb-6 gap-1 sm:gap-2 md:gap-4 overflow-x-auto no-scrollbar scroll-smooth">
                                     {[
                                         { id: 'agenda', label: 'GÜNDEM', count: allNews.filter(n => (!readIds.includes(String(n.id)) && (n.type === 'announcement' || n.type === 'event'))).length, icon: <Megaphone size={14} className="shrink-0" /> },
-                                        { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
-                                        { id: 'odtuclass', label: isBilkent ? 'MOODLE' : 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> },
+                                        // Conditional Tabs
+                                        ...(!isBilkent ? [
+                                            { id: 'emails', label: 'E-POSTA', count: user ? emails.filter(n => !readIds.includes(String(n.id))).length : 0, icon: <Mail size={14} className="shrink-0" /> },
+                                            { id: 'odtuclass', label: 'ODTÜCLASS', count: odtuClassData.filter((item: any) => !readIds.includes(String(item.id))).length, icon: <GraduationCap size={14} className="shrink-0" /> }
+                                        ] : []),
                                         { id: 'starred', label: '', count: starredIds.length, icon: <Star size={14} className="shrink-0" /> },
                                         { id: 'history', label: '', icon: <Trash2 size={14} className="shrink-0" />, count: readIds.length }
                                     ].map(tab => {
