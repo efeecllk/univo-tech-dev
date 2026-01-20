@@ -508,3 +508,29 @@ export async function deletePost(postId: string, communityId: string) {
         return { success: false, message: 'Silme işlemi başarısız' }
     }
 }
+
+export async function updatePost(postId: string, communityId: string, content: string) {
+    try {
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) return { success: false, message: 'Oturum açmanız gerekiyor' }
+
+        const { error } = await supabase
+            .from('community_posts')
+            .update({ 
+                content, 
+                updated_at: new Date().toISOString() 
+            })
+            .eq('id', postId)
+            .eq('user_id', user.id)
+
+        if (error) throw error
+
+        revalidatePath(`/community/${communityId}/chat`)
+        return { success: true }
+    } catch (e: any) {
+        console.error('Error updatePost:', e)
+        return { success: false, message: 'Gönderi güncellenemedi' }
+    }
+}

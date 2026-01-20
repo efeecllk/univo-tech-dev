@@ -1,14 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { CommunityPost, CommunityPostComment, requestPostPermission, createComment, getPostComments, getCommunityPosts, reactToPost, deletePost, reactToComment, updateComment, deleteComment } from '@/app/actions/community-chat';
+import { CommunityPost, CommunityPostComment, requestPostPermission, createComment, getPostComments, getCommunityPosts, reactToPost, deletePost, reactToComment, updateComment, deleteComment, updatePost } from '@/app/actions/community-chat';
 import PostComposer from './PostComposer';
 import AdminRequestPanel from './AdminRequestPanel';
-import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, ArrowBigDown, Loader2, Edit2, User, MoreVertical, ChevronDown, ChevronUp, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { MessageSquare, Share2, MoreHorizontal, Hand, Send, Trash2, Flag, ArrowBigUp, ArrowBigDown, Loader2, Edit2, User, MoreVertical, ChevronDown, ChevronUp, ShieldCheck, Crown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { ThreadConnector, BranchConnector } from '../ui/ThreadConnectors';
+import FriendButton from '../FriendButton';
 
 // Relative time formatter to match VoiceView
 const formatRelativeTime = (dateString: string) => {
@@ -139,6 +140,8 @@ function PostItem({
     const [submittingComment, setSubmittingComment] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [replyingTo, setReplyingTo] = useState<string | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editContent, setEditContent] = useState(post.content || '');
     
     // Connection Line Refs
     const rootContainerRef = useRef<HTMLDivElement>(null);
@@ -182,6 +185,18 @@ function PostItem({
         if (result.success) {
             toast.success('Gönderi silindi');
             if (onDeleted) onDeleted();
+        } else {
+            toast.error(result.message);
+        }
+    };
+
+    const handleUpdate = async () => {
+        if (!editContent.trim()) return;
+        const result = await updatePost(post.id, post.community_id, editContent);
+        if (result.success) {
+            toast.success('Gönderi güncellendi');
+            setIsEditing(false);
+            if (onDeleted) onDeleted(); // Refresh posts
         } else {
             toast.error(result.message);
         }
@@ -259,7 +274,7 @@ function PostItem({
                                     </Link>
                                     {isCommunityAdminPost && (
                                         <div className="group/badge relative flex items-center">
-                                            <BadgeCheck size={16} className="text-[var(--primary-color)] fill-red-50 dark:fill-red-950/30" />
+                                            <Crown size={16} className="text-amber-500 fill-amber-50 dark:fill-amber-950/30" />
                                             {/* Tooltip */}
                                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] font-bold rounded opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                                                 Topluluk Sahibi
@@ -301,7 +316,7 @@ function PostItem({
                                                 <>
                                                     <button 
                                                         className="w-full px-4 py-2 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
-                                                        onClick={() => { setShowMenu(false); /* Implement edit if needed */ }}
+                                                        onClick={() => { setShowMenu(false); setIsEditing(true); }}
                                                     >
                                                         <Edit2 size={14} /> Düzenle
                                                     </button>
@@ -334,6 +349,12 @@ function PostItem({
                                                     >
                                                         <Flag size={14} /> Bildir
                                                     </button>
+                                                    <FriendButton 
+                                                        targetUserId={post.user_id} 
+                                                        variant="menu-item" 
+                                                        className="w-full"
+                                                        onFriendshipChange={() => setShowMenu(false)}
+                                                    />
                                                 </>
                                             )}
                                         </div>
@@ -343,9 +364,35 @@ function PostItem({
                         </div>
 
                         {/* Content */}
-                        <div className="text-neutral-800 dark:text-neutral-200 text-sm whitespace-pre-wrap mb-4 font-serif leading-relaxed">
-                            {post.content}
-                        </div>
+                        {isEditing ? (
+                            <div className="mb-4">
+                                <textarea
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                    className="w-full bg-neutral-50 dark:bg-neutral-900 border-2 border-black dark:border-neutral-700 p-3 text-sm font-serif focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white rounded-lg"
+                                    rows={4}
+                                    autoFocus
+                                />
+                                <div className="flex justify-end gap-3 mt-2">
+                                    <button 
+                                        onClick={() => { setIsEditing(false); setEditContent(post.content || ''); }}
+                                        className="text-[10px] font-black tracking-widest uppercase text-neutral-500 hover:text-black dark:hover:text-white px-2 py-1"
+                                    >
+                                        İPTAL
+                                    </button>
+                                    <button 
+                                        onClick={handleUpdate}
+                                        className="text-[10px] font-black tracking-widest uppercase bg-black dark:bg-white text-white dark:text-black px-4 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                    >
+                                        GÖNDERİYİ KAYDET
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-neutral-800 dark:text-neutral-200 text-sm whitespace-pre-wrap mb-4 font-serif leading-relaxed">
+                                {post.content}
+                            </div>
+                        )}
 
                         {post.media_url && (
                             <div className="mb-4 rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900">
@@ -616,7 +663,7 @@ function CommentItem({
                             </span>
                             {isCommunityAdminComment && (
                                 <div className="group/badge relative flex items-center">
-                                    <BadgeCheck size={14} className="text-[var(--primary-color)] fill-red-50 dark:fill-red-950/30" />
+                                    <Crown size={14} className="text-amber-500 fill-amber-50 dark:fill-amber-950/30" />
                                     {/* Tooltip */}
                                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] font-bold rounded opacity-0 group-hover/badge:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                                         Topluluk Sahibi
@@ -660,6 +707,12 @@ function CommentItem({
                                                     <button className="w-full px-3 py-1.5 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2">
                                                         <Flag size={12} /> Bildir
                                                     </button>
+                                                    <FriendButton 
+                                                        targetUserId={comment.user_id} 
+                                                        variant="menu-item" 
+                                                        className="w-full"
+                                                        onFriendshipChange={() => setShowMenu(false)}
+                                                    />
                                                 </>
                                             )}
                                         </div>
