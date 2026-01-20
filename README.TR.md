@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Sürüm-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Sürüm](https://img.shields.io/badge/Sürüm-v1.3.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/univo-tech-dev/univo-tech-dev)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -20,9 +20,41 @@
 </p>
 
 <p align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
+  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Sürüm Notları: v1.2.0 → v1.3.0 (Profesyonel Temel)
+**📅 20 Ocak 2026**
+
+Bu dönüm noktası niteliğindeki güncelleme, tek kişilik bir MVP'den **kurumsal düzeyde bir organizasyona** geçişimizi simgeliyor. Tüm ekosistemi birleştirdik, veritabanı geçişini otomatize ettik ve yüksek performanslı bir Misafir Modu sunduk.
+
+### ✨ Öne Çıkan Değişiklikler
+- **🏛️ Kapsamlı Göç ve Merkezi Yönetim:**
+    - Kod tabanı yeni `univo-tech-dev` **GitHub Organizasyonu** altında birleştirildi.
+    - 29 senkronize tablo içeren özel bir **Supabase** örneğine tam geçiş yapıldı.
+    - **Eski Veri Kurtarma (User Reclaim):** Mevcut kullanıcılar, e-posta eşleşmesi sayesinde eski profillerini yeni hesaplarına otomatik olarak bağlayabiliyorlar.
+- **👤 Üst Seviye Misafir Modu (Guest Mode):**
+    - Kayıtlı olmayan kullanıcılar artık **Global** kampüs içeriğine göz atabiliyor.
+    - Veri gizliliği ve öğrencilere özel içeriklerin korunması amacıyla, üniversiteye özel akışlar (ODTÜ/Bilkent) misafirlere otomatik olarak kısıtlandı.
+- **📧 Kurumsal E-posta Altyapısı:**
+    - `univo.com.tr` alan adı için DKIM/SPF doğrulamalı **Resend** entegrasyonu tamamlandı.
+    - Şifre sıfırlama ve bildirimler için yüksek teslim edilebilirlik oranlı profesyonel e-posta hizmeti devreye alındı.
+- **🛡️ Performans ve Arayüz Kararlılığı:**
+    - **Sıfır Beklemeli Yönlendirme:** "Başlatılıyor" ekranında takılma hatası, asenkron yetkilendirme mantığı ile tamamen çözüldü.
+    - **Akıllı Üniversite Algılama:** Kayıt sırasında e-posta uzantısına göre (`@metu.edu.tr`, `@bilkent.edu.tr`) üniversite seçimi otomatik hale getirildi.
+    - **Bütünleşik İskelet Ekranlar:** Uygulama genelindeki yükleme ekranları ve başlıklar premium bir his için harmonize edildi.
+
+### 🛠️ Teknik İyileştirmeler (Changelog)
+> **v1.3.0**
+> * `feat(migration)`: `dump_old_data.js` ile 29 tablonun otomatik SQL dışa aktarımı sağlandı.
+> * `feat(auth)`: Profil eşleştirme için `handle_new_user` Postgres tetikleyicisi (trigger) uygulandı.
+> * `feat(ux)`: `page.tsx` içindeki `HomeContent`, sonsuz yükleme döngülerini kırmak için yeniden yapılandırıldı.
+> * `feat(infra)`: `univo.com.tr` için Resend DNS doğrulaması (MX/TXT kayıtları) yapıldı.
+> * `style(views)`: `CommunityView`, `VoiceView` ve `OfficialView` yetkisiz oturumlar için Global Modu zorunlu kılacak şekilde güncellendi.
+> * `chore(github)`: Remote repo adresi organizasyon reposuna taşındı.
 
 ---
 

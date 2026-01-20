@@ -7,7 +7,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-15.0-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-Styling-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/Status-v1.2.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/)
+[![Status](https://img.shields.io/badge/Status-v1.3.0_Release-blue?style=for-the-badge&logo=github)](https://github.com/univo-tech-dev/univo-tech-dev)
 
 <!-- Language Switcher -->
 <p align="center">
@@ -23,6 +23,38 @@
   <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmV3bWY3cW55cnZ5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z5b3Z/xTiTnxpQ3ghPiB2Hp6/giphy.gif" width="100%" alt="Univo Banner Animation">
   <!-- (Placeholder for actual demo GIF if available in future) -->
 </p>
+
+---
+
+## 🚀 Release Notes: v1.2.0 → v1.3.0 (Professional Core)
+**📅 January 20, 2026**
+
+This landmark update marks our transition from a single-person MVP to a **commercial-grade organization**. We've unified the entire ecosystem, automated the migration, and introduced a high-performance Guest Mode.
+
+### ✨ Highlights
+- **🏛️ Pro-Migration & Centralization:**
+    - Unified the codebase under the new `univo-tech-dev` **GitHub Organization**.
+    - Fully migrated to a dedicated **Supabase** instance with 29 synchronized tables and automated parity.
+    - **User Data Reclaim:** Old users can now automatically link their previous profile data to new auth accounts via same-email detection.
+- **👤 Elite Guest Mode (Misafir Modu):**
+    - Non-registered users can now browse **Global** campus content.
+    - University-specific feeds (METU/Bilkent) are automatically restricted for guests to ensure data privacy and student-only exclusivity.
+- **📧 Commercial Email Infrastructure:**
+    - Integrated **Resend** with DKIM/SPF verification for the `univo.com.tr` domain.
+    - Professional, high-deliverability transactional emails for authentication and notifications.
+- **🛡️ UI Hardening & Performance:**
+    - **Zero-Wait Redirection:** Eliminated the "Stuck at Loading" bug through a decoupled auth-initialization logic.
+    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university based on their email domain (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Unified UI Skeletons:** Harmonized persistent headers and skeleton loaders across all views for a premium feel.
+
+### 🛠️ Technical Changelog
+> **v1.3.0**
+> * `feat(migration)`: Automated SQL extraction of 29 tables via `dump_old_data.js`.
+> * `feat(auth)`: Implemented `handle_new_user` Postgres trigger for seamless profile reconciliation.
+> * `feat(ux)`: Refactored `HomeContent` in `page.tsx` to break circular loading dependencies.
+> * `feat(infra)`: Configured Resend domain verification (MX/TXT records) for `univo.com.tr`.
+> * `style(views)`: Unified `CommunityView`, `VoiceView`, and `OfficialView` to enforce Global Mode for unauthorized sessions.
+> * `chore(github)`: Migrated remote origin to organizational repository.
 
 ---
 
