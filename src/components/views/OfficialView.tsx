@@ -69,6 +69,13 @@ export default function OfficialView() {
     const isBilkent = university === 'bilkent';
     const isCankaya = university === 'cankaya';
 
+    // Update university when profile loads
+    React.useEffect(() => {
+        if (profile?.university) {
+            setUniversity(profile.university);
+        }
+    }, [profile?.university]);
+
     // Enforce Mode Logic: Global for Guests, University for Users (on start)
     React.useEffect(() => {
         if (!showSkeleton) {
