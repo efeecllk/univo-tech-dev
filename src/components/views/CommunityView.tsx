@@ -78,6 +78,14 @@ export default function CommunityView() {
 
   const [university, setUniversity] = useState(profile?.university || 'metu');
   const isBilkent = university === 'bilkent';
+  const isCankaya = university === 'cankaya';
+
+  // Sync university state when profile loads
+  useEffect(() => {
+    if (profile?.university) {
+      setUniversity(profile.university);
+    }
+  }, [profile?.university]);
 
   // Enforce Mode Logic: Global for Guests, University for Users (ONLY on initial load)
   useEffect(() => {
@@ -200,6 +208,9 @@ export default function CommunityView() {
   } else if (isBilkent) {
       // Bilkent Start Date: Jan 18, 2026
       start = new Date(2026, 0, 18);
+  } else if (isCankaya) {
+      // Çankaya Start Date: Jan 21, 2026
+      start = new Date(2026, 0, 21);
   }
 
   const diffTime = current.getTime() - start.getTime();
@@ -220,30 +231,42 @@ export default function CommunityView() {
               isAdminSession ? (
               <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
                 {/* ODTÜ Button */}
-                <button 
-                    onClick={() => { setIsGlobalMode(false); setUniversity('metu'); }} 
+                <button
+                    onClick={() => { setIsGlobalMode(false); setUniversity('metu'); }}
                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'metu' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                     title="ODTÜ Kampüsü"
                 >
                     <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
                     {!isGlobalMode && university === 'metu' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                 </button>
-                
+
                 {/* Bilkent Button */}
-                <button 
-                    onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }} 
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && university === 'bilkent' ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                <button
+                    onClick={() => { setIsGlobalMode(false); setUniversity('bilkent'); }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                     title="Bilkent Kampüsü"
                 >
                     <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
                         <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
                     </div>
-                    {!isGlobalMode && university === 'bilkent' && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                    {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                </button>
+
+                {/* Çankaya Button */}
+                <button
+                    onClick={() => { setIsGlobalMode(false); setUniversity('cankaya'); }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isCankaya ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                    title="Çankaya Kampüsü"
+                >
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                        <img src="/universities/cankaya_logo.png" className="w-full h-full object-contain" />
+                    </div>
+                    {!isGlobalMode && isCankaya && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
                 </button>
 
                 {/* Global Button */}
-                <button 
-                    onClick={() => setIsGlobalMode(true)} 
+                <button
+                    onClick={() => setIsGlobalMode(true)}
                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
                     title="Global Gündem"
                 >
@@ -255,7 +278,7 @@ export default function CommunityView() {
             <div 
                 className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
                 onClick={() => setIsGlobalMode(!isGlobalMode)}
-                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : isCankaya ? "Çankaya Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
             >
                 <div 
                     className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
@@ -264,7 +287,7 @@ export default function CommunityView() {
                     {/* Front: Uni Logo */}
                     <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
                          <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                             <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                             <img src={isBilkent ? "/universities/bilkent_cleaned.png" : isCankaya ? "/universities/cankaya_logo.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
                          </div>
                     </div>
                     {/* Back: Global */}

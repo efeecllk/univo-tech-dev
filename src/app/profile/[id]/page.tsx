@@ -764,7 +764,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                                     const classYr = profile.class_year || 'Sınıf Belirtilmemiş';
                                     // Avoid "Hazırlık • Hazırlık" duplication
                                     if (dept === 'Hazırlık' && classYr === 'Hazırlık') {
-                                        return profile.university === 'bilkent' ? 'English Preparatory Program' : 'İngilizce Hazırlık Programı';
+                                        return profile.university === 'bilkent' ? 'English Preparatory Program' : profile.university === 'cankaya' ? 'İngilizce Hazırlık Programı' : 'İngilizce Hazırlık Programı';
                                     }
                                     return `${dept} • ${classYr}`;
                                 })()}

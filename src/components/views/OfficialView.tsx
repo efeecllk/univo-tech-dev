@@ -1282,7 +1282,7 @@ export default function OfficialView() {
                             <button onClick={() => setShowLoginModal(false)} className="absolute right-4 top-4 text-black dark:text-white hover:rotate-90 transition-transform"><X size={24} strokeWidth={3} /></button>
                             <div className="text-center mb-8">
                                 <div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center mx-auto mb-4 border-2 border-transparent"><Lock size={32} /></div>
-                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : 'ODTÜ Giriş'}</h3>
+                                <h3 className="text-2xl font-black font-serif uppercase tracking-tight dark:text-white">{isBilkent ? 'Bilkent Giriş' : isCankaya ? 'Çankaya Giriş' : 'ODTÜ Giriş'}</h3>
                                 <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 font-medium">E-postalarınıza erişmek için {isBilkent ? 'Bilkent ID' : 'ODTÜ kullanıcı kodunuzu'} kullanın.</p>
                             </div>
                             <form onSubmit={handleImapLogin} className="space-y-6">
@@ -1291,7 +1291,7 @@ export default function OfficialView() {
                                     <div className="relative">
                                             <input
                                             type="text"
-                                            placeholder={isBilkent ? "2210XXXX" : "e123456"}
+                                            placeholder={isBilkent ? "2210XXXX" : isCankaya ? "ogrenciadi" : "e123456"}
                                             className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 rounded-lg focus:outline-none focus:border-black dark:focus:border-white transition-colors font-mono dark:text-white"
                                             value={loginForm.username}
                                             onChange={e => {
@@ -1302,7 +1302,7 @@ export default function OfficialView() {
                                             }}
                                             disabled={loadingEmails}
                                         />
-                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : 'metu.edu.tr'}</span>
+                                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold select-none pointer-events-none text-sm">@{isBilkent ? 'ug.bilkent.edu.tr' : isCankaya ? 'student.cankaya.edu.tr' : 'metu.edu.tr'}</span>
                                     </div>
                                 </div>
                                 <div>
