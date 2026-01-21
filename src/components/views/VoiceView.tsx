@@ -665,13 +665,6 @@ export default function VoiceView() {
         setVisibleCommentsCount(prev => ({ ...prev, [voiceId]: (prev[voiceId] || 10) + 10 }));
     };
 
-    // Force global mode for guest users
-    useEffect(() => {
-        if (!user) {
-            setIsGlobalMode(true);
-        }
-    }, [user]);
-
     const [activeCommentBox, setActiveCommentBox] = useState<string | null>(null);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<string | null>(null); // New state for reply
