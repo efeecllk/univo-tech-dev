@@ -1,8 +1,12 @@
-const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
+require('dotenv').config({ path: '.env.local' });
 
-const OLD_URL = "https://oqgdnywowtfjenjmrmwi.supabase.co";
-const OLD_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xZ2RueXdvd3RmamVuam1ybXdpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NzAyNjY4MCwiZXhwIjoyMDgyNjAyNjgwfQ.ujQ3-3izWOoBXcONKeAmlZJnOdYzj9o8tZzyIAzata8";
+const OLD_URL = process.env.OLD_SUPABASE_URL;
+const OLD_KEY = process.env.OLD_SUPABASE_SERVICE_ROLE_KEY;
+
+if (!OLD_URL || !OLD_KEY) {
+    console.error('Hata: OLD_SUPABASE_URL veya OLD_SUPABASE_SERVICE_ROLE_KEY .env.local dosyasında bulunamadı!');
+    process.exit(1);
+}
 
 const supabase = createClient(OLD_URL, OLD_KEY);
 
