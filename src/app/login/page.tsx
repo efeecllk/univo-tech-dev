@@ -63,6 +63,15 @@ const UNIVERSITIES = [
         logo: '/universities/ankara_cleaned.png',
         enabled: false,
         moodleUrl: ''
+    },
+    {
+        id: 'cankaya',
+        name: 'Çankaya',
+        fullName: 'Çankaya Üniversitesi',
+        color: '#1E3A5F',
+        logo: '/universities/cankaya_logo.png',
+        enabled: true,
+        moodleUrl: ''
     }
 ];
 
@@ -114,7 +123,12 @@ export default function LoginPage() {
 
         // Domain Cross-Check
         if (selectedUni && username.includes('@')) {
-            const domain = selectedUni.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr';
+            const domainMap: Record<string, string> = {
+                'bilkent': 'bilkent.edu.tr',
+                'metu': 'metu.edu.tr',
+                'cankaya': 'cankaya.edu.tr'
+            };
+            const domain = domainMap[selectedUni.id] || 'metu.edu.tr';
             if (!username.toLowerCase().endsWith(domain) && !username.toLowerCase().endsWith(`ug.${domain}`)) {
                 setError(`${selectedUni.name} girişi için lütfen ${domain} uzantılı e-postanızı kullanın.`);
                 return;
