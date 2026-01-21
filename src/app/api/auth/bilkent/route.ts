@@ -27,9 +27,12 @@ export async function POST(request: Request) {
         }
     }));
 
-        // 2.1 Security Check: Prevent cross-university domain leak
-        if (username.includes('@') && !username.toLowerCase().endsWith('@bilkent.edu.tr') && !username.toLowerCase().endsWith('@ug.bilkent.edu.tr')) {
-            return NextResponse.json({ error: 'Bilkent girişi için lütfen Bilkent e-posta adresinizi veya ID numaranızı kullanın.' }, { status: 400 });
+        // 2.1 Security Check: Prevent ODTÜ Students (IDs starting with 'e') and emails from leaking into Bilkent.
+        // Bilkent students should only use their 8-digit numeric student ID.
+        if (username.toLowerCase().startsWith('e') || username.includes('@') || isNaN(Number(username))) {
+            return NextResponse.json({ 
+                error: 'Bilkent girişi için lütfen sadece 8 haneli öğrenci numaranızı girin (örn: 22501234).' 
+            }, { status: 400 });
         }
 
         const loginPageUrl = 'https://stars.bilkent.edu.tr/accounts/login';
@@ -37,6 +40,7 @@ export async function POST(request: Request) {
         try {
             const initialRes = await client.get(loginPageUrl);
 
+            // Bilkent users now use student ID (e.g. 22501234) for SRS/STARS
             const starsId = username.split('@')[0];
             const formData = new URLSearchParams();
             formData.append('LoginForm[username]', starsId);
@@ -111,16 +115,9 @@ export async function POST(request: Request) {
         }
         
         // --- 3. UNIVO AUTHENTICATION ---
-        // For consistency, we use the user's provided domain if valid, otherwise fallback to standard
+        // For Bilkent, we use internal identifiers like ID@bilkent.univo since emails are inconsistent
         const normalizedStarsId = username.split('@')[0];
-        let eduEmail = `${normalizedStarsId}@bilkent.edu.tr`;
-        
-        if (username.includes('@')) {
-            const domain = username.split('@')[1].toLowerCase();
-            if (domain === 'ug.bilkent.edu.tr' || domain === 'bilkent.edu.tr') {
-                eduEmail = username.toLowerCase();
-            }
-        }
+        const eduEmail = `${normalizedStarsId}@bilkent.univo`;
 
         const supabaseAdmin = getSupabaseAdmin();
         
