@@ -26,34 +26,57 @@
 
 ---
 
-## 🚀 Release Notes: v1.2.0 → v1.3.0 (Professional Core)
+## 🚀 Release Notes: v1.3.0 → v1.3.1 (Data Integrity & Domain)
+**📅 January 21, 2026**
+
+This update secures the platform's future with a custom Data Migration Engine, ODTÜClass integration, and the official launch of our `univo.com.tr` domain infrastructure.
+
+### ✨ Highlights
+- **💾 Data Migration Engine (Legacy Recovery):**
+    - **Zero Data Loss:** Developed a custom migration engine (`migrate-full-data.js`) that successfully recovered and mapped **orphaned user data** from the legacy system to new Auth accounts.
+    - **Smart Reconciliation:** Solved the "New UUID" conflict by automatically matching users via email and restoring historical data ownership.
+- **🏛️ Deep ODTÜClass Integration:**
+    - **Live Course Sync:** Connects to ODTÜClass to synchronize your **Active Course Schedule**.
+    - **Intelligent Identity:** Validates student status and updates department/class info based on scraped data.
+- **📧 Commercial Domain Launch:**
+    - **univo.com.tr:** Officially launched the custom domain.
+    - Integrated **Resend** with DKIM/SPF verification for high-deliverability transactional emails.
+- **🔐 Authorization Hardening:**
+    - **Case-Insensitivity Fixed:** Normalized input logic to prevent duplicate accounts (`Duplicate Account` bug resolved).
+    - **Identity Fusion:** Merges university credentials with Supabase Auth sessions seamlessly.
+
+### 🛠️ Technical Changelog
+> **v1.3.1**
+> * `feat(migration)`: Implemented `migrate-full-data.js` for recursive table and storage migration.
+> * `feat(integration)`: Added ODTÜClass scraper to `metu/route.ts`.
+> * `feat(infra)`: Configured Resend DNS records for `univo.com.tr`.
+> * `style(ui)`: Added university-themed "Detection Card" for profile data confirmation.
+
+---
+
+## 🚀 Release Notes: v1.2.0 → v1.3.0 (The Global Expansion)
 **📅 January 20, 2026**
 
-This landmark update marks our transition from a single-person MVP to a **commercial-grade organization**. We've unified the entire ecosystem, automated the migration, and introduced a high-performance Guest Mode.
+This update marks our transition to a **commercial-grade organization**, unifying the ecosystem and introducing global access.
 
 ### ✨ Highlights
 - **🏛️ Pro-Migration & Centralization:**
-    - Unified the codebase under the new `univo-tech-dev` **GitHub Organization**.
-    - Fully migrated to a dedicated **Supabase** instance with 29 synchronized tables and automated parity.
-    - **User Data Reclaim:** Old users can now automatically link their previous profile data to new auth accounts via same-email detection.
-- **👤 Elite Guest Mode (Misafir Modu):**
+    - Unified codebase under `univo-tech-dev` **GitHub Organization**.
+    - Migrated to dedicated **Supabase** instance with 29 synchronized tables.
+- **👤 Elite Guest Mode (Global Access):**
     - Non-registered users can now browse **Global** campus content.
-    - University-specific feeds (METU/Bilkent) are automatically restricted for guests to ensure data privacy and student-only exclusivity.
-- **📧 Commercial Email Infrastructure:**
-    - Integrated **Resend** with DKIM/SPF verification for the `univo.com.tr` domain.
-    - Professional, high-deliverability transactional emails for authentication and notifications.
-- **🛡️ UI Hardening & Performance:**
-    - **Zero-Wait Redirection:** Eliminated the "Stuck at Loading" bug through a decoupled auth-initialization logic.
-    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university based on their email domain (`@metu.edu.tr`, `@bilkent.edu.tr`).
-    - **Unified UI Skeletons:** Harmonized persistent headers and skeleton loaders across all views for a premium feel.
+    - University-specific feeds (METU/Bilkent) remain restricted for privacy.
+- **🏫 Multi-University Architecture:**
+    - **Smart Domain Auto-Detection:** Registration now automatically identifies a student's university (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Bilkent Integration:** Added full support for Bilkent University infrastructure.
+- **🛡️ UI Hardening:**
+    - **Zero-Wait Redirection:** Eliminated "Stuck at Loading" bug.
+    - **Unified Skeletons:** Harmonized loaders for a premium feel.
 
 ### 🛠️ Technical Changelog
 > **v1.3.0**
-> * `feat(migration)`: Automated SQL extraction of 29 tables via `dump_old_data.js`.
-> * `feat(auth)`: Implemented `handle_new_user` Postgres trigger for seamless profile reconciliation.
-> * `feat(ux)`: Refactored `HomeContent` in `page.tsx` to break circular loading dependencies.
-> * `feat(infra)`: Configured Resend domain verification (MX/TXT records) for `univo.com.tr`.
-> * `style(views)`: Unified `CommunityView`, `VoiceView`, and `OfficialView` to enforce Global Mode for unauthorized sessions.
+> * `feat(ux)`: Refactored `HomeContent` to break circular loading dependencies.
+> * `style(views)`: Unified views to enforce Global Mode for unauthorized sessions.
 > * `chore(github)`: Migrated remote origin to organizational repository.
 
 ---

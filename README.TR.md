@@ -26,35 +26,58 @@
 
 ---
 
-## 🚀 Sürüm Notları: v1.2.0 → v1.3.0 (Profesyonel Temel)
+## 🚀 Sürüm Notları: v1.3.0 → v1.3.1 (Veri Bütünlüğü ve Domain)
+**📅 21 Ocak 2026**
+
+Bu güncelleme, özel Veri Göçü Motoru, ODTÜClass entegrasyonu ve `univo.com.tr` alan adı altyapısının resmi açılışıyla platformun geleceğini güvence altına alıyor.
+
+### ✨ Öne Çıkan Değişiklikler
+- **💾 Veri Göçü Motoru (Legacy Recovery):**
+    - **Sıfır Veri Kaybı:** Eski sistemden kalan verileri kurtaran ve yeni hesaplara bağlayan özel bir motor (`migrate-full-data.js`) geliştirildi.
+    - **Akıllı Eşleştirme:** Kullanıcıları e-posta ile eşleştirerek "Yeni UUID" sorununu çözdü ve geçmiş verilerin sahipliğini geri kazandırdı.
+- **🏛️ Derin ODTÜClass Entegrasyonu:**
+    - **Canlı Ders Senkronizasyonu:** **Aktif Ders Programınızı** senkronize etmek için ODTÜClass'a bağlanır.
+    - **Akıllı Kimlik:** Öğrenci durumunu doğrular ve bölüm/sınıf bilgilerini otomatik günceller.
+- **� Kurumsal Domain Lansmanı:**
+    - **univo.com.tr:** Özel alan adı resmen devreye alındı.
+    - Yüksek teslimat oranlı e-postalar için DKIM/SPF doğrulamalı **Resend** entegrasyonu yapıldı.
+- **🔐 Yetkilendirme Güçlendirmesi:**
+    - **Büyük/Küçük Harf Düzeltmesi:** Çift hesap oluşumunu engellemek için giriş mantığı normalize edildi.
+    - **Kimlik Füzyonu:** Üniversite kimlik bilgilerini Supabase oturumlarıyla sorunsuz birleştirir.
+
+### �️ Teknik İyileştirmeler (Changelog)
+> **v1.3.1**
+> * `feat(migration)`: Yinelemeli tablo ve depolama göçü için `migrate-full-data.js` uygulandı.
+> * `feat(integration)`: `metu/route.ts` dosyasına ODTÜClass scraper eklendi.
+> * `feat(infra)`: `univo.com.tr` için Resend DNS kayıtları yapılandırıldı.
+> * `style(ui)`: Profil verisi onayı için üniversite temalı "Tespit Kartı" eklendi.
+
+---
+
+## 🚀 Sürüm Notları: v1.2.0 → v1.3.0 (Küresel Genişleme)
 **📅 20 Ocak 2026**
 
-Bu dönüm noktası niteliğindeki güncelleme, tek kişilik bir MVP'den **kurumsal düzeyde bir organizasyona** geçişimizi simgeliyor. Tüm ekosistemi birleştirdik, veritabanı geçişini otomatize ettik ve yüksek performanslı bir Misafir Modu sunduk.
+Bu güncelleme, **kurumsal düzeyde bir organizasyona** geçişimizi simgeler; ekosistemi birleştirir ve küresel erişimi başlatır.
 
 ### ✨ Öne Çıkan Değişiklikler
 - **🏛️ Kapsamlı Göç ve Merkezi Yönetim:**
-    - Kod tabanı yeni `univo-tech-dev` **GitHub Organizasyonu** altında birleştirildi.
-    - 29 senkronize tablo içeren özel bir **Supabase** örneğine tam geçiş yapıldı.
-    - **Eski Veri Kurtarma (User Reclaim):** Mevcut kullanıcılar, e-posta eşleşmesi sayesinde eski profillerini yeni hesaplarına otomatik olarak bağlayabiliyorlar.
-- **👤 Üst Seviye Misafir Modu (Guest Mode):**
-    - Kayıtlı olmayan kullanıcılar artık **Global** kampüs içeriğine göz atabiliyor.
-    - Veri gizliliği ve öğrencilere özel içeriklerin korunması amacıyla, üniversiteye özel akışlar (ODTÜ/Bilkent) misafirlere otomatik olarak kısıtlandı.
-- **📧 Kurumsal E-posta Altyapısı:**
-    - `univo.com.tr` alan adı için DKIM/SPF doğrulamalı **Resend** entegrasyonu tamamlandı.
-    - Şifre sıfırlama ve bildirimler için yüksek teslim edilebilirlik oranlı profesyonel e-posta hizmeti devreye alındı.
-- **🛡️ Performans ve Arayüz Kararlılığı:**
-    - **Sıfır Beklemeli Yönlendirme:** "Başlatılıyor" ekranında takılma hatası, asenkron yetkilendirme mantığı ile tamamen çözüldü.
-    - **Akıllı Üniversite Algılama:** Kayıt sırasında e-posta uzantısına göre (`@metu.edu.tr`, `@bilkent.edu.tr`) üniversite seçimi otomatik hale getirildi.
-    - **Bütünleşik İskelet Ekranlar:** Uygulama genelindeki yükleme ekranları ve başlıklar premium bir his için harmonize edildi.
+    - Kod tabanı `univo-tech-dev` **GitHub Organizasyonu** altında birleştirildi.
+    - 29 senkronize tablosu olan özel bir **Supabase** örneğine geçildi.
+- **👤 Üst Seviye Misafir Modu (Global Erişim):**
+    - Kayıtlı olmayan kullanıcılar artık **Global** kampüs içeriğine göz atabilir.
+    - Üniversiteye özel akışlar (ODTÜ/Bilkent) gizlilik için kısıtlı kalır.
+- **🏫 Çoklu Üniversite Mimarisi:**
+    - **Akıllı Üniversite Algılama:** Kayıt sırasında üniversite otomatik tanımlanır (`@metu.edu.tr`, `@bilkent.edu.tr`).
+    - **Bilkent Entegrasyonu:** Bilkent Üniversitesi altyapısı için tam destek eklendi.
+- **🛡️ Arayüz Kararlılığı:**
+    - **Sıfır Beklemeli Yönlendirme:** "Yükleniyor ekranında takılma" sorunu giderildi.
+    - **Bütünleşik İskeletler:** Premium bir his için yükleme ekranları harmonize edildi.
 
 ### 🛠️ Teknik İyileştirmeler (Changelog)
 > **v1.3.0**
-> * `feat(migration)`: `dump_old_data.js` ile 29 tablonun otomatik SQL dışa aktarımı sağlandı.
-> * `feat(auth)`: Profil eşleştirme için `handle_new_user` Postgres tetikleyicisi (trigger) uygulandı.
-> * `feat(ux)`: `page.tsx` içindeki `HomeContent`, sonsuz yükleme döngülerini kırmak için yeniden yapılandırıldı.
-> * `feat(infra)`: `univo.com.tr` için Resend DNS doğrulaması (MX/TXT kayıtları) yapıldı.
-> * `style(views)`: `CommunityView`, `VoiceView` ve `OfficialView` yetkisiz oturumlar için Global Modu zorunlu kılacak şekilde güncellendi.
-> * `chore(github)`: Remote repo adresi organizasyon reposuna taşındı.
+> * `feat(ux)`: `HomeContent` sonsuz yükleme döngülerini önleyecek şekilde yeniden yazıldı.
+> * `style(views)`: Görünümler yetkisiz oturumlar için Global Modu zorunlu kılacak şekilde güncellendi.
+> * `chore(github)`: Remote repo organizasyon deposuna taşındı.
 
 ---
 
