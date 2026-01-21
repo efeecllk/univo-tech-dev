@@ -53,10 +53,12 @@ export async function POST(request: Request) {
                         const headerPart = message.parts.find((p: any) => p.which === 'HEADER.FIELDS (FROM)');
                         if (headerPart?.body?.from?.[0]) {
                             const fromHeader = headerPart.body.from[0];
-                            // Extract name from "Name <email>" format
-                            const nameMatch = fromHeader.match(/^"?([^"<]+)"?\s*</);
+                            // Extract name from "Name <email>" or Name <email> format
+                            const nameMatch = fromHeader.match(/^"?([^"<]+)"?\s*</) ||
+                                              fromHeader.match(/^([^<]+)</);
                             if (nameMatch && nameMatch[1]) {
-                                const extractedName = nameMatch[1].trim();
+                                // Remove any remaining quotes and trim
+                                const extractedName = nameMatch[1].replace(/"/g, '').trim();
                                 if (extractedName && !extractedName.includes('@') && extractedName.length > 2) {
                                     fullName = toTitleCase(extractedName);
                                     break;
