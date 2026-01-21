@@ -69,9 +69,10 @@ const UNIVERSITIES = [
         name: 'Çankaya',
         fullName: 'Çankaya Üniversitesi',
         color: '#1E3A5F',
+        borderColor: '#FFC107', // Sarı çerçeve
         logo: '/universities/cankaya_logo.png',
         enabled: true,
-        moodleUrl: ''
+        moodleUrl: 'öğrenci e-posta'
     }
 ];
 
@@ -378,7 +379,7 @@ export default function LoginPage() {
                             >
                                 <div
                                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
-                                    style={{ backgroundColor: uni.color }}
+                                    style={{ backgroundColor: (uni as any).borderColor || uni.color }}
                                 >
                                     <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
                                         {uni.logo ? (
@@ -447,7 +448,7 @@ export default function LoginPage() {
                     <div className="flex items-center gap-4">
                         <div
                             className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 overflow-hidden p-0.5"
-                            style={{ backgroundColor: selectedUni?.color || '#C8102E' }}
+                            style={{ backgroundColor: (selectedUni as any)?.borderColor || selectedUni?.color || '#C8102E' }}
                         >
                             <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden p-0.5">
                                 {selectedUni?.logo ? (
@@ -484,20 +485,20 @@ export default function LoginPage() {
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold uppercase text-neutral-500 dark:text-neutral-500 mb-1.5 ml-1">
-                                    {selectedUni?.id === 'bilkent' ? 'Bilkent ID / E-posta' : 'NetID (e123456) / E-posta'}
+                                    {selectedUni?.id === 'bilkent' ? 'Bilkent ID / E-posta' : selectedUni?.id === 'cankaya' ? 'Kullanıcı Adı / E-posta' : 'NetID (e123456) / E-posta'}
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="text"
                                         required
-                                        placeholder={selectedUni?.id === 'bilkent' ? 'Örn: 22501234' : 'Örn: e123456'}
+                                        placeholder={selectedUni?.id === 'bilkent' ? 'Örn: 22501234' : selectedUni?.id === 'cankaya' ? 'Örn: c1234567' : 'Örn: e123456'}
                                         className="w-full p-3 pl-4 pr-32 border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 font-mono focus:border-[var(--primary-color)] focus:ring-1 focus:ring-[var(--primary-color)] focus:outline-none dark:text-white transition-all rounded-lg"
                                         value={username}
                                         onChange={e => setUsername(e.target.value)}
                                         disabled={isLoading}
                                     />
                                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 font-bold pointer-events-none text-sm select-none">
-                                        @{selectedUni?.id === 'bilkent' ? 'bilkent.edu.tr' : 'metu.edu.tr'}
+                                        @{selectedUni?.id === 'bilkent' ? 'bilkent.edu.tr' : selectedUni?.id === 'cankaya' ? 'cankaya.edu.tr' : 'metu.edu.tr'}
                                     </span>
                                 </div>
                             </div>
