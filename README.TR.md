@@ -38,14 +38,14 @@ Bu güncelleme, özel Veri Göçü Motoru, ODTÜClass entegrasyonu ve `univo.com
 - **🏛️ Derin ODTÜClass Entegrasyonu:**
     - **Canlı Ders Senkronizasyonu:** **Aktif Ders Programınızı** senkronize etmek için ODTÜClass'a bağlanır.
     - **Akıllı Kimlik:** Öğrenci durumunu doğrular ve bölüm/sınıf bilgilerini otomatik günceller.
-- **� Kurumsal Domain Lansmanı:**
+- **🛡️ Kurumsal Domain Lansmanı:**
     - **univo.com.tr:** Özel alan adı resmen devreye alındı.
     - Yüksek teslimat oranlı e-postalar için DKIM/SPF doğrulamalı **Resend** entegrasyonu yapıldı.
 - **🔐 Yetkilendirme Güçlendirmesi:**
     - **Büyük/Küçük Harf Düzeltmesi:** Çift hesap oluşumunu engellemek için giriş mantığı normalize edildi.
     - **Kimlik Füzyonu:** Üniversite kimlik bilgilerini Supabase oturumlarıyla sorunsuz birleştirir.
 
-### �️ Teknik İyileştirmeler (Changelog)
+### 🛠️️ Teknik İyileştirmeler (Changelog)
 > **v1.3.1**
 > * `feat(migration)`: Yinelemeli tablo ve depolama göçü için `migrate-full-data.js` uygulandı.
 > * `feat(integration)`: `metu/route.ts` dosyasına ODTÜClass scraper eklendi.
