@@ -25,7 +25,6 @@ export async function POST(request: Request) {
                 tls: true,
                 authTimeout: 20000,
                 tlsOptions: {
-                    rejectUnauthorized: false,
                     servername: 'student.cankaya.edu.tr'
                 }
             }
