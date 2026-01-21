@@ -1,4 +1,4 @@
-import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe, ShieldAlert } from 'lucide-react';
+import { Calendar, ChevronRight, Download, Search, Briefcase, Megaphone, Bookmark, Star, Filter, ArrowRight, Share2, Mail, CheckCircle, RotateCcw, X, Lock, Loader2, Trash2, GraduationCap, Heart, BookOpen, Globe, ShieldAlert, ShieldCheck, Power } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as React from 'react';
 import Link from 'next/link';
