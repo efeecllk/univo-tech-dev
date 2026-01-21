@@ -29,14 +29,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('notifications')
-      .select(`
-        *,
-        actor:profiles!notifications_actor_id_fkey (
-          id,
-          full_name,
-          avatar_url
-        )
-      `)
+      .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -52,14 +45,38 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
     }
 
+    // Fetch actor profiles separately if there are notifications with actor_id
+    const actorIds = [...new Set(notifications?.filter(n => n.actor_id).map(n => n.actor_id) || [])];
+    let actorMap: Record<string, any> = {};
+
+    if (actorIds.length > 0) {
+      const { data: actors } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', actorIds);
+
+      if (actors) {
+        actorMap = actors.reduce((acc, actor) => {
+          acc[actor.id] = actor;
+          return acc;
+        }, {} as Record<string, any>);
+      }
+    }
+
+    // Attach actor data to notifications
+    const notificationsWithActors = notifications?.map(n => ({
+      ...n,
+      actor: n.actor_id ? actorMap[n.actor_id] || null : null
+    })) || [];
+
     const { count: unreadCount } = await supabase
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
       .eq('read', false);
 
-    return NextResponse.json({ 
-      notifications: notifications || [],
+    return NextResponse.json({
+      notifications: notificationsWithActors,
       unreadCount: unreadCount || 0
     });
 

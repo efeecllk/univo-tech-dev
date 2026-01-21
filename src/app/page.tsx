@@ -21,7 +21,7 @@ function HomeContent() {
   // Check auth and guest status - redirect to login immediately if not authenticated
   useEffect(() => {
     // Check localStorage first for immediate decision (no waiting for Supabase)
-    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
+    const guestMode = typeof window !== 'undefined' && localStorage.getItem('univo_guest_mode') === 'true';
     setIsGuest(guestMode);
 
     if (!authLoading) {
@@ -49,8 +49,8 @@ function HomeContent() {
   // This prevents flash of content before redirect
   if (authLoading || isChecking) {
     // If no guest mode and we're checking, just return null to avoid flash
-    const guestMode = localStorage.getItem('univo_guest_mode') === 'true';
-    if (!guestMode) {
+    // Use isGuest state which is set safely in useEffect
+    if (!isGuest) {
       return null; // Quick redirect will happen
     }
     // For guests, show a minimal loader
