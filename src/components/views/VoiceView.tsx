@@ -1607,20 +1607,22 @@ export default function VoiceView() {
             setPollResults(newResults);
 
             // Perform DB Operation
-            if (action === 'retract') {
-                const { error } = await supabase
-                    .from('poll_votes')
-                    .delete()
-                    .eq('user_id', user.id)
-                    .eq('poll_id', pollId);
+            // Step 1: Always clear any previous vote for this poll to ensure state consistency
+            const { error: deleteError } = await supabase
+                .from('poll_votes')
+                .delete()
+                .eq('user_id', user.id)
+                .eq('poll_id', pollId);
 
-                if (error) throw error;
-            } else {
-                const { error } = await supabase
-                    .from('poll_votes')
-                    .upsert({ user_id: user.id, poll_id: pollId, option_index: index }, { onConflict: 'user_id, poll_id' });
+            if (deleteError) throw deleteError;
 
-                if (error) throw error;
+            // Step 2: If we aren't retracting, insert the new vote
+            if (action === 'vote') {
+                const { error: insertError } = await supabase
+                    .from('poll_votes')
+                    .insert({ user_id: user.id, poll_id: pollId, option_index: index });
+
+                if (insertError) throw insertError;
             }
 
             // Success: No need to re-fetch immediately as we trust our optimistic update.
@@ -1708,70 +1710,86 @@ export default function VoiceView() {
 
                     {/* Global Mode Switch - Moved Here */}
                     {/* Global Mode Switch - Custom Morphing Button (3D Flip) - Hidden for Guests */}
-                    {user && (
-                         isAdminSession ? (
-                            <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
-                                 {/* ODTÜ Button */}
-                                 <button 
-                                     onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="ODTÜ Kampüsü"
-                                 >
-                                     <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
-                                     {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-                                 
-                                 {/* Bilkent Button */}
-                                 <button 
-                                     onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="Bilkent Kampüsü"
-                                 >
-                                                                           <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
-                                          <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
-                                      </div>
-
-                                     {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-
-                                 {/* Global Button */}
-                                 <button 
-                                     onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
-                                     className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
-                                     title="Global Gündem"
-                                 >
-                                    <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
-                                    {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
-                                 </button>
-                            </div>
-                        ) : (
+                    {!user ? (
+                        /* Guest View: Locked Global Switch */
                         <div className="flex items-center gap-3">
                             <div 
-                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
-                                onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
-                                title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                                className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2 group active:scale-95 transition-transform"
+                                onClick={() => toast.info('Üniversite moduna geçmek için giriş yapmalısınız.', {
+                                    icon: 'ℹ️',
+                                    description: 'Kendi kampüsünüze özel içerikleri görmek için üye olun.'
+                                })}
+                                title="Misafirler için sadece Global mod"
                             >
-                                    <div 
-                                        className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
-                                        style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
-                                    >
-                                    {/* Front: Uni Logo */}
-                                    <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
-                                         <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
-                                             <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
-                                         </div>
-                                    </div>
-                                    {/* Back: Global */}
-                                    <div 
-                                        className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
-                                        style={{ transform: 'rotateY(180deg)' }}
-                                    >
+                                <div className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out" style={{ transform: 'rotateY(180deg)' }}>
+                                    <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center">
                                         <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        )
+                    ) : isAdminSession ? (
+                        <div className="flex items-center gap-2 mb-2 bg-neutral-100 dark:bg-neutral-800 p-1.5 rounded-full border border-neutral-200 dark:border-neutral-700 animate-in fade-in slide-in-from-top-2">
+                             {/* ODTÜ Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('metu'); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && !isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="ODTÜ Kampüsü"
+                             >
+                                 <img src="/odtu_logo.png" className="w-8 h-8 object-contain" />
+                                 {!isGlobalMode && !isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+                             
+                             {/* Bilkent Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(false); setUniversity('bilkent'); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${!isGlobalMode && isBilkent ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="Bilkent Kampüsü"
+                             >
+                                                                       <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center bg-white border border-neutral-100 dark:border-neutral-800">
+                                      <img src="/universities/bilkent_cleaned.png" className="w-full h-full object-contain" />
+                                  </div>
+
+                                 {!isGlobalMode && isBilkent && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+
+                             {/* Global Button */}
+                             <button 
+                                 onClick={() => { setPostsLoading(true); handleModeSwitch(true); }} 
+                                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all relative ${isGlobalMode ? 'bg-white shadow-sm ring-1 ring-black/5 scale-110' : 'opacity-50 hover:opacity-100'}`}
+                                 title="Global Gündem"
+                             >
+                                <img src="/earth_image.jpg" className="w-8 h-8 rounded-full object-cover" />
+                                {isGlobalMode && <div className="absolute -bottom-1 w-1 h-1 bg-black dark:bg-white rounded-full"></div>}
+                             </button>
+                        </div>
+                    ) : (
+                    <div className="flex items-center gap-3">
+                        <div 
+                            className="relative w-14 h-14 rounded-full perspective-1000 cursor-pointer mb-2"
+                            onClick={() => { setPostsLoading(true); handleModeSwitch(!isGlobalMode); }}
+                            title={isGlobalMode ? (isBilkent ? "Bilkent Moduna Geç" : "ODTÜ Moduna Geç") : "Global Moda Geç"}
+                        >
+                                <div 
+                                    className="w-full h-full relative preserve-3d transition-transform duration-700 ease-in-out"
+                                    style={{ transform: isGlobalMode ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+                                >
+                                {/* Front: Uni Logo */}
+                                <div className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center p-0.5">
+                                     <div className="w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white">
+                                         <img src={isBilkent ? "/universities/bilkent_cleaned.png" : "/odtu_logo.png"} alt="University Logo" className="w-full h-full object-contain" />
+                                     </div>
+                                </div>
+                                {/* Back: Global */}
+                                <div 
+                                    className="absolute inset-0 backface-hidden rounded-full overflow-hidden border-2 border-black dark:border-neutral-400 bg-white dark:bg-black shadow-md flex items-center justify-center transform rotate-y-180"
+                                    style={{ transform: 'rotateY(180deg)' }}
+                                >
+                                    <img src="/earth_image.jpg" alt="Global" className="w-full h-full object-cover" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     )}
                 </div>
 
