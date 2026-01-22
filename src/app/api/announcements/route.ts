@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const university = searchParams.get('uni') || 'metu';
 
     if (university === 'bilkent') {
-        return await fetchBilkentAnnouncements();
+      return await fetchBilkentAnnouncements();
     }
 
     return await fetchMetuAnnouncements();
@@ -31,87 +31,87 @@ export async function GET(request: Request) {
 }
 
 async function fetchBilkentAnnouncements() {
-    try {
-        const res = await fetch('http://bilkentnews.bilkent.edu.tr/?cat=80', { next: { revalidate: 3600 } });
-        const html = await res.text();
-        const $ = cheerio.load(html);
-        const announcements: Announcement[] = [];
+  try {
+    const res = await fetch('http://bilkentnews.bilkent.edu.tr/?cat=80', { next: { revalidate: 3600 } });
+    const html = await res.text();
+    const $ = cheerio.load(html);
+    const announcements: Announcement[] = [];
 
-        $('.post').each((_, el) => {
-            const $el = $(el);
-            const title = $el.find('.entry-title a').text().trim();
-            const link = $el.find('.entry-title a').attr('href') || '';
-            const dateStr = $el.find('.entry-date').text().trim();
-            const summary = $el.find('.entry-summary p').first().text().trim();
-            
-            // Basic date parsing (Bilkent News uses formats like "December 23, 2025")
-            const timestamp = dateStr ? new Date(dateStr).getTime() : Date.now();
+    $('.post').each((_, el) => {
+      const $el = $(el);
+      const title = $el.find('.entry-title a').text().trim();
+      const link = $el.find('.entry-title a').attr('href') || '';
+      const dateStr = $el.find('.entry-date').text().trim();
+      const summary = $el.find('.entry-summary p').first().text().trim();
 
-            if (title && link) {
-                announcements.push({
-                    id: `BILKENT-${link}`,
-                    source: 'Bilkent News',
-                    title: cleanText(title),
-                    link,
-                    date: dateStr || 'Güncel',
-                    timestamp: isNaN(timestamp) ? Date.now() : timestamp,
-                    summary: cleanText(summary)
-                });
-            }
+      // Basic date parsing (Bilkent News uses formats like "December 23, 2025")
+      const timestamp = dateStr ? new Date(dateStr).getTime() : Date.now();
+
+      if (title && link) {
+        announcements.push({
+          id: `BILKENT-${link}`,
+          source: 'Bilkent News',
+          title: cleanText(title),
+          link,
+          date: dateStr || 'Güncel',
+          timestamp: isNaN(timestamp) ? Date.now() : timestamp,
+          summary: cleanText(summary)
         });
+      }
+    });
 
-        return NextResponse.json({ announcements });
-    } catch (e) {
-        console.error('Bilkent Announce Error:', e);
-        return NextResponse.json({ announcements: [] });
-    }
+    return NextResponse.json({ announcements });
+  } catch (e) {
+    console.error('Bilkent Announce Error:', e);
+    return NextResponse.json({ announcements: [] });
+  }
 }
 
 async function fetchMetuAnnouncements() {
-    const results: Announcement[] = [];
-    
-    // 1. Fetch Library
-    try {
-      const libRes = await fetch('https://lib.metu.edu.tr/', { next: { revalidate: 3600 } });
-      if (libRes.ok) {
-        const text = await libRes.text();
-        results.push(...parseDrupalMiys(text, 'https://lib.metu.edu.tr', 'Kütüphane'));
-      }
-    } catch (e) { console.error('Lib fetch failed', e); }
+  const results: Announcement[] = [];
 
-    // 2. Fetch Sports
-    try {
-      const sporRes = await fetch('http://spormd.metu.edu.tr/', { next: { revalidate: 3600 } });
-      if (sporRes.ok) {
-        const text = await sporRes.text();
-        results.push(...parseDrupalMiys(text, 'http://spormd.metu.edu.tr', 'Spor MD'));
-      }
-    } catch (e) { console.error('Spor fetch failed', e); }
+  // 1. Fetch Library
+  try {
+    const libRes = await fetch('https://lib.metu.edu.tr/', { next: { revalidate: 3600 } });
+    if (libRes.ok) {
+      const text = await libRes.text();
+      results.push(...parseDrupalMiys(text, 'https://lib.metu.edu.tr', 'Kütüphane'));
+    }
+  } catch (e) { console.error('Lib fetch failed', e); }
 
-    // 3. Fetch ÖİDB
-    try {
-        const oidbRes = await fetch('https://oidb.metu.edu.tr/tr/duyurular', { next: { revalidate: 3600 } });
-        if (oidbRes.ok) {
-            const text = await oidbRes.text();
-            results.push(...parseOidb(text, 'https://oidb.metu.edu.tr'));
-        }
-    } catch (e) { console.error('OIDB fetch failed', e); }
+  // 2. Fetch Sports
+  try {
+    const sporRes = await fetch('http://spormd.metu.edu.tr/', { next: { revalidate: 3600 } });
+    if (sporRes.ok) {
+      const text = await sporRes.text();
+      results.push(...parseDrupalMiys(text, 'http://spormd.metu.edu.tr', 'Spor MD'));
+    }
+  } catch (e) { console.error('Spor fetch failed', e); }
 
-    // 4. Fetch General (Rektörlük/Genel)
-    try {
-        const genelRes = await fetch('https://www.metu.edu.tr/tr/duyurular', { next: { revalidate: 3600 } });
-        if (genelRes.ok) {
-            const text = await genelRes.text();
-            results.push(...parseMetuGeneral(text, 'https://www.metu.edu.tr'));
-        }
-    } catch (e) { console.error('General fetch failed', e); }
+  // 3. Fetch ÖİDB
+  try {
+    const oidbRes = await fetch('https://oidb.metu.edu.tr/tr/duyurular', { next: { revalidate: 3600 } });
+    if (oidbRes.ok) {
+      const text = await oidbRes.text();
+      results.push(...parseOidb(text, 'https://oidb.metu.edu.tr'));
+    }
+  } catch (e) { console.error('OIDB fetch failed', e); }
 
-    // Filter last 7 days
-    const oneWeekAgo = Date.now() - (14 * 24 * 60 * 60 * 1000); // 14 days for more content
-    const filteredResults = results.filter(a => a.timestamp >= oneWeekAgo);
+  // 4. Fetch General (Rektörlük/Genel)
+  try {
+    const genelRes = await fetch('https://www.metu.edu.tr/tr/duyurular', { next: { revalidate: 3600 } });
+    if (genelRes.ok) {
+      const text = await genelRes.text();
+      results.push(...parseMetuGeneral(text, 'https://www.metu.edu.tr'));
+    }
+  } catch (e) { console.error('General fetch failed', e); }
 
-    filteredResults.sort((a, b) => b.timestamp - a.timestamp);
-    return NextResponse.json({ announcements: filteredResults });
+  // Filter last 7 days
+  const oneWeekAgo = Date.now() - (14 * 24 * 60 * 60 * 1000); // 14 days for more content
+  const filteredResults = results.filter(a => a.timestamp >= oneWeekAgo);
+
+  filteredResults.sort((a, b) => b.timestamp - a.timestamp);
+  return NextResponse.json({ announcements: filteredResults });
 }
 
 // Generic Parser for "Miys" Theme (Sports & Library)
@@ -121,7 +121,7 @@ const parseDrupalMiys = (html: string, baseUrl: string, sourceName: string): Ann
   const titleRegex = /<a href="([^"]+)" class="list-group-item__title">([^<]+)<\/a>/;
   const dateRegex = /<time datetime="([^"]+)"/;
   const bodyRegex = /<p class="list-group-item__body">([\s\S]*?)<\/p>/;
-  
+
   let match;
   while ((match = rowRegex.exec(html)) !== null) {
     const rowContent = match[1];
@@ -136,7 +136,7 @@ const parseDrupalMiys = (html: string, baseUrl: string, sourceName: string): Ann
       const dateObj = new Date(dateStr);
       let summary = '';
       if (bodyMatch) summary = cleanText(bodyMatch[1].replace(/<[^>]+>/g, ' '));
-      
+
       announcements.push({
         id: `${sourceName}-${link}`,
         source: sourceName,
@@ -178,31 +178,31 @@ const parseOidb = (html: string, baseUrl: string): Announcement[] => {
 };
 
 const parseMetuGeneral = (html: string, baseUrl: string): Announcement[] => {
-    const announcements: Announcement[] = [];
-    const cheerio = require('cheerio');
-    const $ = cheerio.load(html);
+  const announcements: Announcement[] = [];
+  // Cheerio is already imported at the top level
+  const $ = cheerio.load(html);
 
-    $('.view-content .views-row').each((_: any, el: any) => {
-        const $el = $(el);
-        const titleLink = $el.find('.views-field-title .field-content a');
-        const title = cleanText(titleLink.text());
-        let link = titleLink.attr('href') || '';
-        const body = cleanText($el.find('.views-field-body .field-content').text());
-        
-        if (title && link) {
-            if (!link.startsWith('http')) link = `${baseUrl}${link}`;
-            
-            announcements.push({
-                id: `GENEL-${link}`,
-                source: 'Rektörlük', 
-                title: title,
-                date: 'Güncel',
-                link: link,
-                timestamp: Date.now(), 
-                summary: body || 'ODTÜ Rektörlük Duyurusu'
-            });
-        }
-    });
+  $('.view-content .views-row').each((_: any, el: any) => {
+    const $el = $(el);
+    const titleLink = $el.find('.views-field-title .field-content a');
+    const title = cleanText(titleLink.text());
+    let link = titleLink.attr('href') || '';
+    const body = cleanText($el.find('.views-field-body .field-content').text());
 
-    return announcements;
+    if (title && link) {
+      if (!link.startsWith('http')) link = `${baseUrl}${link}`;
+
+      announcements.push({
+        id: `GENEL-${link}`,
+        source: 'Rektörlük',
+        title: title,
+        date: 'Güncel',
+        link: link,
+        timestamp: Date.now(),
+        summary: body || 'ODTÜ Rektörlük Duyurusu'
+      });
+    }
+  });
+
+  return announcements;
 };
